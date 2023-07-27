@@ -24,6 +24,8 @@ public class ProductController {
 	@GetMapping("/shop")
 	public List<ProductShopPageDto> getAllAvailableProducts() {
 		List<Product> availableProducts = productService.getAvailableProducts();
+		System.out.println(availableProducts.size());
+		
 		List<ProductShopPageDto> availableProductsDto = new ArrayList<ProductShopPageDto>();
 		for( Product availableProduct: availableProducts ) {
 			availableProductsDto.add(convertToDto(availableProduct));

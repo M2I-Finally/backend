@@ -3,6 +3,7 @@ package fr.fin.model.dto;
 import fr.fin.model.entity.Category;
 
 public class ProductShopPageDto {
+	
 	private Integer productId;
 	private String name;
 	private Double price;
