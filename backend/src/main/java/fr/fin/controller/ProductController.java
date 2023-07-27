@@ -5,11 +5,17 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
-import fr.fin.model.dto.ProductTablePageDto;
+import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.dto.ProductShopPageDto;
+import fr.fin.model.dto.ProductTablePageDto;
 import fr.fin.model.entity.Product;
 import fr.fin.service.ProductService;
 
@@ -48,5 +54,18 @@ public class ProductController {
 	
 	private ProductTablePageDto convertToTableDto(Product product) {
 		return modelMapper.map(product, ProductTablePageDto.class);
+	}
+	
+	@PostMapping("/product-add")
+	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestBody ProductGestionPageDto productDto) {
+		if( productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
+			productService.createProduct(convertToGestionEntity(productDto));
+			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
+		}
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+	}
+	
+	private Product convertToGestionEntity(ProductGestionPageDto productDto) {
+		return modelMapper.map(productDto, Product.class);
 	}
 }
