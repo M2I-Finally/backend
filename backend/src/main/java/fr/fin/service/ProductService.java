@@ -17,4 +17,8 @@ public class ProductService {
 	public List<Product> getAvailableProducts() {
 		return (List<Product>) productRepository.findByStatusTrue();
 	}
+	
+	public List<Product> getAllProducts() {
+		return (List<Product>) productRepository.findAll();
+	}
 }

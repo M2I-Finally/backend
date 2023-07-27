@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.dto.ProductShopPageDto;
 import fr.fin.model.entity.Product;
 import fr.fin.service.ProductService;
@@ -26,16 +27,26 @@ public class ProductController {
 		List<Product> availableProducts = productService.getAvailableProducts();		
 		List<ProductShopPageDto> availableProductsDto = new ArrayList<ProductShopPageDto>();
 		for( Product availableProduct: availableProducts ) {
-			availableProductsDto.add(convertToDto(availableProduct));
+			availableProductsDto.add(convertToShopDto(availableProduct));
 		}
 		return availableProductsDto;
 	}
 	
-	private ProductShopPageDto convertToDto(Product product) {
+	@GetMapping("/products")
+	public List<ProductGestionPageDto> getAllProducts() {
+		List<Product> products = productService.getAllProducts();
+		List<ProductGestionPageDto> productsDto = new ArrayList<ProductGestionPageDto>();
+		for( Product product: products ) {
+			productsDto.add(convertToGestionDto(product));
+		}
+		return productsDto;
+	}
+	
+	private ProductShopPageDto convertToShopDto(Product product) {
 		return modelMapper.map(product, ProductShopPageDto.class);
 	}
 	
-	private Product convertToEntity(ProductShopPageDto productDto) {
-		return modelMapper.map(productDto, Product.class);
+	private ProductGestionPageDto convertToGestionDto(Product product) {
+		return modelMapper.map(product, ProductGestionPageDto.class);
 	}
 }
