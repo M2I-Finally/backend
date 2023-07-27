@@ -1,15 +1,11 @@
 package fr.fin.model.dto;
 
-import fr.fin.model.entity.Category;
-
 public class ProductShopPageDto {
 	
 	private Integer productId;
 	private String name;
 	private Double price;
-	private Double tax;
 	private String picture;
-	private Category category;
 	
 	public ProductShopPageDto() {
 		
@@ -39,14 +35,6 @@ public class ProductShopPageDto {
 		this.price = price;
 	}
 
-	public Double getTax() {
-		return tax;
-	}
-
-	public void setTax(Double tax) {
-		this.tax = tax;
-	}
-
 	public String getPicture() {
 		return picture;
 	}
@@ -54,12 +42,4 @@ public class ProductShopPageDto {
 	public void setPicture(String picture) {
 		this.picture = picture;
 	}
-
-	public Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category category) {
-		this.category = category;
-	}	
 }
