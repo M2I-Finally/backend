@@ -26,4 +26,11 @@ public class ProductService {
 		Product newProduct = productRepository.save(product);
 		return newProduct;
 	}
+	
+	public Product getProductById(Integer id) {
+		if( productRepository.findById(id).isPresent() ) {
+			return productRepository.findById(id).get();			
+		}
+		return null;
+	}
 }

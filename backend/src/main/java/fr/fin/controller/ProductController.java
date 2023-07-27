@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,5 +68,18 @@ public class ProductController {
 	
 	private Product convertToGestionEntity(ProductGestionPageDto productDto) {
 		return modelMapper.map(productDto, Product.class);
+	}
+	
+	@GetMapping("/product-edit/{id}")
+	public ProductGestionPageDto getProductById(@PathVariable("id") Integer id) {
+		if( productService.getProductById(id) != null ) {
+			Product product = productService.getProductById(id);
+			return convertToGestionDto(product);
+		}
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+	}
+	
+	private ProductGestionPageDto convertToGestionDto(Product product) {
+		return modelMapper.map(product, ProductGestionPageDto.class);
 	}
 }
