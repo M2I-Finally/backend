@@ -25,5 +25,25 @@ public class BasketInsertDto {
 	private List<Payment> payments = new ArrayList<Payment>();
 	
 
-	
+	/*
+	 * class CartLine {
+    private id: number;
+    private name: string;
+    private price: number;
+    private discount: number;
+    private quantity: number;
+    
+    
+    class Cart {
+    private cartLines: CartLine[];
+    private total: number;
+    private discount: number;
+    
+    class Basket {
+    private cart : Cart;
+    private discount : number;
+    private total : number = 0;
+    
+    
+	 * */
 }
