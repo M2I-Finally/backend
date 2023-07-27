@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -81,5 +82,14 @@ public class ProductController {
 	
 	private ProductGestionPageDto convertToGestionDto(Product product) {
 		return modelMapper.map(product, ProductGestionPageDto.class);
+	}
+	
+	@DeleteMapping("/product/{id}")
+	public ResponseEntity<String> deleteProduct(@PathVariable("id") Integer id) {
+		if( productService.getProductById(id) != null ) {
+			productService.delete(id);
+			return new ResponseEntity<String>("Produit supprimé", HttpStatus.OK);
+		}
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le produit n'existe pas");
 	}
 }
