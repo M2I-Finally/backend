@@ -1,5 +1,6 @@
 ## Docker datas
-./data/
+backend/data/
+backend/data/*
 
 ##############################
 ## Java
