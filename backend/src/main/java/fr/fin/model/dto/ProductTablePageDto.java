@@ -1,13 +1,13 @@
 package fr.fin.model.dto;
 
-public class ProductGestionPageDto {
+public class ProductTablePageDto {
 
 	private Integer productId;
 	private String name;
 	private Double price;
 	private boolean status;
 	
-	public ProductGestionPageDto() {
+	public ProductTablePageDto() {
 		
 	}
 
