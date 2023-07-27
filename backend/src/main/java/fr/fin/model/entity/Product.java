@@ -69,8 +69,6 @@ public class Product {
 	public Product() {
 		
 	}
-	
-	
 
 	public Product(String name, String description, Double price, Double tax, String picture, Boolean status,
 			Double stock, String createdBy, String updatedBy, Date createdAt, Date updatedAt, Category category,
@@ -90,8 +88,6 @@ public class Product {
 		this.category = category;
 		this.basketDetails = basketDetails;
 	}
-	
-	
 
 	public Product(Integer productId, String name, String description, Double price, Double tax, String picture,
 			Boolean status, Double stock, String createdBy, String updatedBy, Date createdAt, Date updatedAt,
@@ -112,8 +108,6 @@ public class Product {
 		this.category = category;
 		this.basketDetails = basketDetails;
 	}
-
-
 
 	public Integer getProductId() {
 		return productId;
@@ -225,9 +219,5 @@ public class Product {
 
 	public void setBasketDetails(List<BasketDetail> basketDetails) {
 		this.basketDetails = basketDetails;
-	}
-	
-	
-	
-	
+	}	
 }
