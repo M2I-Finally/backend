@@ -14,10 +14,6 @@ public class ProductService {
 	@Autowired
 	private ProductRepository productRepository;
 	
-	public List<Product> getAvailableProducts() {
-		return (List<Product>) productRepository.findByStatusTrue();
-	}
-	
 	public List<Product> getAllProducts() {
 		return (List<Product>) productRepository.findAll();
 	}
@@ -36,5 +32,16 @@ public class ProductService {
 	
 	public void delete(Integer id) {		
 		productRepository.deleteById(id);
+	}
+	
+	public Product updateProductStatus(Integer id) {
+		Product updatedProduct = this.getProductById(id);
+		if( updatedProduct.getStatus() == true ) {
+			updatedProduct.setStatus(false);
+		} else {
+			updatedProduct.setStatus(true);
+		}
+		productRepository.save(updatedProduct);
+		return updatedProduct;
 	}
 }

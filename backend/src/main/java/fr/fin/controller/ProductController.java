@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,7 +21,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.dto.ProductShopPageDto;
-import fr.fin.model.dto.ProductTablePageDto;
 import fr.fin.model.entity.Product;
 import fr.fin.service.ProductService;
 
@@ -34,32 +34,18 @@ public class ProductController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping("/shop")
-	public List<ProductShopPageDto> getAllAvailableProducts() {
-		List<Product> availableProducts = productService.getAvailableProducts();		
-		List<ProductShopPageDto> availableProductsDto = new ArrayList<ProductShopPageDto>();
-		for( Product availableProduct: availableProducts ) {
-			availableProductsDto.add(convertToShopDto(availableProduct));
-		}
-		return availableProductsDto;
-	}
-	
-	private ProductShopPageDto convertToShopDto(Product product) {
-		return modelMapper.map(product, ProductShopPageDto.class);
-	}
-	
 	@GetMapping("/products")
-	public List<ProductTablePageDto> getAllProducts() {
+	public List<ProductShopPageDto> getAllProducts() {
 		List<Product> products = productService.getAllProducts();
-		List<ProductTablePageDto> productsDto = new ArrayList<ProductTablePageDto>();
+		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
 		for( Product product: products ) {
-			productsDto.add(convertToTableDto(product));
+			productsDto.add(convertToShopDto(product));
 		}
 		return productsDto;
 	}
 	
-	private ProductTablePageDto convertToTableDto(Product product) {
-		return modelMapper.map(product, ProductTablePageDto.class);
+	private ProductShopPageDto convertToShopDto(Product product) {
+		return modelMapper.map(product, ProductShopPageDto.class);
 	}
 	
 	@PostMapping("/product-add")
@@ -102,6 +88,11 @@ public class ProductController {
 	
 	private ProductGestionPageDto convertToGestionDto(Product product) {
 		return modelMapper.map(product, ProductGestionPageDto.class);
+	}
+	
+	@PatchMapping("/products/{id}")
+	public ProductGestionPageDto updateProductStatus(@PathVariable("id") Integer id) {		
+		return convertToGestionDto(productService.updateProductStatus(id));
 	}
 	
 	@DeleteMapping("/product/{id}")
