@@ -140,6 +140,14 @@ public class Category {
 	public void setProducts(List<Product> products) {
 		this.products = products;
 	}
+
+	public Boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
 	
 	
 }

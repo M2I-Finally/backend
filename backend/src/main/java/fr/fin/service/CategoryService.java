@@ -1,5 +1,6 @@
 package fr.fin.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,29 @@ public class CategoryService {
 		Optional<Category> category = categoryRepository.findById(id);
 		if(category.isPresent()) {
 			return category.get();
+		}
+		return null;
+	}
+	
+	public Category createNewCategory(Category category) {
+		category.setStatus(true);
+		category.setCreatedBy("Administrator");
+		category.setCreatedAt(new Date());
+		return categoryRepository.save(category);
+	}
+	
+	public Category patchCategoryStatus(Integer id) {
+		Category category = this.getCategoryById(id);
+		if(category != null) {
+			
+			// Opération ternaire, si la catégorie est active on la désactive et inversement
+			category.setStatus(category.getStatus() == true ? false : true);
+			
+			// Mis à jour des champs concernant l'update
+			category.setUpdatedAt(new Date());
+			category.setUpdatedBy("Administrator");
+			return categoryRepository.save(category);
+			
 		}
 		return null;
 	}
