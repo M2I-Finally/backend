@@ -51,7 +51,6 @@ public class CategoryService {
 	}
 	
 	public Category patchCategoryName(Integer id, String newName) {
-		
 		Category category = this.getCategoryById(id);
 		if(category != null) {
 			
@@ -63,6 +62,15 @@ public class CategoryService {
 			return categoryRepository.save(category);	
 		}
 		return null;
+	}
+	
+	public Boolean deleteCategoryById(Integer id) {
+		Category category = this.getCategoryById(id);
+		if(category != null) {
+			categoryRepository.deleteById(id);
+			return true;
+		}
+		return false;
 	}
 	
 }

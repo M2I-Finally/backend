@@ -7,6 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,11 +76,24 @@ public class CategoryController {
 	}
 	
 	@PatchMapping("/name/{id}")
-	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId, @RequestBody UpdateCategoryNameDto updateCategoryNameDto) {
+	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId, @Valid @RequestBody UpdateCategoryNameDto updateCategoryNameDto) {
 		
 		if(categoryService.getCategoryById(categoryId) != null) {
 			Category category = categoryService.patchCategoryName(categoryId, updateCategoryNameDto.getName());
 			return convertToDto(category);
+		}
+		
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");	
+	}
+	
+	@DeleteMapping("/{id}")
+	public String deleteCategory(@PathVariable("id") Integer categoryId) {
+	
+		if(categoryService.getCategoryById(categoryId) != null) {
+			if(categoryService.deleteCategoryById(categoryId)) {
+				return String.format("Deleted category with id %d from database", categoryId);
+			}
+			return String.format("Could not delete category with id %d", categoryId);
 		}
 		
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");	
