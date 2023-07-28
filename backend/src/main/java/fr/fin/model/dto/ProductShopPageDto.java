@@ -4,11 +4,30 @@ public class ProductShopPageDto {
 	
 	private Integer productId;
 	private String name;
+	private String description;
 	private Double price;
+	private boolean status;
+	private Double stock;
 	private String picture;
 	
 	public ProductShopPageDto() {
 		
+	}
+	
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+
+	public Double getStock() {
+		return stock;
+	}
+
+	public void setStock(Double stock) {
+		this.stock = stock;
 	}
 
 	public Integer getProductId() {
@@ -41,5 +60,14 @@ public class ProductShopPageDto {
 
 	public void setPicture(String picture) {
 		this.picture = picture;
+	}
+	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

@@ -1,12 +1,14 @@
 package fr.fin.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,7 @@ import fr.fin.model.dto.ProductTablePageDto;
 import fr.fin.model.entity.Product;
 import fr.fin.service.ProductService;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class ProductController {
 
@@ -90,6 +93,7 @@ public class ProductController {
 			updatedProduct.setCategory(productDto.getCategory());
 			updatedProduct.setPrice(productDto.getPrice());
 			updatedProduct.setPicture(productDto.getPicture());
+			updatedProduct.setUpdatedAt(new Date());
 			productService.createProduct(updatedProduct);
 			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
 		}
