@@ -16,10 +16,21 @@ public class CategoryService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
+	/**
+	 * Fetch all categories and order them by ascending identifier
+	 * 
+	 * @return List<Category> containing the categories
+	 */
 	public List<Category> getAllCategories() {
-		return categoryRepository.findAll();
+		return categoryRepository.findAllByOrderById();
 	}
 	
+	/**
+	 * Get a category by id and return it if it exists
+	 * 
+	 * @param id	The id of the category
+	 * @return		The category if it exists
+	 */
 	public Category getCategoryById(Integer id) {
 		Optional<Category> category = categoryRepository.findById(id);
 		if(category.isPresent()) {
@@ -28,6 +39,12 @@ public class CategoryService {
 		return null;
 	}
 	
+	/**
+	 * Creates a new category and populate it in database
+	 * 
+	 * @param category	A Category entity that represents the object we add
+	 * @return			The newly created category
+	 */
 	public Category createNewCategory(Category category) {
 		category.setStatus(true);
 		category.setCreatedBy("Administrator");
@@ -35,14 +52,19 @@ public class CategoryService {
 		return categoryRepository.save(category);
 	}
 	
+	/**
+	 * Patch category status. It becomes true if it's false (inverse works)
+	 * 
+	 * @param id	The id of the category to patch
+	 * @return		The patched category
+	 */
 	public Category patchCategoryStatus(Integer id) {
-		Category category = this.getCategoryById(id);
+		Category category = getCategoryById(id);
 		if(category != null) {
 			
-			// Opération ternaire, si la catégorie est active on la désactive et inversement
+			// Ternary operation
 			category.setStatus(category.getStatus() == true ? false : true);
 			
-			// Mis à jour des champs concernant l'update
 			category.setUpdatedAt(new Date());
 			category.setUpdatedBy("Administrator");
 			return categoryRepository.save(category);	
@@ -50,20 +72,32 @@ public class CategoryService {
 		return null;
 	}
 	
+	/**
+	 * Patch category name given an identifier.
+	 * 
+	 * @param id	The id of the category to patch
+	 * @param newName	The new name to set
+	 * @return		The patched category
+	 */
 	public Category patchCategoryName(Integer id, String newName) {
-		Category category = this.getCategoryById(id);
+		Category category = getCategoryById(id);
+		
 		if(category != null) {
-			
 			category.setName(newName);
-			
-			// Mis à jour des champs concernant l'update
 			category.setUpdatedAt(new Date());
 			category.setUpdatedBy("Administrator");
 			return categoryRepository.save(category);	
 		}
+		
 		return null;
 	}
 	
+	/**
+	 * Delete a category given it's identifier
+	 * 
+	 * @param id	The id of the category to delete
+	 * @return		True if the category has been successfully deleted
+	 */
 	public Boolean deleteCategoryById(Integer id) {
 		Category category = this.getCategoryById(id);
 		if(category != null) {

@@ -1,13 +1,13 @@
-package fr.fin.model.dto;
+package fr.fin.model.dto.category;
 
 import jakarta.validation.constraints.NotNull;
 
-public class CreateCategoryDto {
-
+public class UpdateCategoryNameDto {
+	
 	@NotNull
 	private String name;
 	
-	public CreateCategoryDto() { }
+	public UpdateCategoryNameDto() { }
 
 	public String getName() {
 		return name;
@@ -16,5 +16,4 @@ public class CreateCategoryDto {
 	public void setName(String name) {
 		this.name = name;
 	}
-		
 }

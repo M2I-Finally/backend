@@ -10,5 +10,7 @@ import fr.fin.model.entity.Category;
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, Integer> {
 
-	List<Category> findAll();
+	List<Category> findAllByOrderById();
+	
+	Category findByIdOrderById(Integer id);
 }

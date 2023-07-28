@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import fr.fin.model.dto.CategoryDto;
-import fr.fin.model.dto.CreateCategoryDto;
-import fr.fin.model.dto.UpdateCategoryNameDto;
+import fr.fin.model.dto.category.CategoryDto;
+import fr.fin.model.dto.category.CreateCategoryDto;
+import fr.fin.model.dto.category.UpdateCategoryNameDto;
 import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
 import jakarta.validation.Valid;
@@ -35,6 +35,9 @@ public class CategoryController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
+	/**
+	 * @return JSON containing all categories
+	 */
 	@GetMapping("/all")
 	public List<CategoryDto> getAllCategories() {
 		List<Category> categoriesAsEntity = categoryService.getAllCategories();
@@ -47,6 +50,12 @@ public class CategoryController {
 		return categoriesAsDto;
 	}
 	
+	/**
+	 * Get a category given an ID
+	 * 
+	 * @param categoryId	The id of the category to get
+	 * @return	JSON containing the category information
+	 */
 	@GetMapping("/{categoryId}")
 	public CategoryDto getCategoryById(@PathVariable("categoryId") Integer categoryId) {
 		Category category = categoryService.getCategoryById(categoryId);
@@ -57,6 +66,12 @@ public class CategoryController {
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");	
 	}
 	
+	/**
+	 * Create a category
+	 * 
+	 * @param createCategoryDto	The DTO containing fields for the required data
+	 * @return	JSON containing the created category information
+	 */
 	@PostMapping
 	public CategoryDto createCategory(@Valid @RequestBody CreateCategoryDto createCategoryDto) {
 		Category categoryFromDto = modelMapper.map(createCategoryDto, Category.class);
@@ -64,6 +79,12 @@ public class CategoryController {
 		return convertToDto(categoryToSave);
 	}
 	
+	/**
+	 * Update a category status
+	 * 
+	 * @param categoryId	The id of the category to update
+	 * @return	JSON containing the updated category information
+	 */
 	@PatchMapping("/status/{id}")
 	public CategoryDto changeCategoryName(@PathVariable("id") Integer categoryId) {
 		
@@ -75,6 +96,13 @@ public class CategoryController {
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");	
 	}
 	
+	/**
+	 * Update a category name
+	 * 
+	 * @param categoryId	The id of the category to update
+	 * @param updateCategoryNameDto	The DTO containg the name field required for update
+	 * @return	JSON containing the updated category information
+	 */
 	@PatchMapping("/name/{id}")
 	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId, @Valid @RequestBody UpdateCategoryNameDto updateCategoryNameDto) {
 		
@@ -86,6 +114,12 @@ public class CategoryController {
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");	
 	}
 	
+	/**
+	 * Delete a category by its id
+	 * 
+	 * @param categoryId	The id of the category to delete
+	 * @return	String that confirms if the deletion was successful or not
+	 */
 	@DeleteMapping("/{id}")
 	public String deleteCategory(@PathVariable("id") Integer categoryId) {
 	
@@ -99,6 +133,9 @@ public class CategoryController {
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");	
 	}
 	
+	/*
+	 * Converter for Category to CategoryDto
+	 */
 	private CategoryDto convertToDto(Category categoryAsEntity) {
 		return modelMapper.map(categoryAsEntity, CategoryDto.class);
 	}
