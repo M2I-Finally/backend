@@ -45,8 +45,22 @@ public class CategoryService {
 			// Mis à jour des champs concernant l'update
 			category.setUpdatedAt(new Date());
 			category.setUpdatedBy("Administrator");
-			return categoryRepository.save(category);
+			return categoryRepository.save(category);	
+		}
+		return null;
+	}
+	
+	public Category patchCategoryName(Integer id, String newName) {
+		
+		Category category = this.getCategoryById(id);
+		if(category != null) {
 			
+			category.setName(newName);
+			
+			// Mis à jour des champs concernant l'update
+			category.setUpdatedAt(new Date());
+			category.setUpdatedBy("Administrator");
+			return categoryRepository.save(category);	
 		}
 		return null;
 	}

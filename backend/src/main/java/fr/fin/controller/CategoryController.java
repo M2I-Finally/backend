@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.model.dto.CategoryDto;
 import fr.fin.model.dto.CreateCategoryDto;
+import fr.fin.model.dto.UpdateCategoryNameDto;
 import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
 import jakarta.validation.Valid;
@@ -62,11 +63,22 @@ public class CategoryController {
 		return convertToDto(categoryToSave);
 	}
 	
-	@PatchMapping("/active/{id}")
-	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId) {
+	@PatchMapping("/status/{id}")
+	public CategoryDto changeCategoryName(@PathVariable("id") Integer categoryId) {
 		
 		if(categoryService.getCategoryById(categoryId) != null) {
 			Category category = categoryService.patchCategoryStatus(categoryId);
+			return convertToDto(category);
+		}
+		
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");	
+	}
+	
+	@PatchMapping("/name/{id}")
+	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId, @RequestBody UpdateCategoryNameDto updateCategoryNameDto) {
+		
+		if(categoryService.getCategoryById(categoryId) != null) {
+			Category category = categoryService.patchCategoryName(categoryId, updateCategoryNameDto.getName());
 			return convertToDto(category);
 		}
 		
