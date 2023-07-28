@@ -26,7 +26,7 @@ public class Category {
 	private String name;
 	
 	@Column
-	private boolean status;
+	private Boolean status;
 	
 	@Column(name="created_by",nullable=false)
 	private String createdBy;
@@ -45,14 +45,10 @@ public class Category {
 	@OneToMany(mappedBy = "category")
 	private List<Product> products;
 	
-	
-
 	public Category() {
 		
 	}
 	
-	
-
 	public Category(String name, boolean status, String createdBy, String updatedBy, Date createdAt, Date updatedAt,
 			List<Product> products) {
 		super();
@@ -64,7 +60,6 @@ public class Category {
 		this.updatedAt = updatedAt;
 		this.products = products;
 	}
-	
 	
 
 	public Category(Integer categoryId, String name, boolean status, String createdBy, String updatedBy, Date createdAt,
