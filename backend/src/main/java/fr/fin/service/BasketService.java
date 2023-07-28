@@ -23,14 +23,12 @@ public class BasketService {
 		return newBasket;
 	}
 	
-	public Basket getProductById(Integer id) {
+	public Basket getBasketById(Integer id) {
 		if( basketRepository.findById(id).isPresent() ) {
 			return basketRepository.findById(id).get();			
 		}
 		return null;
 	}
 	
-	public void delete(Integer id) {		
-		basketRepository.deleteById(id);
-	}
+
 }
