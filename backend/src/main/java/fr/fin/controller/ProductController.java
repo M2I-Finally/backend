@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -78,6 +79,21 @@ public class ProductController {
 			return convertToGestionDto(product);
 		}
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+	}
+	
+	@PutMapping("/product-edit/{id}")
+	public ResponseEntity<ProductGestionPageDto> updateProduct(@PathVariable("id") Integer id, @RequestBody ProductGestionPageDto productDto) {
+		if( productService.getProductById(id) != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
+			Product updatedProduct = productService.getProductById(id);
+			updatedProduct.setName(productDto.getName());
+			updatedProduct.setDescription(productDto.getDescription());
+			updatedProduct.setCategory(productDto.getCategory());
+			updatedProduct.setPrice(productDto.getPrice());
+			updatedProduct.setPicture(productDto.getPicture());
+			productService.createProduct(updatedProduct);
+			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
+		}
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
 	}
 	
 	private ProductGestionPageDto convertToGestionDto(Product product) {
