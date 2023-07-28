@@ -1,5 +1,5 @@
 package fr.fin.model.dto;
 
-public class Empty {
-
+public class BasketDto {
+	
 }
