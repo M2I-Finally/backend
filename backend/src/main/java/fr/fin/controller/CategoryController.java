@@ -131,12 +131,17 @@ public class CategoryController {
 	 */
 	@DeleteMapping("/{id}")
 	public String deleteCategory(@PathVariable("id") Integer categoryId) {
-
-		if (categoryService.getCategoryById(categoryId) != null) {
-			if (categoryService.deleteCategoryById(categoryId)) {
-				return String.format("Deleted category with id %d from database", categoryId);
+		Category category = categoryService.getCategoryById(categoryId);
+		if (category != null) {
+			if (category.getProducts().isEmpty()) {
+				if (categoryService.deleteCategoryById(categoryId)) {
+					return String.format("La catégorie avec l'ID %d a été supprimé de la base de données", categoryId);
+				}
+				return String.format("Une erreur s'est produite lors de la suppression %d", categoryId);
 			}
-			return String.format("Could not delete category with id %d", categoryId);
+
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+					"La catégorie contient des produits, impossible de la supprimer");
 		}
 
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");

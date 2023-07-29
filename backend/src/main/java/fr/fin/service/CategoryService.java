@@ -103,7 +103,7 @@ public class CategoryService {
 	 * @param id	The id of the category to delete
 	 * @return		True if the category has been successfully deleted
 	 */
-	public Boolean deleteCategoryById(Integer id) {
+	public boolean deleteCategoryById(Integer id) {
 		Category category = this.getCategoryById(id);
 		if (category != null) {
 			categoryRepository.deleteById(id);
