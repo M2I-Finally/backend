@@ -66,7 +66,7 @@ public class CategoryController {
 			return convertToDto(category);
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class CategoryController {
 			return convertToDto(category);
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class CategoryController {
 			return convertToDto(category);
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class CategoryController {
 			return String.format("Could not delete category with id %d", categoryId);
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with given ID was not found");
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
 	}
 
 	/*
