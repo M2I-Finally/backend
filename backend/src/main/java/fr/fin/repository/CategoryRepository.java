@@ -14,5 +14,5 @@ public interface CategoryRepository extends CrudRepository<Category, Integer> {
 
 	Category findByIdOrderById(Integer id);
 
-	Category findCategoryByName(String name);
+	Category findCategoryByNameIgnoreCase(String name);
 }

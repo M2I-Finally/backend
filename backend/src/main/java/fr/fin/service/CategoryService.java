@@ -53,7 +53,7 @@ public class CategoryService {
 	}
 
 	public boolean checkIfCategoryExistsByName(String name) {
-		Category category = categoryRepository.findCategoryByName(name);
+		Category category = categoryRepository.findCategoryByNameIgnoreCase(name);
 		return !(category == null);
 	}
 
