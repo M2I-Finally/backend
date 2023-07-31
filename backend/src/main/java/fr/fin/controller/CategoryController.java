@@ -40,7 +40,7 @@ public class CategoryController {
 	/**
 	 * @return JSON containing all categories with product count
 	 */
-	@GetMapping("/all")
+	@GetMapping
 	public List<CategoryWithProductCountDto> getAllCategories() {
 		List<Category> categoriesAsEntity = categoryService.getAllCategories();
 		List<CategoryWithProductCountDto> categoriesAsDto = new ArrayList<>();
@@ -60,8 +60,8 @@ public class CategoryController {
 	 * @param categoryId	The id of the category to get
 	 * @return	JSON containing the category information
 	 */
-	@GetMapping("/{categoryId}")
-	public CategoryDto getCategoryById(@PathVariable("categoryId") Integer categoryId) {
+	@GetMapping("/{id}")
+	public CategoryDto getCategoryById(@PathVariable("id") Integer categoryId) {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
 			return convertToDto(category);
