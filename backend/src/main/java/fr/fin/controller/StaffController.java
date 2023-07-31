@@ -57,30 +57,6 @@ public class StaffController {
 	}
 
 	/**
-	 * Only manager can delete staff, manager cannot delete himself
-	 * 
-	 * @param id
-	 * @return
-	 */
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteStaff(@PathVariable("id") Integer id) {
-		List<Staff> managers = staffService.getManager();
-
-		if (staffService.getStaffById(id) == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le staff n'existe pas");
-		}
-
-		if (Arrays.asList(managers).contains(id)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un manager ne peut pas être supprimé.");
-		}
-		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
-
-		staffService.deleteStaffById(id);
-		return new ResponseEntity<String>("Staff supprimé", HttpStatus.OK);
-
-	}
-
-	/**
 	 * Create a new staff, only manager can create a new staff, and control the
 	 * validity of every input
 	 * 
@@ -167,6 +143,30 @@ public class StaffController {
 		}
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+	}
+	
+	/**
+	 * Only manager can delete staff, manager cannot delete himself
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteStaff(@PathVariable("id") Integer id) {
+		List<Staff> managers = staffService.getManager();
+
+		if (staffService.getStaffById(id) == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le staff n'existe pas");
+		}
+
+		if (Arrays.asList(managers).contains(id)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un manager ne peut pas être supprimé.");
+		}
+		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
+
+		staffService.deleteStaffById(id);
+		return new ResponseEntity<String>("Staff supprimé", HttpStatus.OK);
+
 	}
 
 }
