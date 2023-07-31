@@ -3,12 +3,15 @@ package fr.fin.model.dto.category;
 public class CategoryDto {
 
 	private Integer id;
-	
+
 	private String name;
-	
+
 	private Boolean status;
 	
-	public CategoryDto() { }
+	private Integer productCount;
+
+	public CategoryDto() {
+	}
 
 	public String getName() {
 		return name;
@@ -33,6 +36,14 @@ public class CategoryDto {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
+
+	public Integer getProductCount() {
+		return productCount;
+	}
+
+	public void setProductCount(Integer productCount) {
+		this.productCount = productCount;
+	}
+
 	
 }
