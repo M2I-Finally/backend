@@ -98,10 +98,11 @@ public class ProductController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteProduct(@PathVariable("id") Integer id) {
+	public ResponseEntity<ProductGestionPageDto> deleteProduct(@PathVariable("id") Integer id) {
 		if( productService.getProductById(id) != null ) {
+			ProductGestionPageDto deletedProduct = convertToGestionDto(productService.getProductById(id));
 			productService.delete(id);
-			return new ResponseEntity<String>("Produit supprimé", HttpStatus.OK);
+			return new ResponseEntity<ProductGestionPageDto>(deletedProduct, HttpStatus.OK);
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le produit n'existe pas");
 	}
