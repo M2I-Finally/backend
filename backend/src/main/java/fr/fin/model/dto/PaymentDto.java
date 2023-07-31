@@ -4,16 +4,16 @@ public class PaymentDto {
 
 	private Float amount;
 
-	private int paymentTypeId;
+	private int type;
 
 	public PaymentDto() {
 
 	}
 
-	public PaymentDto(Float amount, int paymentTypeId) {
+	public PaymentDto(Float amount, int type) {
 
 		this.amount = amount;
-		this.paymentTypeId = paymentTypeId;
+		this.type = type;
 	}
 
 	public Float getAmount() {
@@ -24,17 +24,17 @@ public class PaymentDto {
 		this.amount = amount;
 	}
 
-	public int getPaymentTypeId() {
-		return paymentTypeId;
+	public int getType() {
+		return type;
 	}
 
-	public void setPaymentTypeId(int paymentTypeId) {
-		this.paymentTypeId = paymentTypeId;
+	public void setType(int type) {
+		this.type = type;
 	}
 
 	@Override
 	public String toString() {
-		return "PaymentDto [amount=" + amount + ", paymentTypeId=" + paymentTypeId + "]";
+		return "PaymentDto [amount=" + amount + ", type=" + type + "]";
 	}
 	
 	

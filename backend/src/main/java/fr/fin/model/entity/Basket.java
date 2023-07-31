@@ -18,10 +18,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "basket")
 public class Basket {
+	
 	@Id
 	@Column(name = "basket_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Integer basketId;
 
 	@Column
 	private Float discount;
@@ -33,7 +34,7 @@ public class Basket {
 	@JoinColumn(name = "staff_id")
 	private Staff staff;
 
-	@OneToMany(targetEntity = BasketDetail.class, mappedBy = "basket",cascade = CascadeType.MERGE)
+	@OneToMany(targetEntity = BasketDetail.class, mappedBy = "basket")
 	private List<BasketDetail> basketDetails = new ArrayList<BasketDetail>();
 
 	@OneToMany(targetEntity = Payment.class, mappedBy = "basket")
@@ -54,10 +55,6 @@ public class Basket {
 		this.payments = payments;
 	}
 	
-	
-
-
-
 	public Basket(Float discount, Staff staff, List<BasketDetail> basketDetails, List<Payment> payments) {
 		
 		this.discount = discount;
@@ -66,15 +63,30 @@ public class Basket {
 		this.payments = payments;
 	}
 
-
-
-	public Integer getId() {
-		return id;
+	public Basket(Integer basketId, Float discount, Date createdAt, Staff staff, List<BasketDetail> basketDetails,
+			List<Payment> payments) {
+		
+		this.basketId = basketId;
+		this.discount = discount;
+		this.createdAt = createdAt;
+		this.staff = staff;
+		this.basketDetails = basketDetails;
+		this.payments = payments;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+
+
+	public Integer getBasketId() {
+		return basketId;
 	}
+
+
+
+	public void setBasketId(Integer basketId) {
+		this.basketId = basketId;
+	}
+
+
 
 	public float getDiscount() {
 		return discount;
@@ -120,7 +132,7 @@ public class Basket {
 
 	@Override
 	public String toString() {
-		return "Basket [id=" + id + ", discount=" + discount + ", createdAt=" + createdAt + ", staff=" + staff
+		return "Basket [id=" + basketId + ", discount=" + discount + ", createdAt=" + createdAt + ", staff=" + staff
 				+ ", basketDetails=" + basketDetails + ", payments=" + payments + "]";
 	}
 

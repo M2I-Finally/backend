@@ -51,11 +51,12 @@ public class BasketController {
 	
 	@PostMapping()
 	public BasketRegistredDto insertBasket(@RequestBody BasketPaymentDto basketPaymentDto) {
+		
 		Basket basketFromApp = convertToEntities(basketPaymentDto);
-		basketFromApp.setCreatedAt(new Date());
 		basketPaymentService.createBasket(basketFromApp);
 		return null;
 	}
+	
 	@GetMapping()
 	public BasketPaymentDto getBasket() {
 		BasketPaymentDto basketPaymentDto = new BasketPaymentDto();
@@ -119,15 +120,17 @@ public class BasketController {
 	}*/
 	
 	private Basket convertToEntities(BasketPaymentDto dto) {
-		
+		System.out.println(dto.getpaymentDtoList());
 		List<BasketDetail> listBasketDetail = mapList(dto.getBasketDetailDto(), BasketDetail.class);
 		
 		List<Payment> payments = mapList(dto.getpaymentDtoList(), Payment.class);
-		
+		for (Payment payment : payments) {
+			System.out.println(payment);
+		}
 		Staff staff = new Staff();
 		staff.setStaffId(dto.getSellerId());		
 		
-		return new Basket(dto.getDiscount(),staff,listBasketDetail,payments);
+		return new Basket(null,dto.getDiscount(), new Date(), staff,listBasketDetail,payments);
 				
 	}
 	
