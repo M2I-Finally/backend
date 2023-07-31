@@ -6,3 +6,6 @@ Environement.ts =>
 * getAll:(/)
 * post(/)
 * actionById({id})
+
+# ngx-toastr
+[documentation](https://www.npmjs.com/package/ngx-toastr)
