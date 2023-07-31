@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import fr.fin.model.entity.Category;
 import fr.fin.repository.CategoryRepository;
@@ -46,6 +47,7 @@ public class CategoryService {
 	 * @return			The newly created category
 	 */
 	public Category createNewCategory(Category category) {
+		category.setName(trimAndCapitalize(category.getName()));
 		category.setStatus(true);
 		category.setCreatedBy("Administrator");
 		category.setCreatedAt(new Date());
@@ -88,7 +90,7 @@ public class CategoryService {
 		Category category = getCategoryById(id);
 
 		if (category != null) {
-			category.setName(newName);
+			category.setName(trimAndCapitalize(newName));
 			category.setUpdatedAt(new Date());
 			category.setUpdatedBy("Administrator");
 			return categoryRepository.save(category);
@@ -110,6 +112,17 @@ public class CategoryService {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Trim useless spaces character and capitalize the first letter of the string
+	 * @param processedString	The string to process 
+	 * @return trimmed and capitalized string
+	 */
+	private String trimAndCapitalize(String processedString) {
+		processedString = processedString.trim();
+		processedString = StringUtils.capitalize(processedString.toLowerCase());
+		return processedString;
 	}
 
 }
