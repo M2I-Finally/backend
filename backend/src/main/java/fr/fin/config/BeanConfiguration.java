@@ -1,3 +1,4 @@
+
 package fr.fin.config;
 
 import org.modelmapper.ModelMapper;
@@ -12,4 +13,3 @@ public class BeanConfiguration {
 		return new ModelMapper();
 	}
 }
-
