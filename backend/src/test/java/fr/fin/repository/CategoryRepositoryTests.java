@@ -21,5 +21,12 @@ class CategoryRepositoryTests {
 		List<Category> categories = categoryRepository.findAllByOrderById();
 		System.out.println(categories.size());
 	}
+	
+	@Test
+	@Sql("test2.sql")
+	void findAllOrderById_ShouldReturn_OrderedCategories2() {
+		List<Category> categories = categoryRepository.findAllByOrderById();
+		System.out.println(categories.size());
+	}
 
 }
