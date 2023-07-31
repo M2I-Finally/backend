@@ -80,6 +80,7 @@ public class ProductController {
 			updatedProduct.setDescription(productDto.getDescription());
 			updatedProduct.setCategory(productDto.getCategory());
 			updatedProduct.setPrice(productDto.getPrice());
+			updatedProduct.setTax(productDto.getTax());
 			updatedProduct.setPicture(productDto.getPicture());
 			updatedProduct.setUpdatedAt(new Date());
 			productService.createProduct(updatedProduct);
