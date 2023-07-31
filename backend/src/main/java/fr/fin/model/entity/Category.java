@@ -3,6 +3,8 @@ package fr.fin.model.entity;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,18 +22,18 @@ public class Category {
 	@Id
 	@Column(name = "category_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer categoryId;
+	private Integer id;
 	
 	@Column(length=50)
 	private String name;
 	
 	@Column
-	private boolean status;
+	private Boolean status;
 	
 	@Column(name="created_by",nullable=false)
 	private String createdBy;
 	
-	@Column(name="updated_by",nullable=false)
+	@Column(name="updated_by")
 	private String updatedBy;
 	
 	@Column(name = "created_at")
@@ -42,52 +44,29 @@ public class Category {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 	
+	@JsonBackReference
 	@OneToMany(mappedBy = "category")
 	private List<Product> products;
 	
-	
-
 	public Category() {
 		
 	}
 	
-	
-
-	public Category(String name, boolean status, String createdBy, String updatedBy, Date createdAt, Date updatedAt,
-			List<Product> products) {
+	public Category(Integer id, String name, Boolean status, String createdBy, Date createdAt) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.status = status;
 		this.createdBy = createdBy;
-		this.updatedBy = updatedBy;
 		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-		this.products = products;
+	}
+
+	public Integer getId() {
+		return id;
 	}
 	
-	
-
-	public Category(Integer categoryId, String name, boolean status, String createdBy, String updatedBy, Date createdAt,
-			Date updatedAt, List<Product> products) {
-		super();
-		this.categoryId = categoryId;
-		this.name = name;
-		this.status = status;
-		this.createdBy = createdBy;
-		this.updatedBy = updatedBy;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-		this.products = products;
-	}
-
-
-
-	public Integer getCategoryId() {
-		return categoryId;
-	}
-
-	public void setCategoryId(Integer categoryId) {
-		this.categoryId = categoryId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -145,6 +124,20 @@ public class Category {
 	public void setProducts(List<Product> products) {
 		this.products = products;
 	}
-	
+
+	public Boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		return "Category [id=" + id + ", name=" + name + ", status=" + status + ", createdBy=" + createdBy
+				+ ", updatedBy=" + updatedBy + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", products="
+				+ products + "]";
+	}
 	
 }
