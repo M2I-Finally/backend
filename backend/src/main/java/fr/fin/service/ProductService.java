@@ -15,7 +15,7 @@ public class ProductService {
 	private ProductRepository productRepository;
 	
 	public List<Product> getAllProducts() {
-		return (List<Product>) productRepository.findAll();
+		return (List<Product>) productRepository.findAllByOrderByProductId();
 	}
 	
 	public Product createProduct(Product product) {

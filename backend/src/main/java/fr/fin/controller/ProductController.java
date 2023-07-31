@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,6 +25,7 @@ import fr.fin.model.dto.ProductShopPageDto;
 import fr.fin.model.entity.Product;
 import fr.fin.service.ProductService;
 
+@RequestMapping("/products")
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class ProductController {
@@ -34,7 +36,7 @@ public class ProductController {
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@GetMapping("/products")
+	@GetMapping
 	public List<ProductShopPageDto> getAllProducts() {
 		List<Product> products = productService.getAllProducts();
 		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
@@ -48,7 +50,7 @@ public class ProductController {
 		return modelMapper.map(product, ProductShopPageDto.class);
 	}
 	
-	@PostMapping("/product-add")
+	@PostMapping
 	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestBody ProductGestionPageDto productDto) {
 		if( productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
 			productService.createProduct(convertToGestionEntity(productDto));
@@ -61,7 +63,7 @@ public class ProductController {
 		return modelMapper.map(productDto, Product.class);
 	}
 	
-	@GetMapping("/product-edit/{id}")
+	@GetMapping("/{id}")
 	public ProductGestionPageDto getProductById(@PathVariable("id") Integer id) {
 		if( productService.getProductById(id) != null ) {
 			Product product = productService.getProductById(id);
@@ -70,7 +72,7 @@ public class ProductController {
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
 	}
 	
-	@PutMapping("/product-edit/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<ProductGestionPageDto> updateProduct(@PathVariable("id") Integer id, @RequestBody ProductGestionPageDto productDto) {
 		if( productService.getProductById(id) != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
 			Product updatedProduct = productService.getProductById(id);
@@ -90,12 +92,12 @@ public class ProductController {
 		return modelMapper.map(product, ProductGestionPageDto.class);
 	}
 	
-	@PatchMapping("/products/{id}")
+	@PatchMapping("/{id}")
 	public ProductGestionPageDto updateProductStatus(@PathVariable("id") Integer id) {		
 		return convertToGestionDto(productService.updateProductStatus(id));
 	}
 	
-	@DeleteMapping("/product/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteProduct(@PathVariable("id") Integer id) {
 		if( productService.getProductById(id) != null ) {
 			productService.delete(id);
