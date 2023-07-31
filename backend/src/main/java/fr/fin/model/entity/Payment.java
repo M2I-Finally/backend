@@ -40,6 +40,12 @@ public class Payment {
 	public Payment() {
 	}
 
+	public Payment(Float amount, PaymentType type) {
+
+		this.amount = amount;
+		this.type = type;
+	}
+
 	public Payment(Float amount, PaymentType type, Date createdAt, Basket basket) {
 		this.amount = amount;
 		this.type = type;

@@ -1,5 +1,6 @@
 package fr.fin.model.entity;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -30,6 +31,23 @@ public class BasketDetail {
 	@MapsId("productId")
 	@JoinColumn(name="product_id")
 	private Product product;
+	
+	
+
+	public BasketDetail() {
+		
+	}
+	
+	
+
+	public BasketDetail(Integer quantity, Float discount, Product product) {
+		
+		this.quantity = quantity;
+		this.discount = discount;
+		this.product = product;
+	}
+
+
 
 	public BasketDetailKey getId() {
 		return id;
@@ -70,6 +88,15 @@ public class BasketDetail {
 	public void setProduct(Product product) {
 		this.product = product;
 	}
+
+
+
+	@Override
+	public String toString() {
+		return "BasketDetail [id=" + id + ", quantity=" + quantity + ", discount=" + discount + ", basket=" + basket
+				+ ", product=" + product + "]";
+	}
+	
 	
 	
 }

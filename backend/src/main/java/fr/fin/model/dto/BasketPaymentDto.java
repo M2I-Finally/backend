@@ -21,26 +21,22 @@ public class BasketPaymentDto {
 	private Integer sellerId;
 	private Float discount;
 	private Float total;
-	private List<BasketDetailDto> basketDetailDto = new ArrayList<>();
-	private List<Integer> paymentsType = new ArrayList<>();
+	private List<BasketDetailDto> basketDetailDtoList = new ArrayList<>();
+	private List<PaymentDto> paymentDtoList = new ArrayList<>();
 
 	public BasketPaymentDto() {
 
 	}
-	
-	
 
-	public BasketPaymentDto(Integer sellerId, Float discount, Float total, List<BasketDetailDto> basketDetailDto,
-			List<Integer> paymentsType) {
-		
+	public BasketPaymentDto(Integer sellerId, Float discount, Float total, List<BasketDetailDto> basketDetailDtoList,
+			List<PaymentDto> paymentDtoList) {
+
 		this.sellerId = sellerId;
 		this.discount = discount;
 		this.total = total;
-		this.basketDetailDto = basketDetailDto;
-		this.paymentsType = paymentsType;
+		this.basketDetailDtoList = basketDetailDtoList;
+		this.paymentDtoList = paymentDtoList;
 	}
-
-
 
 	public Integer getSellerId() {
 		return sellerId;
@@ -67,19 +63,27 @@ public class BasketPaymentDto {
 	}
 
 	public List<BasketDetailDto> getBasketDetailDto() {
-		return basketDetailDto;
+		return basketDetailDtoList;
 	}
 
-	public void setBasketDetailDto(List<BasketDetailDto> basketDetailDto) {
-		this.basketDetailDto = basketDetailDto;
+	public void setBasketDetailDto(List<BasketDetailDto> basketDetailDtoList) {
+		this.basketDetailDtoList = basketDetailDtoList;
 	}
 
-	public List<Integer> getPaymentsType() {
-		return paymentsType;
+	public List<PaymentDto> getpaymentDtoList() {
+		return paymentDtoList;
 	}
 
-	public void setPaymentsType(List<Integer> paymentsType) {
-		this.paymentsType = paymentsType;
+	public void setpaymentDtoList(List<PaymentDto> paymentDtoList) {
+		this.paymentDtoList = paymentDtoList;
 	}
+
+	@Override
+	public String toString() {
+		return "BasketPaymentDto [sellerId=" + sellerId + ", discount=" + discount + ", total=" + total
+				+ ", basketDetailDtoList=" + basketDetailDtoList + ", paymentDtoList=" + paymentDtoList + "]";
+	}
+	
+	
 
 }

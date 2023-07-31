@@ -1,25 +1,22 @@
 package fr.fin.model.dto;
 
-
 public class BasketDetailDto {
-	
+
 	private Integer quantity;
-		
+
 	private Float discount;
-		
-	private Integer product_id;
-	
-	
+
+	private Integer productId;
 
 	public BasketDetailDto() {
-	
+
 	}
 
-	public BasketDetailDto(Integer quantity, Float discount, Integer product_id) {
-		
+	public BasketDetailDto(Integer quantity, Float discount, Integer productId) {
+
 		this.quantity = quantity;
-		this.discount = discount;		
-		this.product_id = product_id;
+		this.discount = discount;
+		this.productId = productId;
 	}
 
 	public Integer getQuantity() {
@@ -38,21 +35,17 @@ public class BasketDetailDto {
 		this.discount = discount;
 	}
 
-	
-
-	public Integer getProduct_id() {
-		return product_id;
+	public Integer getproductId() {
+		return productId;
 	}
 
-	public void setProduct_id(Integer product_id) {
-		this.product_id = product_id;
+	public void setproductId(Integer productId) {
+		this.productId = productId;
 	}
 
 	@Override
 	public String toString() {
-		return "BasketDetailDto [quantity=" + quantity + ", discount=" + discount + ", product_id=" + product_id + "]";
+		return "BasketDetailDto [quantity=" + quantity + ", discount=" + discount + ", productId=" + productId + "]";
 	}
-	
-	
 
 }
