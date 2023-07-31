@@ -50,6 +50,16 @@ public class ProductController {
 		return modelMapper.map(product, ProductShopPageDto.class);
 	}
 	
+	@GetMapping("/category/{id}")
+	public List<ProductShopPageDto> getProductByCategory(@PathVariable Integer id) {
+		List<Product> products = productService.getProductsByCategory(id);
+		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
+		for( Product product: products ) {
+			productsDto.add(convertToShopDto(product));
+		}
+		return productsDto;
+	}
+	
 	@PostMapping
 	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestBody ProductGestionPageDto productDto) {
 		if( productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
