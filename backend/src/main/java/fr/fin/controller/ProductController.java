@@ -1,12 +1,15 @@
 package fr.fin.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,12 +20,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.dto.ProductShopPageDto;
 import fr.fin.model.entity.Product;
+import fr.fin.service.FileService;
 import fr.fin.service.ProductService;
 
 @RequestMapping("/products")
@@ -34,12 +40,16 @@ public class ProductController {
 	private ProductService productService;
 	
 	@Autowired
-	private ModelMapper modelMapper;
+	private FileService fileService;
 	
+	@Autowired
+	private ModelMapper modelMapper;
+		
 	@GetMapping
 	public List<ProductShopPageDto> getAllProducts() {
 		List<Product> products = productService.getAllProducts();
 		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
+			
 		for( Product product: products ) {
 			productsDto.add(convertToShopDto(product));
 		}
@@ -50,15 +60,23 @@ public class ProductController {
 		return modelMapper.map(product, ProductShopPageDto.class);
 	}
 	
-	@PostMapping
-	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestBody ProductGestionPageDto productDto) {
-		if( productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
+	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestPart("product") ProductGestionPageDto productDto, @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+		if(productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
+			
+			if(file != null) {
+				String pictureRelativeURL = fileService.createImage(file);
+				productDto.setPicture(pictureRelativeURL);
+			}
+			
 			productService.createProduct(convertToGestionEntity(productDto));
+			
 			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
 		}
+		
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
 	}
-	
+		
 	private Product convertToGestionEntity(ProductGestionPageDto productDto) {
 		return modelMapper.map(productDto, Product.class);
 	}

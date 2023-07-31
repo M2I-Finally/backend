@@ -24,10 +24,8 @@ public class FileService {
 	 */
 	public String createImage(MultipartFile file) throws IOException {
 		
-		// Creates the images folder if it doesn't exist
-		if(Paths.get(FOLDER_NAME) == null) {
-			this.createFolder();
-		}
+		// Creates the images folder, it won't be executed if it doesn't exist
+		Files.createDirectories(Paths.get(FOLDER_NAME));
 			
 		// Check if the file is null before processing datas
 		if(file != null) {		
@@ -40,8 +38,9 @@ public class FileService {
 			
 			try {
 				String fileName = UUID.randomUUID().toString();
-				Files.copy(file.getInputStream(), this.root.resolve(fileName));
-				return generateRelativeURL(fileName, FilenameUtils.getExtension(originFileName));
+				String fileExtension = FilenameUtils.getExtension(originFileName).toLowerCase();
+				Files.copy(file.getInputStream(), this.root.resolve(fileName + "." + fileExtension));
+				return generateRelativeURL(fileName, fileExtension);
 			} catch (IOException e) {
 				System.out.println("Could not process image");
 			}
@@ -68,18 +67,11 @@ public class FileService {
 	 */
 	private boolean hasCorrectExtensions(String fileName) {
 		for(String extension : authorizedExtensions) {
-			if(extension.equals(FilenameUtils.getExtension(fileName))) {
+			if(extension.toLowerCase().equals(FilenameUtils.getExtension(fileName).toLowerCase())) {
 				return true;
 			}
 		}
 		return false;	
 	}
-	/**
-	 * Create a folder in the server if it doesn't exist
-	 * @throws IOException 
-	 */
-	private void createFolder() throws IOException {
-		Files.createDirectories(Paths.get(FOLDER_NAME));
-		System.out.println("Created image folder");
-	}
+
 }
