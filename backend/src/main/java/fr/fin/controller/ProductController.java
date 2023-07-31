@@ -32,7 +32,7 @@ import fr.fin.service.FileService;
 import fr.fin.service.ProductService;
 
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 @RestController
 public class ProductController {
 
