@@ -6,6 +6,8 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.model.dto.category.CategoryDto;
 import fr.fin.model.dto.category.CategoryWithProductCountDto;
-import fr.fin.model.dto.category.CreateCategoryDto;
-import fr.fin.model.dto.category.UpdateCategoryNameDto;
+import fr.fin.model.dto.category.CreateUpdateCategoryDto;
 import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
 import jakarta.validation.Valid;
@@ -76,7 +77,12 @@ public class CategoryController {
 	 * @return	JSON containing the created category information
 	 */
 	@PostMapping
-	public CategoryDto createCategory(@Valid @RequestBody CreateCategoryDto createCategoryDto) {
+	public CategoryDto createCategory(@Valid @RequestBody CreateUpdateCategoryDto createCategoryDto, BindingResult bindingResult) {
+		
+		if(bindingResult.hasErrors()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur de validation");
+		}
+		
 		if (!categoryService.checkIfCategoryExistsByName(createCategoryDto.getName())) {
 			Category categoryFromDto = modelMapper.map(createCategoryDto, Category.class);
 			Category categoryToSave = categoryService.createNewCategory(categoryFromDto);
@@ -113,31 +119,41 @@ public class CategoryController {
 	 */
 	@PatchMapping("/name/{id}")
 	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId,
-			@Valid @RequestBody UpdateCategoryNameDto updateCategoryNameDto) {
+			@Valid @RequestBody CreateUpdateCategoryDto updateCategoryNameDto, BindingResult bindingResult) {
 
+		if(bindingResult.hasErrors()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur de validation");
+		}
+		
 		if (categoryService.getCategoryById(categoryId) != null) {
-			Category category = categoryService.patchCategoryName(categoryId, updateCategoryNameDto.getName());
-			return convertToDto(category);
+			if (!categoryService.checkIfCategoryExistsByName(updateCategoryNameDto.getName())) {
+				Category category = categoryService.patchCategoryName(categoryId, updateCategoryNameDto.getName());
+				return convertToDto(category);
+			}
+			
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"La catégorie avec le nom \"" + updateCategoryNameDto.getName() + "\" existe déjà");
 		}
 
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
 	}
 
 	/**
-	 * Delete a category by its id
+	 * Delete a category by its id;
 	 *
 	 * @param categoryId	The id of the category to delete
 	 * @return	String that confirms if the deletion was successful or not
 	 */
 	@DeleteMapping("/{id}")
-	public String deleteCategory(@PathVariable("id") Integer categoryId) {
+	public ResponseEntity<String> deleteCategory(@PathVariable("id") Integer categoryId) {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
-			if (category.getProducts().isEmpty()) {
+			if (category.getProducts().isEmpty() || category.getProducts() == null) {
 				if (categoryService.deleteCategoryById(categoryId)) {
-					return String.format("La catégorie avec l'ID %d a été supprimé de la base de données", categoryId);
+					return new ResponseEntity<String>("[]", HttpStatus.OK);
 				}
-				return String.format("Une erreur s'est produite lors de la suppression %d", categoryId);
+				
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur inconnue s'est produite lors de la suppression");
 			}
 
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
