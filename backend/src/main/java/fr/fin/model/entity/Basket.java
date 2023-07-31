@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,10 +18,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "basket")
 public class Basket {
+	
 	@Id
 	@Column(name = "basket_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Integer basketId;
 
 	@Column
 	private Float discount;
@@ -40,14 +42,51 @@ public class Basket {
 
 	public Basket() {
 	}
+	
+	
 
-	public Integer getId() {
-		return id;
+	public Basket(Float discount, Date createdAt, Staff staff, List<BasketDetail> basketDetails,
+			List<Payment> payments) {
+		
+		this.discount = discount;
+		this.createdAt = createdAt;
+		this.staff = staff;
+		this.basketDetails = basketDetails;
+		this.payments = payments;
+	}
+	
+	public Basket(Float discount, Staff staff, List<BasketDetail> basketDetails, List<Payment> payments) {
+		
+		this.discount = discount;
+		this.staff = staff;
+		this.basketDetails = basketDetails;
+		this.payments = payments;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public Basket(Integer basketId, Float discount, Date createdAt, Staff staff, List<BasketDetail> basketDetails,
+			List<Payment> payments) {
+		
+		this.basketId = basketId;
+		this.discount = discount;
+		this.createdAt = createdAt;
+		this.staff = staff;
+		this.basketDetails = basketDetails;
+		this.payments = payments;
 	}
+
+
+
+	public Integer getBasketId() {
+		return basketId;
+	}
+
+
+
+	public void setBasketId(Integer basketId) {
+		this.basketId = basketId;
+	}
+
+
 
 	public float getDiscount() {
 		return discount;
@@ -87,6 +126,14 @@ public class Basket {
 
 	public void setPayments(List<Payment> payments) {
 		this.payments = payments;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "Basket [id=" + basketId + ", discount=" + discount + ", createdAt=" + createdAt + ", staff=" + staff
+				+ ", basketDetails=" + basketDetails + ", payments=" + payments + "]";
 	}
 
 	
