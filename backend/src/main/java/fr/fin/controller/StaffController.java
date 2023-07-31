@@ -55,7 +55,7 @@ public class StaffController {
 	 */
 	@GetMapping
 	public List<StaffTablePageDto> getAllStaff() {
-		List<Staff> staffs = staffService.getAllStaff();
+		List<Staff> staffs = staffService.getAllStaffs();
 		List<StaffTablePageDto> staffsDto = new ArrayList<StaffTablePageDto>();
 		for (Staff staff : staffs) {
 			staffsDto.add(convertToTableDto(staff));
@@ -86,7 +86,7 @@ public class StaffController {
 		}
 		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
 
-		staffService.delete(id);
+		staffService.deleteStaffById(id);
 		return new ResponseEntity<String>("Staff supprimé", HttpStatus.OK);
 
 	}

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import fr.fin.model.entity.Staff;
 
 @Repository
-public interface StaffRepository extends CrudRepository<Staff, Integer>{
+public interface StaffRepository extends CrudRepository<Staff, Integer> {
 	List<Staff> findByRoleOrderByUsername(String role);
-
 }
