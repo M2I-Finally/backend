@@ -38,20 +38,9 @@ public class StaffController {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	// digit + lowercase char + uppercase char + punctuation + symbol
-	private final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
-
-	private final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
-
-	public boolean isValidPassword(final String password) {
-		Matcher matcher = pattern.matcher(password);
-		return matcher.matches();
-	}
-
 	/**
-	 * when get all staff, en view il y a : nom, id, rôle
-	 * 
-	 * @return
+	 * User table
+	 * @return staffsDto view
 	 */
 	@GetMapping
 	public List<StaffTablePageDto> getAllStaff() {
@@ -140,7 +129,6 @@ public class StaffController {
 	@PutMapping("{id}")
 	public ResponseEntity<StaffGestionPageDto> updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) {
-
 		if (staffDto != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
 
@@ -151,18 +139,20 @@ public class StaffController {
 
 			// update password & passwordConfirm
 			if (staffDto.getPassword() != null) {
+				//objectify a password validator
+				PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
 				
+				//password needs to match the pattern
+				if (!passwordValidator.isValid(staffDto.getPassword())) {
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,passwordValidator.getMessage());
+				}
+
 				//passwordConfirm needs to be identical than password
 				if (!staffDto.getPassword().equals(staffDto.getPasswordConfirm())) {
 					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 							"La confirmation de mot de passe doit être identique que le mot de passe.");
 				}
 
-				if (!isValidPassword(staffDto.getPassword())) {
-					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-							"Le mot de passe doit > 8 caractères, 1 chiffre, 1 minuscule, 1 majuscule et un caractère spécial ($@$!%*?&).");
-
-				}
 
 				staffToUpdate.setPassword(staffDto.getPassword());
 			}
