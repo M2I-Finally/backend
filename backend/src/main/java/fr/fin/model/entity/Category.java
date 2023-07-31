@@ -3,6 +3,8 @@ package fr.fin.model.entity;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +33,7 @@ public class Category {
 	@Column(name="created_by",nullable=false)
 	private String createdBy;
 	
-	@Column(name="updated_by",nullable=false)
+	@Column(name="updated_by")
 	private String updatedBy;
 	
 	@Column(name = "created_at")
@@ -42,6 +44,7 @@ public class Category {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 	
+	@JsonBackReference
 	@OneToMany(mappedBy = "category")
 	private List<Product> products;
 	
