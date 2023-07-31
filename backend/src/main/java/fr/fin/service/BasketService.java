@@ -11,7 +11,7 @@ import fr.fin.repository.BasketRepository;
 
 @Service
 public class BasketService {
-
+	/*
 	@Autowired
 	private BasketRepository basketRepository;
 	
@@ -33,6 +33,6 @@ public class BasketService {
 	
 	public void delete(Integer id) {		
 		basketRepository.deleteById(id);
-	}
+	}*/
 
 }

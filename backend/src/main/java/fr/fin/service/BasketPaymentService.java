@@ -27,7 +27,7 @@ public class BasketPaymentService {
 	private BasketRepository basketRepository;
 	
 	public void createBasket(Basket basket) {
-		System.out.println(basket);
+		
 		Basket basketToSave = basketRepository.save(basket);
 		basketId = basketToSave.getBasketId();
 		List<BasketDetail> listDetailInsert = basketDetailService.insertBasketDetails(basket.getBasketDetails(), basketId);

@@ -17,7 +17,7 @@ public class PaymentService {
 	private PaymentRepository paymentRepository;
 	
 	public List<Payment> insertPayments(Basket basket, Integer basketId){
-		System.out.println("impression du basket " + basket);
+		
 		for (Payment payment : basket.getPayments()) {
 			Basket basket1 = new Basket(basketId, null, null, null, null, null);
 			payment.setBasket(basket1);
@@ -26,7 +26,7 @@ public class PaymentService {
 	
 		List<Payment> listPaymentUpdate = (List<Payment>) paymentRepository.saveAll(basket.getPayments());
 		
-		return null ;
+		return listPaymentUpdate ;
 	}
 	
 }

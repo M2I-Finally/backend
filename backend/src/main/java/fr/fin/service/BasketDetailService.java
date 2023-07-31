@@ -14,21 +14,14 @@ public class BasketDetailService {
 	private BasketDetailRepository basketDetailRepository;
 	
 	public List<BasketDetail> insertBasketDetails(List<BasketDetail> listBasketDetail, Integer basketId){
-		System.err.println(basketId);
-		for (BasketDetail basketDetail : listBasketDetail) {
-			System.out.println("avant modif id du basket "+basketDetail.getBasketDetailId());
-			
-		}
+		
+		
 		for (BasketDetail basketDetail : listBasketDetail) {
 			basketDetail.setBasketDetailId(null);
-			basketDetail.getBasket().setBasketId(basketId);;
-			//System.out.println("Apres modif id du basket "+basketDetail);
+			basketDetail.getBasket().setBasketId(basketId);			
 			
 		}
-		for (BasketDetail basketDetail : listBasketDetail) {
-			System.out.println("Apres modif id du basket "+basketDetail);
-			
-		}
+		
 		List<BasketDetail> listBasketDetailUpdate = (List<BasketDetail>) basketDetailRepository.saveAll(listBasketDetail);
 		
 		return listBasketDetailUpdate ;

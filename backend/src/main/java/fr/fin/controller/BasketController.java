@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.fin.model.dto.BasketDetailDto;
 import fr.fin.model.dto.BasketPaymentDto;
-import fr.fin.model.dto.BasketRegistredDto;
 import fr.fin.model.dto.PaymentDto;
 import fr.fin.model.entity.Basket;
 import fr.fin.model.entity.BasketDetail;
@@ -50,11 +49,11 @@ public class BasketController {
 	}*/
 	
 	@PostMapping()
-	public BasketRegistredDto insertBasket(@RequestBody BasketPaymentDto basketPaymentDto) {
+	public void insertBasket(@RequestBody BasketPaymentDto basketPaymentDto) {
 		
 		Basket basketFromApp = convertToEntities(basketPaymentDto);
 		basketPaymentService.createBasket(basketFromApp);
-		return null;
+		
 	}
 	
 	@GetMapping()

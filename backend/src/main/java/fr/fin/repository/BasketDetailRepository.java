@@ -8,5 +8,5 @@ import fr.fin.model.entity.BasketDetail;
 @Repository
 public interface BasketDetailRepository extends CrudRepository<BasketDetail, Integer>{
 
-	//List<BasketDetail> saveAll(List<BasketDetail> baskets);
+	
 }
