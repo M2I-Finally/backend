@@ -52,6 +52,15 @@ public class Category {
 		
 	}
 	
+	public Category(Integer id, String name, Boolean status, String createdBy, Date createdAt) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.status = status;
+		this.createdBy = createdBy;
+		this.createdAt = createdAt;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -123,6 +132,12 @@ public class Category {
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Category [id=" + id + ", name=" + name + ", status=" + status + ", createdBy=" + createdBy
+				+ ", updatedBy=" + updatedBy + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", products="
+				+ products + "]";
+	}
 	
 }

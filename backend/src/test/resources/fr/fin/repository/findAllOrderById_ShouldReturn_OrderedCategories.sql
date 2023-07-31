@@ -1,0 +1,2 @@
+INSERT INTO category (name, status, created_by, created_at) VALUES ('Pains', true, 'Administrateur', NOW());
+INSERT INTO category (name, status, created_by, created_at) VALUES ('Tartes', true, 'Utilisateur', NOW());
