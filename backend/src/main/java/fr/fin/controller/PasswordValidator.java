@@ -3,6 +3,7 @@ package fr.fin.controller;
 /**
  * PasswordValidator, use for validating user's password.
  * Objectify the class and verify isValid.
+ * Advantage is to get precise message when password is not valid.
  */
 public class PasswordValidator {
 
