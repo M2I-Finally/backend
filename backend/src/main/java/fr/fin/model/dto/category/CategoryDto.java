@@ -7,6 +7,8 @@ public class CategoryDto {
 	private String name;
 
 	private Boolean status;
+	
+	private Integer productCount;
 
 	public CategoryDto() {
 	}
@@ -35,4 +37,13 @@ public class CategoryDto {
 		this.id = id;
 	}
 
+	public Integer getProductCount() {
+		return productCount;
+	}
+
+	public void setProductCount(Integer productCount) {
+		this.productCount = productCount;
+	}
+
+	
 }

@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.model.dto.category.CategoryDto;
-import fr.fin.model.dto.category.CategoryWithProductCountDto;
 import fr.fin.model.dto.category.CreateUpdateCategoryDto;
 import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
@@ -41,12 +40,12 @@ public class CategoryController {
 	 * @return JSON containing all categories with product count
 	 */
 	@GetMapping
-	public List<CategoryWithProductCountDto> getAllCategories() {
+	public List<CategoryDto> getAllCategories() {
 		List<Category> categoriesAsEntity = categoryService.getAllCategories();
-		List<CategoryWithProductCountDto> categoriesAsDto = new ArrayList<>();
+		List<CategoryDto> categoriesAsDto = new ArrayList<>();
 
 		for (Category c : categoriesAsEntity) {
-			CategoryWithProductCountDto categoryDto = modelMapper.map(c, CategoryWithProductCountDto.class);
+			CategoryDto categoryDto = convertToDto(c);
 			categoryDto.setProductCount(c.getProducts().size());
 			categoriesAsDto.add(categoryDto);
 		}
