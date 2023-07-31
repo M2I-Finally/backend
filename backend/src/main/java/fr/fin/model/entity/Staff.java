@@ -81,7 +81,7 @@ public class Staff {
 	/*
 	 * getters & setters (no id setter)
 	 */
-	public int getId() {
+	public Integer getId() {
 		return staffId;
 	}
 
