@@ -22,7 +22,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.dto.ProductShopPageDto;
+import fr.fin.model.entity.Category;
 import fr.fin.model.entity.Product;
+import fr.fin.service.CategoryService;
 import fr.fin.service.ProductService;
 
 @RequestMapping("/products")
@@ -32,6 +34,9 @@ public class ProductController {
 
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private CategoryService categoryService;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -50,10 +55,23 @@ public class ProductController {
 		return modelMapper.map(product, ProductShopPageDto.class);
 	}
 	
+	@GetMapping("/category/{id}")
+	public List<ProductShopPageDto> getProductByCategory(@PathVariable Integer id) {
+		List<Product> products = productService.getProductsByCategory(id);
+		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
+		for( Product product: products ) {
+			productsDto.add(convertToShopDto(product));
+		}
+		return productsDto;
+	}
+	
 	@PostMapping
 	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestBody ProductGestionPageDto productDto) {
 		if( productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
-			productService.createProduct(convertToGestionEntity(productDto));
+			Category productCategory = categoryService.getCategoryById(productDto.getCategoryId());		
+			Product productToCreate = convertToGestionEntity(productDto);
+			productToCreate.setCategory(productCategory);	
+			productService.createProduct(productToCreate);
 			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
@@ -76,9 +94,10 @@ public class ProductController {
 	public ResponseEntity<ProductGestionPageDto> updateProduct(@PathVariable("id") Integer id, @RequestBody ProductGestionPageDto productDto) {
 		if( productService.getProductById(id) != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
 			Product updatedProduct = productService.getProductById(id);
+			Category updatedProductCategory = categoryService.getCategoryById(productDto.getCategoryId());
 			updatedProduct.setName(productDto.getName());
 			updatedProduct.setDescription(productDto.getDescription());
-			updatedProduct.setCategory(productDto.getCategory());
+			updatedProduct.setCategory(updatedProductCategory);
 			updatedProduct.setPrice(productDto.getPrice());
 			updatedProduct.setTax(productDto.getTax());
 			updatedProduct.setPicture(productDto.getPicture());

@@ -50,7 +50,15 @@ public class Product {
 	private String createdBy;
 	
 	@Column(name="updated_by",nullable=false)
-	private String updatedBy;	
+	private String updatedBy;
+	
+	@Column(name = "created_at")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdAt;
+	
+	@Column(name = "update_at")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updatedAt;	
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="category_id", nullable=true)

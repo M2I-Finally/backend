@@ -12,4 +12,5 @@ public interface ProductRepository extends CrudRepository<Product, Integer> {
 	
 	public List<Product> findAllByOrderByProductId();
 
+	public List<Product> findAllByCategoryId(Integer id);
 }
