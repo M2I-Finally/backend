@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import fr.fin.model.dto.BasketDetailDto;
 import fr.fin.model.dto.BasketPaymentDto;
+import fr.fin.model.dto.PaymentDto;
 import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.entity.Basket;
 import fr.fin.model.entity.BasketDetail;
@@ -40,13 +43,7 @@ public class BasketController {
 		
 	@PostMapping
 	public ResponseEntity<Integer> insertBasket(@RequestBody BasketPaymentDto basketPaymentDto) {
-		/*
-		 * private Integer sellerId;
-			private Float discount;
-			private Float total;
-			private List<BasketDetailDto> basketDetailDtoList = new ArrayList<>();
-			private List<PaymentDto> paymentDtoList = new ArrayList<>();
-		 */
+		
 		if(basketPaymentDto.getSellerId() != null 
 				&& basketPaymentDto.getTotal() > 0 
 				&& !(basketPaymentDto.getpaymentDtoList().size() <= 0) 
@@ -62,79 +59,25 @@ public class BasketController {
 	
 	@GetMapping("/{id}")
 	public BasketPaymentDto getBasket(@PathVariable("id") Integer id) {
-		
-		//Basket basketLoaded = basketPaymentService.getBasket(id);
-		//System.out.println(basketLoaded);
-		
-		/*
-		BasketPaymentDto basketPaymentDto = new BasketPaymentDto();
-		basketPaymentDto.setSellerId(1);
-		List<PaymentDto> payments = new ArrayList<>();
-		List<BasketDetailDto> detailsDto = new ArrayList<>();
-		BasketDetailDto b1 = new BasketDetailDto(5, 1f, 1);
-		BasketDetailDto b2 = new BasketDetailDto(5, 1f, 2);
-		BasketDetailDto b3 = new BasketDetailDto(5, 1f, 3);
-		BasketDetailDto b4 = new BasketDetailDto(5, 1f, 4);
-		BasketDetailDto b5 = new BasketDetailDto(5, 1f, 5);
-		detailsDto.add(b1);
-		detailsDto.add(b2);
-		detailsDto.add(b3);
-		detailsDto.add(b4);
-		detailsDto.add(b5);
-		payments.add(new PaymentDto(12.3f,0));
-		payments.add(new PaymentDto(8.7f,1));
-		payments.add(new PaymentDto(9.0f,2));
-		basketPaymentDto.setpaymentDtoList(payments);
-		basketPaymentDto.setBasketDetailDto(detailsDto);
-		basketPaymentDto.setDiscount(1f);
-		basketPaymentDto.setTotal(56.3f);
-		convertToEntities(basketPaymentDto);
-		return basketPaymentDto;*/
+		Float total =0f;
 		Basket basket = basketService.getBasketById(id);
+		BasketPaymentDto dto = new BasketPaymentDto();
+		List<PaymentDto> listpaymentDto = mapList(basket.getPayments(), PaymentDto.class);
+		List<BasketDetailDto> listDetailDto = mapList(basket.getBasketDetails(), BasketDetailDto.class);
+		for (BasketDetailDto basketDetailDto : listDetailDto) {
+			System.out.println(basketDetailDto.getDiscount() + " - " +basketDetailDto.getproductId() + " - "+basketDetailDto.getQuantity());
+			total += basketDetailDto.getDiscount() * basketDetailDto.getproductId() * basketDetailDto.getQuantity();
+		}
+		dto.setBasketDetailDto(listDetailDto);
+		dto.setpaymentDtoList(listpaymentDto);
+		dto.setSellerId(basket.getStaff().getStaffId());
+		dto.setDiscount(basket.getDiscount());
 		System.out.println(basket.getBasketId() +" - " + basket.getStaff().getStaffId() + " - " +basket.getStaff().getUsername());
-		for(Payment payment : basket.getPayments()) {
-			System.out.println(payment);
-		}
-		for(BasketDetail basketDetail : basket.getBasketDetails()) {
-			System.out.println(basketDetail.getProduct().getName());
-		}
-		return null;
+		System.out.println(dto);
+		return dto;
 	};
 	
-	/*
-	private ProductShopPageDto convertToDto(Product product) {
-		return modelMapper.map(product, ProductShopPageDto.class);
-	}
 	
-	private Product convertToEntity(ProductShopPageDto productDto) {
-		return modelMapper.map(productDto, Product.class);
-	}*/
-	/*
-	private Basket convertToEntity(BasketPaymentDto dto) {
-		Basket basket = new Basket();
-		List<BasketDetail> listBasketDetail = new ArrayList<>();
-		List<Payment> payments = new ArrayList<>();
-		List<PaymentDto> paymentDtoList = dto.getpaymentDtoList();
-		List<BasketDetailDto> listBasketDetailDto = dto.getBasketDetailDto();
-		
-		
-		for (PaymentDto paymentDto : paymentDtoList) {
-			payments.add(new Payment(paymentDto.getAmount(),PaymentType.valueOfPosition(paymentDto.getPaymentTypeId())));
-		}
-		
-		for (BasketDetailDto basketDetailDto : listBasketDetailDto) {
-			Product product = new Product();
-			product.setProductId(basketDetailDto.getproductId());
-			listBasketDetail.add(new BasketDetail(basketDetailDto.getQuantity(),basketDetailDto.getDiscount(), product) );
-		}
-		
-		basket.setDiscount(dto.getDiscount());
-		basket.setStaff(new Staff(dto.getSellerId()));
-		
-		
-		
-		return null;		
-	}*/
 	
 	private Basket convertToEntities(BasketPaymentDto dto) {
 		System.out.println(dto.getpaymentDtoList());
