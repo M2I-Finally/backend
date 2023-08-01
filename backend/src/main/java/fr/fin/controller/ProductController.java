@@ -1,6 +1,8 @@
 package fr.fin.controller;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.dto.ProductShopPageDto;
@@ -42,13 +45,17 @@ public class ProductController {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
 
 	@GetMapping
-	public List<ProductShopPageDto> getAllProducts() {
+	public List<ProductShopPageDto> getAllProducts() throws UnknownHostException {
 		List<Product> products = productService.getAllProducts();
 		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
-
+		
 		for (Product product : products) {
+			if(product.getPicture() != null) {
+				product.setPicture(getBaseUrl() + product.getPicture());
+			}
 			productsDto.add(convertToShopDto(product));
 		}
 		return productsDto;
@@ -84,6 +91,9 @@ public class ProductController {
 	public ProductGestionPageDto getProductById(@PathVariable("id") Integer id) {
 		if (productService.getProductById(id) != null) {
 			Product product = productService.getProductById(id);
+			if(product.getPicture() != null) {
+				product.setPicture(getBaseUrl() + product.getPicture());
+			}
 			return convertToGestionDto(product);
 		}
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
@@ -125,5 +135,9 @@ public class ProductController {
 			return new ResponseEntity<ProductGestionPageDto>(deletedProduct, HttpStatus.OK);
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le produit n'existe pas");
+	}
+	
+	private String getBaseUrl() {
+		return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 	}
 }
