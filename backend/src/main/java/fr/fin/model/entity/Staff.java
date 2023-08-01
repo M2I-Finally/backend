@@ -52,6 +52,15 @@ public class Staff {
 	// default constructor
 	public Staff() {
 	};
+	
+	
+
+	public Staff(Integer staffId) {
+		
+		this.staffId = staffId;
+	}
+
+
 
 	// constructor w/o id
 	public Staff(String username, String password, Integer passwordTrial, String role, boolean status,
@@ -81,7 +90,7 @@ public class Staff {
 	/*
 	 * getters & setters (no id setter)
 	 */
-	public int getId() {
+	public Integer getId() {
 		return staffId;
 	}
 

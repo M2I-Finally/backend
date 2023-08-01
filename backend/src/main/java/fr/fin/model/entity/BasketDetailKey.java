@@ -32,6 +32,30 @@ public class BasketDetailKey implements Serializable {
 		BasketDetailKey other = (BasketDetailKey) obj;
 		return Objects.equals(basketId, other.basketId) && Objects.equals(productId, other.productId);
 	}
+
+	public Integer getBasketId() {
+		return basketId;
+	}
+
+	public void setBasketId(Integer basketId) {
+		this.basketId = basketId;
+	}
+
+	public Integer getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
+	}
+
+	@Override
+	public String toString() {
+		return "BasketDetailKey [basketId=" + basketId + ", productId=" + productId + "]";
+	}
+	
+	
+	
 	
 
 	

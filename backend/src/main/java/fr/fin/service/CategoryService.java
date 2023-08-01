@@ -66,7 +66,7 @@ public class CategoryService {
 	 * @return		The patched category
 	 */
 	public Category patchCategoryStatus(Integer id) {
-		Category category = getCategoryById(id);
+		Category category = this.getCategoryById(id);
 		if (category != null) {
 
 			// Ternary operation
