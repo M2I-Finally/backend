@@ -5,14 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.fin.model.entity.Category;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
-//import fr.fin.model.entity.Category;
 
 public class ProductGestionPageDto {
 
 	private Integer productId;
 	
 	@NotNull
+	@Pattern(regexp = "[a-zA-Z0-9 ]+", message = "Un nom de produit ne peut contenir des lettres, des chiffres et des espaces")
 	private String name;
 	
 	private String description;
@@ -20,13 +21,13 @@ public class ProductGestionPageDto {
 	@JsonIgnore
 	private Category category;
 	
-	@NotNull
+	@NotNull(message = "Le produit doit appartenir à une catégorie")
 	private Integer categoryId;
 	
-	@Min(0)
+	@Min(value = 0, message = "Le prix ne peut pas être inférieur à 0")
 	private Double price;
 	
-	@Min(0)
+	@Min(value = 0, message = "La taxe ne peut pas être inférieure à 0")
 	private Double tax;
 	
 	private String picture;

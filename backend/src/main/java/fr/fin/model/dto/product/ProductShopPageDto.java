@@ -1,5 +1,7 @@
 package fr.fin.model.dto.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import fr.fin.model.entity.Category;
 
 public class ProductShopPageDto {
@@ -11,6 +13,8 @@ public class ProductShopPageDto {
 	private boolean status;
 	private Double stock;
 	private String picture;
+	
+	@JsonIgnore
 	private Category category;
 	
 	public ProductShopPageDto() {
