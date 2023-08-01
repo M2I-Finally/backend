@@ -13,9 +13,6 @@ $$ LANGUAGE plpgsql;
 -- Appelle la fonction create_finally_database() pour vérifier et créer la base de données "finally".
 SELECT create_finally_database();
 
--- Sélectionne la base de données "finally" pour les instructions suivantes.
-\c finally
-
 -- Crée la table "category" si elle n'existe pas déjà.
 CREATE TABLE IF NOT EXISTS category (
   category_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -58,9 +55,7 @@ CREATE TABLE IF NOT EXISTS product (
   status BOOLEAN NOT NULL DEFAULT FALSE,
   stock DECIMAL(15,3),
   created_by VARCHAR(50) NOT NULL,
-  updated_by VARCHAR(50) NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW(),
-  update_at TIMESTAMP DEFAULT NOW(),
+  updated_by VARCHAR(50),
   category_id INT,
   CONSTRAINT fk_category
     FOREIGN KEY (category_id)

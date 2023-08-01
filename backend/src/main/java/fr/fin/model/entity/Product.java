@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,17 +50,9 @@ public class Product {
 	private String createdBy;
 	
 	@Column(name="updated_by",nullable=false)
-	private String updatedBy;
+	private String updatedBy;	
 	
-	@Column(name = "created_at")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdAt;
-	
-	@Column(name = "update_at")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date updatedAt;
-	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="category_id", nullable=true)
 	private Category category;
 	
@@ -67,10 +60,27 @@ public class Product {
 	private List<BasketDetail> basketDetails;
 	
 	public Product() {
-		
+		this.status = true;
+		this.createdBy = "admin";
+		this.updatedBy = "admin";
 	}
 	
-	
+	public Product(String name, String description, Double price, Double tax, String picture,
+			Double stock, String createdBy, String updatedBy, Date createdAt, Date updatedAt, Category category,
+			List<BasketDetail> basketDetails) {
+		super();
+		this.name = name;
+		this.description = description;
+		this.price = price;
+		this.tax = tax;
+		this.picture = picture;
+		this.status = true;
+		this.stock = stock;
+		this.createdBy = createdBy;
+		this.updatedBy = updatedBy;
+		this.category = category;
+		this.basketDetails = basketDetails;
+	}
 
 	public Product(String name, String description, Double price, Double tax, String picture, Boolean status,
 			Double stock, String createdBy, String updatedBy, Date createdAt, Date updatedAt, Category category,
@@ -85,13 +95,9 @@ public class Product {
 		this.stock = stock;
 		this.createdBy = createdBy;
 		this.updatedBy = updatedBy;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
 		this.category = category;
 		this.basketDetails = basketDetails;
 	}
-	
-	
 
 	public Product(Integer productId, String name, String description, Double price, Double tax, String picture,
 			Boolean status, Double stock, String createdBy, String updatedBy, Date createdAt, Date updatedAt,
@@ -107,13 +113,9 @@ public class Product {
 		this.stock = stock;
 		this.createdBy = createdBy;
 		this.updatedBy = updatedBy;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
 		this.category = category;
 		this.basketDetails = basketDetails;
 	}
-
-
 
 	public Integer getProductId() {
 		return productId;
@@ -195,22 +197,6 @@ public class Product {
 		this.updatedBy = updatedBy;
 	}
 
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-
 	public Category getCategory() {
 		return category;
 	}
@@ -225,9 +211,5 @@ public class Product {
 
 	public void setBasketDetails(List<BasketDetail> basketDetails) {
 		this.basketDetails = basketDetails;
-	}
-	
-	
-	
-	
+	}	
 }
