@@ -1,8 +1,18 @@
 # Backend
 this is backend for finally
 
-<<<<<<< HEAD
-# Staff 👨‍🍳👩‍🍳🧑‍🍳
+
+
+# Normalization
+Environement.ts =>
+* RequestMapping(url)
+* getAll:(/)
+* post(/)
+* actionById({id})
+# Documentation
+## [ngx-toastr](https://www.npmjs.com/package/ngx-toastr)
+
+## Staff 👨‍🍳👩‍🍳🧑‍🍳
 available Api:
 * GET/users
   * get all users  
@@ -12,13 +22,6 @@ available Api:
   *   delete user by id
 * PUT/users/{id}
   *   update user information
-=======
-Environement.ts =>
-* RequestMapping(url)
-* getAll:(/)
-* post(/)
-* actionById({id})
 
-# ngx-toastr
-[documentation](https://www.npmjs.com/package/ngx-toastr)
->>>>>>> 53abe4cbed8915937cae64f16f6998b131d4db54
+
+
