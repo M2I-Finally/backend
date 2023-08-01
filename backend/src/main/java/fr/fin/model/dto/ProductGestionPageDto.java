@@ -2,12 +2,15 @@ package fr.fin.model.dto;
 
 import fr.fin.model.entity.Category;
 
+//import fr.fin.model.entity.Category;
+
 public class ProductGestionPageDto {
 
 	private Integer productId;
 	private String name;
 	private String description;
 	private Category category;
+	private Integer categoryId;
 	private Double price;
 	private Double tax;
 	private String picture;
@@ -47,6 +50,14 @@ public class ProductGestionPageDto {
 	public void setCategory(Category category) {
 		this.category = category;
 	}
+
+	public Integer getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
+	}	
 
 	public Double getPrice() {
 		return price;

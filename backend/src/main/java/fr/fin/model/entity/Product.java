@@ -60,7 +60,6 @@ public class Product {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 	
-	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="category_id", nullable=true)
 	private Category category;

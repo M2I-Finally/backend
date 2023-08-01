@@ -27,7 +27,7 @@ public class Payment {
 	private Float amount;
 
 	@Column
-	private PaymentType type;
+	private int type;
 
 	@Column(name = "created_at")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -40,14 +40,20 @@ public class Payment {
 	public Payment() {
 	}
 
-	public Payment(Float amount, PaymentType type, Date createdAt, Basket basket) {
+	public Payment(Float amount, int type) {
+
+		this.amount = amount;
+		this.type = type;
+	}
+
+	public Payment(Float amount, int type, Date createdAt, Basket basket) {
 		this.amount = amount;
 		this.type = type;
 		this.createdAt = createdAt;
 		this.basket = basket;
 	}
 
-	public Payment(Integer id, Float amount, PaymentType type, Date createdAt, Basket basket) {
+	public Payment(Integer id, Float amount, int type, Date createdAt, Basket basket) {
 
 		this.id = id;
 		this.amount = amount;
@@ -72,11 +78,11 @@ public class Payment {
 		this.amount = amount;
 	}
 
-	public PaymentType getType() {
+	public int getType() {
 		return type;
 	}
 
-	public void setType(PaymentType type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 
@@ -95,5 +101,13 @@ public class Payment {
 	public void setBasket(Basket basket) {
 		this.basket = basket;
 	}
+
+	@Override
+	public String toString() {
+		return "Payment [id=" + id + ", amount=" + amount + ", type=" + type + ", createdAt=" + createdAt + ", basket="
+				+ basket + "]";
+	}
+	
+	
 
 }

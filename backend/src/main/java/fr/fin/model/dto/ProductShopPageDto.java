@@ -1,5 +1,7 @@
 package fr.fin.model.dto;
 
+import fr.fin.model.entity.Category;
+
 public class ProductShopPageDto {
 	
 	private Integer productId;
@@ -9,6 +11,7 @@ public class ProductShopPageDto {
 	private boolean status;
 	private Double stock;
 	private String picture;
+	private Category category;
 	
 	public ProductShopPageDto() {
 		
@@ -69,5 +72,13 @@ public class ProductShopPageDto {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 }

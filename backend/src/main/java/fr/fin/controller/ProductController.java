@@ -28,8 +28,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.dto.ProductShopPageDto;
+import fr.fin.model.entity.Category;
 import fr.fin.model.entity.Product;
 import fr.fin.service.FileService;
+import fr.fin.service.CategoryService;
 import fr.fin.service.ProductService;
 
 @RequestMapping("/products")
@@ -43,6 +45,9 @@ public class ProductController {
 	@Autowired
 	private FileService fileService;
 
+	@Autowired
+	private CategoryService categoryService;
+	
 	@Autowired
 	private ModelMapper modelMapper;
 	
@@ -69,19 +74,32 @@ public class ProductController {
 	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestPart("product") ProductGestionPageDto productDto,
 			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
 		if (productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN()) {
-
-			if (file != null) {
+      Category productCategory = categoryService.getCategoryById(productDto.getCategoryId());
+			
+      if (file != null) {
 				String pictureRelativeURL = fileService.createImage(file);
 				productDto.setPicture(pictureRelativeURL);
 			}
-
-			productService.createProduct(convertToGestionEntity(productDto));
+      
+      Product productToCreate = convertToGestionEntity(productDto);
+      productToCreate.setCategory(productCategory);	
+			productService.createProduct(productToCreate);
 
 			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
 		}
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
 	}
+      
+  @GetMapping("/category/{id}")
+	public List<ProductShopPageDto> getProductByCategory(@PathVariable Integer id) {
+		List<Product> products = productService.getProductsByCategory(id);
+		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
+		for( Product product: products ) {
+			productsDto.add(convertToShopDto(product));
+		}
+		return productsDto;
+	}   
 
 	private Product convertToGestionEntity(ProductGestionPageDto productDto) {
 		return modelMapper.map(productDto, Product.class);
@@ -109,9 +127,10 @@ public class ProductController {
 				&& !productDto.getPrice().isNaN()) {
 			
 			Product updatedProduct = productService.getProductById(id);
+			Category updatedProductCategory = categoryService.getCategoryById(productDto.getCategoryId());
 			updatedProduct.setName(productDto.getName());
 			updatedProduct.setDescription(productDto.getDescription());
-			updatedProduct.setCategory(productDto.getCategory());
+			updatedProduct.setCategory(updatedProductCategory);
 			updatedProduct.setPrice(productDto.getPrice());
 			updatedProduct.setTax(productDto.getTax());
 			

@@ -18,16 +18,20 @@ public class ProductService {
 		return (List<Product>) productRepository.findAllByOrderByProductId();
 	}
 	
-	public Product createProduct(Product product) {
-		Product newProduct = productRepository.save(product);
-		return newProduct;
-	}
-	
 	public Product getProductById(Integer id) {
 		if( productRepository.findById(id).isPresent() ) {
 			return productRepository.findById(id).get();			
 		}
 		return null;
+	}
+	
+	public List<Product> getProductsByCategory(Integer id) {
+		return (List<Product>) productRepository.findAllByCategoryId(id);
+	}
+	
+	public Product createProduct(Product product) {
+		Product newProduct = productRepository.save(product);
+		return newProduct;
 	}
 	
 	public void delete(Integer id) {		
