@@ -100,20 +100,35 @@ public class ProductController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<ProductGestionPageDto> updateProduct(@PathVariable("id") Integer id,
-			@RequestBody ProductGestionPageDto productDto) {
+	public ResponseEntity<ProductGestionPageDto> updateProduct(
+			@PathVariable("id") Integer id,
+			@RequestPart("product") ProductGestionPageDto productDto,
+			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+		
 		if (productService.getProductById(id) != null && !productDto.getName().isBlank()
 				&& !productDto.getPrice().isNaN()) {
+			
 			Product updatedProduct = productService.getProductById(id);
 			updatedProduct.setName(productDto.getName());
 			updatedProduct.setDescription(productDto.getDescription());
 			updatedProduct.setCategory(productDto.getCategory());
 			updatedProduct.setPrice(productDto.getPrice());
 			updatedProduct.setTax(productDto.getTax());
-			updatedProduct.setPicture(productDto.getPicture());
+			
+			if (file != null) {
+				String pictureRelativeURL = fileService.createImage(file);
+				updatedProduct.setPicture(pictureRelativeURL);
+			}
+			
+			if(file == null && productDto.getPicture() != null) {
+				System.out.println(productDto.getPicture());
+				updatedProduct.setPicture(productDto.getPicture());
+			}
+			
 			updatedProduct.setUpdatedAt(new Date());
-			productService.createProduct(updatedProduct);
-			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
+			Product p = productService.createProduct(updatedProduct);
+			ProductGestionPageDto pDto = modelMapper.map(p, ProductGestionPageDto.class);
+			return new ResponseEntity<ProductGestionPageDto>(pDto, HttpStatus.CREATED);
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
 	}
