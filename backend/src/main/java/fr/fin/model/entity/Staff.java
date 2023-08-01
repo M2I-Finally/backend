@@ -1,8 +1,13 @@
 package fr.fin.model.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +21,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "staff")
-public class Staff {
+public class Staff implements UserDetails{
 
 	@Id
 	@Column(name = "staff_id")
@@ -58,6 +63,13 @@ public class Staff {
 	public Staff(Integer staffId) {
 		
 		this.staffId = staffId;
+	}
+
+
+	// for Spring Security
+	public Staff(Integer staffId, String username) {
+		this.staffId = staffId;
+		this.username = username;
 	}
 
 
@@ -164,6 +176,46 @@ public class Staff {
 
 	public void setBaskets(List<Basket> baskets) {
 		this.baskets = baskets;
+	}
+
+
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return Set.of(); 
+	}
+
+
+
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
 	};
 
 	
