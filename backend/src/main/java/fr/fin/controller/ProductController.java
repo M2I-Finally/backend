@@ -1,7 +1,6 @@
 package fr.fin.controller;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,6 +73,7 @@ public class ProductController {
 	 * GET product information for a given id
 	 * @param id	The Id of the product
 	 * @return		Information about the product
+	 * @throws ResourceNotFoundException 
 	 */
 	@GetMapping("/{id}")
 	public ProductGestionPageDto getProductById(@PathVariable("id") Integer id) {
@@ -84,8 +84,10 @@ public class ProductController {
 			}
 			return convertToGestionDto(product);
 		}
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+		
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produit pas trouvé");
 	}
+
 
 	/**
 	 * Handle POST Mapping of a multi-part form-data with ProductGestionPageDto Object and a MultiPartFile
@@ -96,12 +98,12 @@ public class ProductController {
 	 */
 	@PostMapping
 	public ResponseEntity<ProductGestionPageDto> addProduct(
-			@Valid @RequestPart("product") ProductGestionPageDto productDto,
-			@RequestPart(value = "file", required = false) MultipartFile file,
-			BindingResult bindingResult) throws IOException {
+			@RequestPart("product") @Valid ProductGestionPageDto productDto,
+			BindingResult bindingResult,
+			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
 		
 		if(bindingResult.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur de validation");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur lors de la validation");
 		}
 		
 		if (productDto != null) {
@@ -122,7 +124,7 @@ public class ProductController {
 			return new ResponseEntity<ProductGestionPageDto>(modelMapper.map(productToCreate, ProductGestionPageDto.class), HttpStatus.CREATED);
 		}
 
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le produit n'existe pas");
 	}
     
 	/**
@@ -137,8 +139,8 @@ public class ProductController {
 	public ResponseEntity<ProductGestionPageDto> updateProduct(
 			@PathVariable("id") Integer id,
 			@Valid @RequestPart("product") ProductGestionPageDto productDto,
-			@RequestPart(value = "file", required = false) MultipartFile file,
-			BindingResult bindingResult) throws IOException {
+			BindingResult bindingResult,
+			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
 		
 		if(bindingResult.hasErrors()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur de validation");
@@ -171,7 +173,7 @@ public class ProductController {
 			updatedProduct = productService.createProduct(updatedProduct);
 			return new ResponseEntity<ProductGestionPageDto>(convertToGestionDto(updatedProduct), HttpStatus.CREATED);
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le produit n'existe pas");
 	}
 
 	/**
