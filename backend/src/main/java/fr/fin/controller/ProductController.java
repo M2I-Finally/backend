@@ -96,6 +96,9 @@ public class ProductController {
 		List<Product> products = productService.getProductsByCategory(id);
 		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
 		for( Product product: products ) {
+			if(product.getPicture() != null) {
+				product.setPicture(getBaseUrl() + product.getPicture());
+			}
 			productsDto.add(convertToShopDto(product));
 		}
 		return productsDto;
