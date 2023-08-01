@@ -129,12 +129,12 @@ public class Basket {
 	}
 
 
-
+	/*
 	@Override
 	public String toString() {
 		return "Basket [id=" + basketId + ", discount=" + discount + ", createdAt=" + createdAt + ", staff=" + staff
 				+ ", basketDetails=" + basketDetails + ", payments=" + payments + "]";
-	}
+	}*/
 
 	
 }

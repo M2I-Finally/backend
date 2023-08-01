@@ -1,7 +1,6 @@
 package fr.fin.service;
 
-
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,10 +10,10 @@ import fr.fin.repository.BasketRepository;
 
 @Service
 public class BasketService {
-	/*
+	
 	@Autowired
 	private BasketRepository basketRepository;
-	
+	/*
 	public List<Basket> getAllProducts() {
 		return (List<Basket>) basketRepository.findAll();
 	}
@@ -34,5 +33,15 @@ public class BasketService {
 	public void delete(Integer id) {		
 		basketRepository.deleteById(id);
 	}*/
+	
+	public Basket getBasketById(Integer id) {
+		Optional<Basket> basket = basketRepository.findById(id);
+		if(basket.isPresent()) {
+			return basket.get();
+		}else {
+			return null;
+		}
+	}
+	
 
 }

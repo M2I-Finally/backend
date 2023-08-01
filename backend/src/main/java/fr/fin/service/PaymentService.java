@@ -29,4 +29,8 @@ public class PaymentService {
 		return listPaymentUpdate ;
 	}
 	
+	public List<Payment> getBasketById(Basket basket){
+		return paymentRepository.findByBasketEquals(basket);
+	}
+	
 }

@@ -1,24 +1,26 @@
 package fr.fin.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import fr.fin.model.dto.BasketDetailDto;
+import org.springframework.web.server.ResponseStatusException;
 import fr.fin.model.dto.BasketPaymentDto;
-import fr.fin.model.dto.PaymentDto;
+import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.entity.Basket;
 import fr.fin.model.entity.BasketDetail;
 import fr.fin.model.entity.Payment;
+import fr.fin.model.entity.Product;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.BasketPaymentService;
 import fr.fin.service.BasketService;
@@ -35,29 +37,36 @@ public class BasketController {
 	
 	@Autowired
 	private BasketPaymentService basketPaymentService;
-	/*
-	@GetMapping("/payment")
-	public List<ProductShopPageDto> getAllAvailableProducts() {
-		List<Product> availableProducts = productService.getAvailableProducts();
-		System.out.println(availableProducts.size());
 		
-		List<ProductShopPageDto> availableProductsDto = new ArrayList<ProductShopPageDto>();
-		for( Product availableProduct: availableProducts ) {
-			availableProductsDto.add(convertToDto(availableProduct));
-		}
-		return availableProductsDto;
-	}*/
-	
-	@PostMapping()
-	public void insertBasket(@RequestBody BasketPaymentDto basketPaymentDto) {
-		
+	@PostMapping
+	public ResponseEntity<Integer> insertBasket(@RequestBody BasketPaymentDto basketPaymentDto) {
+		/*
+		 * private Integer sellerId;
+			private Float discount;
+			private Float total;
+			private List<BasketDetailDto> basketDetailDtoList = new ArrayList<>();
+			private List<PaymentDto> paymentDtoList = new ArrayList<>();
+		 */
+		if(basketPaymentDto.getSellerId() != null 
+				&& basketPaymentDto.getTotal() > 0 
+				&& !(basketPaymentDto.getpaymentDtoList().size() <= 0) 
+				&& !(basketPaymentDto.getBasketDetailDto().size() <= 0)) {
 		Basket basketFromApp = convertToEntities(basketPaymentDto);
-		basketPaymentService.createBasket(basketFromApp);
+		Integer basketId = basketPaymentService.createBasket(basketFromApp);
+		return new ResponseEntity<Integer>(basketId, HttpStatus.CREATED);
+		}else {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+		}
 		
 	}
 	
-	@GetMapping()
-	public BasketPaymentDto getBasket() {
+	@GetMapping("/{id}")
+	public BasketPaymentDto getBasket(@PathVariable("id") Integer id) {
+		
+		//Basket basketLoaded = basketPaymentService.getBasket(id);
+		//System.out.println(basketLoaded);
+		
+		/*
 		BasketPaymentDto basketPaymentDto = new BasketPaymentDto();
 		basketPaymentDto.setSellerId(1);
 		List<PaymentDto> payments = new ArrayList<>();
@@ -80,7 +89,16 @@ public class BasketController {
 		basketPaymentDto.setDiscount(1f);
 		basketPaymentDto.setTotal(56.3f);
 		convertToEntities(basketPaymentDto);
-		return basketPaymentDto;
+		return basketPaymentDto;*/
+		Basket basket = basketService.getBasketById(id);
+		System.out.println(basket.getBasketId() +" - " + basket.getStaff().getStaffId() + " - " +basket.getStaff().getUsername());
+		for(Payment payment : basket.getPayments()) {
+			System.out.println(payment);
+		}
+		for(BasketDetail basketDetail : basket.getBasketDetails()) {
+			System.out.println(basketDetail.getProduct().getName());
+		}
+		return null;
 	};
 	
 	/*
@@ -135,7 +153,7 @@ public class BasketController {
 	
 		
 	/*
-	 * Generic method to convert dto to entity/ entity to dto
+	 * Generic method to convert dto to entity / entity to dto
 	 * <S> = List source
 	 * <T> = targetClass
 	 * exemple
