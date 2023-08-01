@@ -1,20 +1,36 @@
-package fr.fin.model.dto;
+package fr.fin.model.dto.product;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import fr.fin.model.entity.Category;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 //import fr.fin.model.entity.Category;
 
 public class ProductGestionPageDto {
 
 	private Integer productId;
-	private String name;
-	private String description;
-	private Category category;
-	private Integer categoryId;
-	private Double price;
-	private Double tax;
-	private String picture;
 	
+	@NotNull
+	private String name;
+	
+	private String description;
+	
+	@JsonIgnore
+	private Category category;
+	
+	@NotNull
+	private Integer categoryId;
+	
+	@Min(0)
+	private Double price;
+	
+	@Min(0)
+	private Double tax;
+	
+	private String picture;
+		
 	public ProductGestionPageDto() {
 		
 	}

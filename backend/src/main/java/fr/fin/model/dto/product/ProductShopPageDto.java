@@ -1,4 +1,4 @@
-package fr.fin.model.dto;
+package fr.fin.model.dto.product;
 
 import fr.fin.model.entity.Category;
 
