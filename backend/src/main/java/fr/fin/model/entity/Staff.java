@@ -1,12 +1,14 @@
 package fr.fin.model.entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
@@ -67,9 +69,10 @@ public class Staff implements UserDetails{
 
 
 	// for Spring Security
-	public Staff(Integer staffId, String username) {
+	public Staff(Integer staffId, String username, String role) {
 		this.staffId = staffId;
 		this.username = username;
+		this.role = role;
 	}
 
 
@@ -182,15 +185,15 @@ public class Staff implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return Set.of(); 
+
+		return Arrays.asList(new SimpleGrantedAuthority(role)); 
 	}
 
 
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
+
 		return true;
 	}
 

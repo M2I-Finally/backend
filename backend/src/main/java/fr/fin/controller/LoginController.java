@@ -2,6 +2,8 @@ package fr.fin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,12 +42,18 @@ public class LoginController {
 	  var user = (Staff) auth.getPrincipal();
 	  System.out.println("User {} logged in."+ user.getUsername());
 	  
-	  return new Staff(user.getId(), user.getUsername());
+	  return new Staff(user.getId(), user.getUsername(), user.getRole());
 	}
 	
 	@GetMapping
 	public String test() {
 		String pass = bCryptPasswordEncoder.encode("admin");
 		return pass;
+	}
+	
+	@GetMapping("/current-user")
+	public Staff getCurrentUser(@AuthenticationPrincipal Staff user) {
+//	  need role after
+	  return user;
 	}
 }
