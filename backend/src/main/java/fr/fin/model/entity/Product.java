@@ -58,8 +58,7 @@ public class Product {
 	
 	@Column(name = "update_at")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date updatedAt;
-	
+	private Date updatedAt;	
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="category_id", nullable=true)

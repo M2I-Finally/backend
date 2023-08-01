@@ -22,7 +22,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.dto.ProductShopPageDto;
+import fr.fin.model.entity.Category;
 import fr.fin.model.entity.Product;
+import fr.fin.service.CategoryService;
 import fr.fin.service.ProductService;
 
 @RequestMapping("/products")
@@ -32,6 +34,9 @@ public class ProductController {
 
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private CategoryService categoryService;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -63,7 +68,10 @@ public class ProductController {
 	@PostMapping
 	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestBody ProductGestionPageDto productDto) {
 		if( productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
-			productService.createProduct(convertToGestionEntity(productDto));
+			Category productCategory = categoryService.getCategoryById(productDto.getCategoryId());		
+			Product productToCreate = convertToGestionEntity(productDto);
+			productToCreate.setCategory(productCategory);	
+			productService.createProduct(productToCreate);
 			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
@@ -88,7 +96,7 @@ public class ProductController {
 			Product updatedProduct = productService.getProductById(id);
 			updatedProduct.setName(productDto.getName());
 			updatedProduct.setDescription(productDto.getDescription());
-			updatedProduct.setCategory(productDto.getCategory());
+//			updatedProduct.setCategory(productDto.getCategory());
 			updatedProduct.setPrice(productDto.getPrice());
 			updatedProduct.setTax(productDto.getTax());
 			updatedProduct.setPicture(productDto.getPicture());
