@@ -12,6 +12,7 @@ public class ProductShopPageDto {
 	private Double stock;
 	private String picture;
 	private Category category;
+	private Integer categoryId;
 	
 	public ProductShopPageDto() {
 		
@@ -80,5 +81,13 @@ public class ProductShopPageDto {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public Integer getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
 	}
 }

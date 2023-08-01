@@ -1,7 +1,6 @@
 package fr.fin.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -46,7 +45,9 @@ public class ProductController {
 		List<Product> products = productService.getAllProducts();
 		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
 		for( Product product: products ) {
-			productsDto.add(convertToShopDto(product));
+			ProductShopPageDto productDto = convertToShopDto(product);
+			productDto.setCategoryId(product.getCategory().getId());
+			productsDto.add(productDto);
 		}
 		return productsDto;
 	}
@@ -101,7 +102,6 @@ public class ProductController {
 			updatedProduct.setPrice(productDto.getPrice());
 			updatedProduct.setTax(productDto.getTax());
 			updatedProduct.setPicture(productDto.getPicture());
-			updatedProduct.setUpdatedAt(new Date());
 			productService.createProduct(updatedProduct);
 			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
 		}
