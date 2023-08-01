@@ -94,9 +94,10 @@ public class ProductController {
 	public ResponseEntity<ProductGestionPageDto> updateProduct(@PathVariable("id") Integer id, @RequestBody ProductGestionPageDto productDto) {
 		if( productService.getProductById(id) != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN() ) {
 			Product updatedProduct = productService.getProductById(id);
+			Category updatedProductCategory = categoryService.getCategoryById(productDto.getCategoryId());
 			updatedProduct.setName(productDto.getName());
 			updatedProduct.setDescription(productDto.getDescription());
-//			updatedProduct.setCategory(productDto.getCategory());
+			updatedProduct.setCategory(updatedProductCategory);
 			updatedProduct.setPrice(productDto.getPrice());
 			updatedProduct.setTax(productDto.getTax());
 			updatedProduct.setPicture(productDto.getPicture());
