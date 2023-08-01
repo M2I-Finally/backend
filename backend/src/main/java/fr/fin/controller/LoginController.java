@@ -54,6 +54,6 @@ public class LoginController {
 	@GetMapping("/current-user")
 	public Staff getCurrentUser(@AuthenticationPrincipal Staff user) {
 //	  need role after
-	  return user;
+	  return new Staff(user.getId(), user.getUsername(), user.getRole());
 	}
 }
