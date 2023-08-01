@@ -15,7 +15,7 @@ public class FileService {
 
 	private final String[] authorizedExtensions = { "png", "jpg" };
 	private final String FOLDER_NAME = "images";
-	private final Path root = Paths.get(FOLDER_NAME);
+	private final Path root = Paths.get("src", "main", "resources", "static", FOLDER_NAME);
 	
 	/**
 	 * Creates an image from a MultipartFile
@@ -25,7 +25,7 @@ public class FileService {
 	public String createImage(MultipartFile file) throws IOException {
 		
 		// Creates the images folder, it won't be executed if it doesn't exist
-		Files.createDirectories(Paths.get(FOLDER_NAME));
+		Files.createDirectories(root);
 			
 		// Check if the file is null before processing datas
 		if(file != null) {		
@@ -39,7 +39,7 @@ public class FileService {
 			try {
 				String fileName = UUID.randomUUID().toString();
 				String fileExtension = FilenameUtils.getExtension(originFileName).toLowerCase();
-				Files.copy(file.getInputStream(), this.root.resolve(fileName + "." + fileExtension));
+				Files.copy(file.getInputStream(), root.resolve(fileName + "." + fileExtension));
 				return generateRelativeURL(fileName, fileExtension);
 			} catch (IOException e) {
 				System.out.println("Could not process image");
