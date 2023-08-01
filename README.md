@@ -1,9 +1,7 @@
 # Backend
 this is backend for finally
 
-# Documentation
-## ngx-toastr
-[documentation](https://www.npmjs.com/package/ngx-toastr)
+
 
 # Normalization
 Environement.ts =>
@@ -11,8 +9,10 @@ Environement.ts =>
 * getAll:(/)
 * post(/)
 * actionById({id})
+# Documentation
+## [ngx-toastr](https://www.npmjs.com/package/ngx-toastr)
 
-# Staff 👨‍🍳👩‍🍳🧑‍🍳
+## Staff 👨‍🍳👩‍🍳🧑‍🍳
 available Api:
 * GET/users
   * get all users  
