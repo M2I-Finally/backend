@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -14,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import fr.fin.service.LoginService;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -22,11 +25,19 @@ public class SecurityConfig {
 	private JwtAuthenticationFilter jwtAuthFilter;
 
 	@Autowired
-	private AuthenticationProvider authenticationProvider;
+	private LoginService userDetailsService;
 
 	@Bean
 	PasswordEncoder getPasswordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setUserDetailsService(userDetailsService);
+		authProvider.setPasswordEncoder(getPasswordEncoder());
+		return authProvider;
 	}
 
 	@Bean
@@ -39,7 +50,7 @@ public class SecurityConfig {
 	        // .csrf().ignoringRequestMatchers("/login", "/logout").and()
 	        .csrf().disable()
 	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-	        .authenticationProvider(null).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+	        .authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 	        .logout(logout -> logout
 	                .logoutSuccessUrl("/logout/success")
 	                .permitAll())
