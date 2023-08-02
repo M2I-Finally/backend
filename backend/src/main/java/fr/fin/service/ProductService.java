@@ -34,8 +34,13 @@ public class ProductService {
 		return newProduct;
 	}
 	
-	public void delete(Integer id) {		
-		productRepository.deleteById(id);
+	public boolean delete(Integer id) {
+		Product product = this.getProductById(id);
+		if(product != null) {
+			productRepository.deleteById(id);
+			return true;
+		}
+		return false;
 	}
 	
 	public Product updateProductStatus(Integer id) {
