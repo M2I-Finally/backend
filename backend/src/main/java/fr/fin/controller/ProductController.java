@@ -64,11 +64,13 @@ public class ProductController {
 			if(product.getPicture() != null) {
 				product.setPicture(getBaseUrl() + product.getPicture());
 			}
+			ProductShopPageDto productDto = convertToShopDto(product);
+			productDto.setCategoryId(product.getCategory().getId());
 			productsDto.add(convertToShopDto(product));
 		}
 		return productsDto;
 	}
-	
+
 	/**
 	 * GET product information for a given id
 	 * @param id	The Id of the product
@@ -88,6 +90,28 @@ public class ProductController {
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produit pas trouvé");
 	}
 
+	@PostMapping
+	public ResponseEntity<ProductGestionPageDto> addProduct
+	(@RequestPart("product") ProductGestionPageDto productDto,
+			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+			if (productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN()) {
+				Category productCategory = categoryService.getCategoryById(productDto.getCategoryId());
+			
+      		if (file != null) {
+				String pictureRelativeURL = fileService.createImage(file);
+				productDto.setPicture(pictureRelativeURL);
+			}
+      
+      		Product productToCreate = modelMapper.map(productDto, Product.class);
+      		productToCreate.setCategory(productCategory);	
+			productToCreate = productService.createProduct(productToCreate);
+
+			return new ResponseEntity<ProductGestionPageDto>(modelMapper.map(productToCreate, ProductGestionPageDto.class), HttpStatus.CREATED);
+		}
+
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+	}
+      
 
 	/**
 	 * Handle POST Mapping of a multi-part form-data with ProductGestionPageDto Object and a MultiPartFile
