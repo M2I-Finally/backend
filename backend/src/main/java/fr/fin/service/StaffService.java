@@ -9,13 +9,13 @@ import fr.fin.model.entity.Staff;
 import fr.fin.repository.StaffRepository;
 
 @Service
-public class StaffService {
+public class StaffService  {
 
 	@Autowired
 	private StaffRepository staffRepository;
 
 	public List<Staff> getAllStaffs() {
-		
+
 		return (List<Staff>) staffRepository.findAll();
 	}
 
@@ -26,16 +26,16 @@ public class StaffService {
 	}
 
 	public Staff getStaffById(Integer id) {
-		
+
 		if (staffRepository.findById(id).isPresent()) {
 			return staffRepository.findById(id).get();
 		}
-		
+
 		return null;
 	}
 
 	public List<Staff> getManager() {
-		return ((StaffRepository) staffRepository).findByRoleOrderByUsername("Manager");
+		return staffRepository.findByRoleOrderByUsername("Manager");
 	}
 
 	public void saveStaff(Staff staff) {
