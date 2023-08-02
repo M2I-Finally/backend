@@ -9,6 +9,8 @@ import fr.fin.model.entity.Staff;
 
 @Repository
 public interface StaffRepository extends CrudRepository<Staff, Integer> {
+
 	List<Staff> findByRoleOrderByUsername(String role);
+
 	Staff findByUsername(String username);
 }

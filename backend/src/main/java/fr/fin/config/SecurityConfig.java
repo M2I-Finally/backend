@@ -13,27 +13,27 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 	@Bean
-	public PasswordEncoder getPasswordEncoder() {
+	PasswordEncoder getPasswordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-	
+
+
 	@SuppressWarnings("removal")
 	@Bean
-	  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	    return http
 	        .authorizeHttpRequests(customizer -> customizer
 	            .requestMatchers("/login").permitAll()
 	            .requestMatchers("/login/csrf").permitAll()
-	            .requestMatchers("/**").authenticated())	            
+	            .requestMatchers("/**").authenticated())
 	        .csrf().ignoringRequestMatchers("/login", "/logout").and()
-	        .logout((logout) -> logout
+	        .logout(logout -> logout
 	                .logoutSuccessUrl("/logout/success")
 	                .permitAll())
 	        .exceptionHandling(customizer -> customizer
 	            .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 	        .build();
-	  }
+	 }
 }

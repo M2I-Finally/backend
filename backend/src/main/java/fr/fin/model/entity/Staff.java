@@ -1,11 +1,9 @@
 package fr.fin.model.entity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,7 +21,9 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "staff")
-public class Staff implements UserDetails{
+public class Staff implements UserDetails {
+
+	private static final long serialVersionUID = -4414646490025845750L;
 
 	@Id
 	@Column(name = "staff_id")
@@ -55,18 +55,51 @@ public class Staff implements UserDetails{
 
 	@OneToMany(targetEntity = Basket.class, mappedBy = "staff")
 	private List<Basket> baskets = new ArrayList<>();
-	
-	// default constructor
-	public Staff() {
-	};
-	
-	
 
-	public Staff(Integer staffId) {
-		
-		this.staffId = staffId;
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority(role));
 	}
 
+	@Override
+	// Overriden getter for Spring Security from UserDetails implementation
+	public String getUsername() {
+		return username;
+	}
+
+	@Override
+	// Overriden getter for Spring Security from UserDetails implementation
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
+	// default constructor
+	public Staff() {
+	}
+
+	public Staff(Integer staffId) {
+		this.staffId = staffId;
+	}
 
 	// for Spring Security
 	public Staff(Integer staffId, String username, String role) {
@@ -75,11 +108,9 @@ public class Staff implements UserDetails{
 		this.role = role;
 	}
 
-
-
 	// constructor w/o id
-	public Staff(String username, String password, Integer passwordTrial, String role, boolean status,
-			Date createdAt, Date updateAt) {
+	public Staff(String username, String password, Integer passwordTrial, String role, boolean status, Date createdAt,
+			Date updateAt) {
 		this.username = username;
 		this.password = password;
 		this.passwordTrial = passwordTrial;
@@ -109,16 +140,8 @@ public class Staff implements UserDetails{
 		return staffId;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
 	}
 
 	public void setPassword(String password) {
@@ -181,45 +204,4 @@ public class Staff implements UserDetails{
 		this.baskets = baskets;
 	}
 
-
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-
-		return Arrays.asList(new SimpleGrantedAuthority(role)); 
-	}
-
-
-
-	@Override
-	public boolean isAccountNonExpired() {
-
-		return true;
-	}
-
-
-
-	@Override
-	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-
-
-	@Override
-	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return true;
-	};
-
-	
 }
