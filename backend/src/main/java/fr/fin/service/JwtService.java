@@ -1,6 +1,5 @@
 package fr.fin.service;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,13 +11,12 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
 
 	// https://jwt-keys.21no.de/
-	private static final String SECRET_KEY = "jrs68jr0aCOPqscJRQCjb+q/0vRkdiuZGj1JXWVqZ8lwHPWXEoIaBqdIHI7WgvyGcfWQFDjOg0kL/6R7C2Ey3g==";
+	private final String SECRET_KEY = "0NK97McIAUPfeg5C3SLIDpiFYcicW/JM3cE0KVAKgqLqdq5L2kSA/K8xR4Hzmdff8zJk7eSIAcvcAmjQH9umMw==";
 
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
@@ -40,7 +38,7 @@ public class JwtService {
 				.setSubject(userDetails.getUsername())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 12))
-				.signWith(SignatureAlgorithm.HS256, getSignInKey())
+				.signWith(SignatureAlgorithm.HS256, SECRET_KEY)
 				.compact();
 	}
 
@@ -60,13 +58,13 @@ public class JwtService {
 	private Claims extractAllClaims(String token) {
 		return Jwts
 				.parserBuilder()
-				.setSigningKey(getSignInKey())
+				.setSigningKey(SECRET_KEY)
 				.build()
 				.parseClaimsJws(token)
 				.getBody();
 	}
 
-	private Key getSignInKey() {
-		return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-	}
+//	private Key getSignInKey() {
+//		return Keys.hmacShaKeyFor(SECRET_KEY);
+//	}
 }

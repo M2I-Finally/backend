@@ -43,13 +43,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		jwt = authHeader.substring(7);
-		System.out.println(jwt);
+		System.out.println("DEBUG JWT : " + jwt);
+		System.out.println(jwtService.extractUsername(jwt));
+
 		username = jwtService.extractUsername(jwt);
+		System.out.println(username);
 
 		// Check if user is not connected yet
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails staff = this.loginService.loadUserByUsername(username);
-			if(jwtService.isTokenValid(username, staff)) {
+			if(jwtService.isTokenValid(jwt, staff)) {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(staff, null, staff.getAuthorities());
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authToken);
