@@ -27,8 +27,7 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(customizer -> customizer
 	            .requestMatchers("/login").permitAll()
 	            .requestMatchers("/login/csrf").permitAll()
-	            .requestMatchers("/**").authenticated())
-	            
+	            .requestMatchers("/**").authenticated())	            
 	        .csrf().ignoringRequestMatchers("/login", "/logout").and()
 	        .logout((logout) -> logout
 	                .logoutSuccessUrl("/logout/success")

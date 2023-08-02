@@ -87,7 +87,7 @@ public class StaffControllerTest {
 		
 		StaffGestionPageDto staffDto = new StaffGestionPageDto();
 		
-		staffDto.setName("zoe");
+		staffDto.setUsername("zoe");
 		staffDto.setPassword("psw123");
 		
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
