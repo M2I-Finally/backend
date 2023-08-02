@@ -183,7 +183,7 @@ public class StaffController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un manager ne peut pas être supprimé.");
 		}
 		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
-
+		
 		staffService.deleteStaffById(id);
 		return new ResponseEntity<String>("Staff supprimé", HttpStatus.OK);
 
