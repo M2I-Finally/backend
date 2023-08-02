@@ -3,13 +3,13 @@ package fr.fin.model.dto;
 import org.springframework.security.web.csrf.CsrfToken;
 
 public class LoginDto {
-	
+
 	//user.getId(), user.getUsername(), user.getRole()
 	private Integer id;
 	private String username;
 	private String role;
 	private CsrfToken token;
-	
+
 	public LoginDto() {
 	}
 
@@ -51,7 +51,7 @@ public class LoginDto {
 	public void setToken(CsrfToken csrf) {
 		this.token = csrf;
 	}
-	
-	
-	
+
+
+
 }

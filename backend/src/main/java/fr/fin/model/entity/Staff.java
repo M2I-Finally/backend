@@ -97,6 +97,14 @@ public class Staff implements UserDetails {
 	public Staff() {
 	}
 
+
+
+	public Staff(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+	}
+
 	public Staff(Integer staffId) {
 		this.staffId = staffId;
 	}

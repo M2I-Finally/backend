@@ -2,6 +2,7 @@ package fr.fin.controller;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,13 +12,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.fin.model.dto.AuthenticationResponse;
 import fr.fin.model.dto.CrsfTokenDto;
+import fr.fin.model.dto.JwtLoginDto;
 import fr.fin.model.dto.LoginDto;
 import fr.fin.model.dto.LoginForm;
 import fr.fin.model.entity.Staff;
+import fr.fin.service.AuthenticationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +35,9 @@ public class AuthentificationController {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	@Autowired
+	private AuthenticationService authenticationService;
+
 	private LoginDto convertToTableDto(Staff staff) {
 		return modelMapper.map(staff, LoginDto.class);
 	}
@@ -43,6 +49,7 @@ public class AuthentificationController {
 	@PostMapping("/login")
 	public LoginDto login(@Valid @RequestBody LoginForm form, BindingResult bindingResult, HttpServletRequest request)
 			throws Exception {
+
 		if (bindingResult.hasErrors()) {
 			throw new Exception("Invalid username or password");
 		}
@@ -56,13 +63,19 @@ public class AuthentificationController {
 		Authentication auth = (Authentication) request.getUserPrincipal();
 		CsrfToken csrf =  (CsrfToken) request.getAttribute("_csrf");
 		Staff user = (Staff) auth.getPrincipal();
-		
+
 		LoginDto loginDto = convertToTableDto(user);
 		loginDto.setToken(csrf);
-		
+
 		System.out.println("User "+ user.getUsername()+" logged in." );
 
 		return loginDto;
+	}
+
+	@PostMapping("/jwt")
+	public ResponseEntity<AuthenticationResponse> jwtLogin(@RequestBody JwtLoginDto form, BindingResult bindingResult, HttpServletRequest request)
+			throws Exception {
+		return ResponseEntity.ok(authenticationService.authenticate(form));
 	}
 
 	@GetMapping("/login")
@@ -81,21 +94,21 @@ public class AuthentificationController {
 		CsrfToken csrf =  (CsrfToken) request.getAttribute("_csrf");
 		return new CrsfTokenDto(csrf.getToken());
 	}
-	
-	
+
+
 	@PostMapping("/logout")
 	public String performLogout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-	   
+
 		logoutHandler.logout(request, response, authentication);
-	   
+
 	    return "redirect:/success";
 	}
-	
+
 	@GetMapping("/logout/success")
 	public String success() {
 		//this will be recap of daily sell
 		return "logout";
 	}
-	
+
 }

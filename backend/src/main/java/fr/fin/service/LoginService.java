@@ -18,4 +18,6 @@ public class LoginService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return staffRepository.findByUsername(username);
 	}
+
+
 }
