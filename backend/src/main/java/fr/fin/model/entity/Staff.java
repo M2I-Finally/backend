@@ -1,8 +1,15 @@
 package fr.fin.model.entity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +23,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "staff")
-public class Staff {
+public class Staff implements UserDetails{
 
 	@Id
 	@Column(name = "staff_id")
@@ -61,6 +68,14 @@ public class Staff {
 	}
 
 
+	// for Spring Security
+	public Staff(Integer staffId, String username, String role) {
+		this.staffId = staffId;
+		this.username = username;
+		this.role = role;
+	}
+
+
 
 	// constructor w/o id
 	public Staff(String username, String password, Integer passwordTrial, String role, boolean status,
@@ -90,7 +105,7 @@ public class Staff {
 	/*
 	 * getters & setters (no id setter)
 	 */
-	public int getId() {
+	public Integer getId() {
 		return staffId;
 	}
 
@@ -164,6 +179,46 @@ public class Staff {
 
 	public void setBaskets(List<Basket> baskets) {
 		this.baskets = baskets;
+	}
+
+
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+
+		return Arrays.asList(new SimpleGrantedAuthority(role)); 
+	}
+
+
+
+	@Override
+	public boolean isAccountNonExpired() {
+
+		return true;
+	}
+
+
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
 	};
 
 	

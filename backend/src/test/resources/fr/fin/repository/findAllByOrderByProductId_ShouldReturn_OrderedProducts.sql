@@ -1,0 +1,3 @@
+INSERT INTO product (name, description, price, tax, picture, status, stock, created_by, updated_by) VALUES ('Baguette traditionnelle', 'Pain traditionnel français', 0.80, 0.05, 'https://picsum.photos/200/300', true, 50, 'admin', 'admin');
+INSERT INTO product (name, description, price, tax, picture, status, stock, created_by, updated_by) VALUES ('Croissant', 'Pâte feuilletée et beurre', 0.90, 0.05, 'https://picsum.photos/200/300', true, 30, 'admin', 'admin');
+INSERT INTO product (name, description, price, tax, picture, status, stock, created_by, updated_by) VALUES ('Tarte aux pommes', 'Pâte sablée et pommes', 10.00, 0.10, 'https://picsum.photos/200/300', true, 10, 'admin', 'admin');

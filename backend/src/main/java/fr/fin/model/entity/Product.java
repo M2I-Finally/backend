@@ -50,7 +50,15 @@ public class Product {
 	private String createdBy;
 	
 	@Column(name="updated_by",nullable=false)
-	private String updatedBy;	
+	private String updatedBy;
+	
+	@Column(name = "created_at")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdAt;
+	
+	@Column(name = "update_at")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updatedAt;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="category_id", nullable=true)
@@ -63,6 +71,15 @@ public class Product {
 		this.status = true;
 		this.createdBy = "admin";
 		this.updatedBy = "admin";
+		this.createdAt = new Date();
+	}
+	
+	public Product(Integer productId, String name, Double price, Category category, boolean status) {
+		this.productId = productId;
+		this.name = name;
+		this.price = price;
+		this.category = category;
+		this.status = status;
 	}
 	
 	public Product(String name, String description, Double price, Double tax, String picture,
@@ -78,6 +95,8 @@ public class Product {
 		this.stock = stock;
 		this.createdBy = createdBy;
 		this.updatedBy = updatedBy;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 		this.category = category;
 		this.basketDetails = basketDetails;
 	}
@@ -95,6 +114,8 @@ public class Product {
 		this.stock = stock;
 		this.createdBy = createdBy;
 		this.updatedBy = updatedBy;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 		this.category = category;
 		this.basketDetails = basketDetails;
 	}
@@ -113,6 +134,8 @@ public class Product {
 		this.stock = stock;
 		this.createdBy = createdBy;
 		this.updatedBy = updatedBy;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 		this.category = category;
 		this.basketDetails = basketDetails;
 	}
@@ -195,6 +218,22 @@ public class Product {
 
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	public Category getCategory() {

@@ -1,6 +1,8 @@
 ## Docker datas
 backend/data/
 backend/data/*
+backend/src/main/resources/static/images/
+backend/src/main/resources/static/images/*
 
 ##############################
 ## Java

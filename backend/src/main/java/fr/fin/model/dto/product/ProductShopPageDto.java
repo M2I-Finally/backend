@@ -1,4 +1,8 @@
-package fr.fin.model.dto;
+package fr.fin.model.dto.product;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import fr.fin.model.entity.Category;
 
 public class ProductShopPageDto {
 	
@@ -9,6 +13,10 @@ public class ProductShopPageDto {
 	private boolean status;
 	private Double stock;
 	private String picture;
+	
+	@JsonIgnore
+	private Category category;
+	private Integer categoryId;
 	
 	public ProductShopPageDto() {
 		
@@ -69,5 +77,21 @@ public class ProductShopPageDto {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public Integer getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
 	}
 }
