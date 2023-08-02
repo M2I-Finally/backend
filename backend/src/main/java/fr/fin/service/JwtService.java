@@ -1,6 +1,7 @@
 package fr.fin.service;
 
 import java.security.Key;
+import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
 
@@ -13,13 +14,15 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService {
 
 	// https://jwt-keys.21no.de/
-	private static final String SECRET_KEY = """
-		jrs68jr0aCOPqscJRQCjb+q/0vRkdiuZGj1JXWVqZ8lwHPWXEoIaBqdIHI7WgvyG
-		cfWQFDjOg0kL/6R7C2Ey3g==
-	""";
+	private static final String SECRET_KEY = "jrs68jr0aCOPqscJRQCjb+q/0vRkdiuZGj1JXWVqZ8lwHPWXEoIaBqdIHI7WgvyGcfWQFDjOg0kL/6R7C2Ey3g==";
 
 	public String extractUsername(String token) {
-		return null;
+		return extractClaim(token, Claims::getSubject);
+	}
+
+	public <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+		Claims claims = extractAllClaims(token);
+		return claimResolver.apply(claims);
 	}
 
 	private Claims extractAllClaims(String token) {
