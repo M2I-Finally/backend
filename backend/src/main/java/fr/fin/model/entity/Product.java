@@ -74,6 +74,14 @@ public class Product {
 		this.createdAt = new Date();
 	}
 	
+	public Product(Integer productId, String name, Double price, Category category, boolean status) {
+		this.productId = productId;
+		this.name = name;
+		this.price = price;
+		this.category = category;
+		this.status = status;
+	}
+	
 	public Product(String name, String description, Double price, Double tax, String picture,
 			Double stock, String createdBy, String updatedBy, Date createdAt, Date updatedAt, Category category,
 			List<BasketDetail> basketDetails) {

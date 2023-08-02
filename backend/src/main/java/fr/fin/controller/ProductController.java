@@ -70,7 +70,7 @@ public class ProductController {
 		}
 		return productsDto;
 	}
-
+  
 	/**
 	 * GET product information for a given id
 	 * @param id	The Id of the product
