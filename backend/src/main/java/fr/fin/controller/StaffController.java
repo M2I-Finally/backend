@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,9 @@ public class StaffController {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private PasswordEncoder bCryptPasswordEncoder;
 
 	/**
 	 * User table
@@ -67,6 +71,22 @@ public class StaffController {
 	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto) {
 		if (staffDto != null && !staffDto.getUsername().isBlank()
 				&& ROLE_CAN_UPDATE_USER.equals(staffDto.getRole().toLowerCase())) {
+			
+			PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
+			
+			//password needs to match the pattern
+			if (!passwordValidator.isValid(staffDto.getPassword())) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,passwordValidator.getMessage());
+			}
+			
+			//passwordConfirm needs to be identical than password
+			if (!staffDto.getPassword().equals(staffDto.getPasswordConfirm())) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"La confirmation de mot de passe doit être identique que le mot de passe.");
+			}
+			
+			staffDto.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
+
 			staffService.createStaff(convertToGestionEntity(staffDto));
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}

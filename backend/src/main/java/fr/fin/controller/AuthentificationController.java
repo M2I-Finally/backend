@@ -54,11 +54,15 @@ public class AuthentificationController {
 		}
 
 		Authentication auth = (Authentication) request.getUserPrincipal();
+		CsrfToken csrf =  (CsrfToken) request.getAttribute("_csrf");
 		Staff user = (Staff) auth.getPrincipal();
+		
+		LoginDto loginDto = convertToTableDto(user);
+		loginDto.setToken(csrf);
+		
+		System.out.println("User "+ user.getUsername()+" logged in." );
 
-		System.out.println("User {} logged in." + user.getUsername());
-
-		return convertToTableDto(user);
+		return loginDto;
 	}
 
 	@GetMapping("/login")
