@@ -72,17 +72,17 @@ public class ProductController {
 
 	@PostMapping
 	public ResponseEntity<ProductGestionPageDto> addProduct(@RequestPart("product") ProductGestionPageDto productDto,
-			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+	@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
 		if (productDto != null && !productDto.getName().isBlank() && !productDto.getPrice().isNaN()) {
-      Category productCategory = categoryService.getCategoryById(productDto.getCategoryId());
+			Category productCategory = categoryService.getCategoryById(productDto.getCategoryId());
 			
-      if (file != null) {
+			if (file != null) {
 				String pictureRelativeURL = fileService.createImage(file);
 				productDto.setPicture(pictureRelativeURL);
 			}
       
-      Product productToCreate = convertToGestionEntity(productDto);
-      productToCreate.setCategory(productCategory);	
+			Product productToCreate = convertToGestionEntity(productDto);
+			productToCreate.setCategory(productCategory);	
 			productService.createProduct(productToCreate);
 
 			return new ResponseEntity<ProductGestionPageDto>(productDto, HttpStatus.CREATED);
@@ -91,7 +91,7 @@ public class ProductController {
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
 	}
       
-  @GetMapping("/category/{id}")
+	@GetMapping("/category/{id}")
 	public List<ProductShopPageDto> getProductByCategory(@PathVariable Integer id) {
 		List<Product> products = productService.getProductsByCategory(id);
 		List<ProductShopPageDto> productsDto = new ArrayList<ProductShopPageDto>();
