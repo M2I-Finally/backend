@@ -3,7 +3,6 @@ package fr.fin.controller;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,15 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
 import fr.fin.model.dto.BasketDetailDto;
 import fr.fin.model.dto.BasketPaymentDto;
 import fr.fin.model.dto.PaymentDto;
-import fr.fin.model.dto.ProductGestionPageDto;
 import fr.fin.model.entity.Basket;
 import fr.fin.model.entity.BasketDetail;
 import fr.fin.model.entity.Payment;
-import fr.fin.model.entity.Product;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.BasketPaymentService;
 import fr.fin.service.BasketService;
