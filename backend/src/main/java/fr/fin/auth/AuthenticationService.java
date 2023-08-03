@@ -1,5 +1,7 @@
 package fr.fin.auth;
 
+import java.util.HashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -40,7 +42,13 @@ public class AuthenticationService {
 
 		// If authentication manager authenticates, it process the JWT token generation
 		Staff staff = (Staff) staffService.loadUserByUsername(request.getUsername());
-		String generatedJwt = jwtService.generateToken(staff);
+		
+		// Proccess extra claims
+		HashMap<String, Object> extraClaims = new HashMap<>();
+		extraClaims.put("id", staff.getId());
+		extraClaims.put("role", staff.getRole());
+		
+		String generatedJwt = jwtService.generateToken(extraClaims, staff);
 		return new JwtTokenResponse(generatedJwt);
 	}
 }
