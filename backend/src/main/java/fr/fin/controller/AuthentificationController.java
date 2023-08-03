@@ -11,13 +11,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.fin.model.dto.CrsfTokenDto;
 import fr.fin.model.dto.LoginDto;
 import fr.fin.model.dto.LoginForm;
 import fr.fin.model.entity.Staff;
+import fr.fin.service.TokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +32,9 @@ public class AuthentificationController {
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private TokenService tokenService;
 
 	private LoginDto convertToTableDto(Staff staff) {
 		return modelMapper.map(staff, LoginDto.class);
@@ -59,8 +63,8 @@ public class AuthentificationController {
 		
 		LoginDto loginDto = convertToTableDto(user);
 		loginDto.setToken(csrf);
-		
-		System.out.println("User "+ user.getUsername()+" logged in." );
+		String token = tokenService.generateToken(auth);
+		System.out.println("User "+ user.getUsername()+" logged in." + "with token : " + token);
 
 		return loginDto;
 	}
@@ -97,5 +101,14 @@ public class AuthentificationController {
 		//this will be recap of daily sell
 		return "logout";
 	}
+	
+	 @PostMapping("/token")
+	    public String token(Authentication authentication) {
+	       System.out.println(authentication.getCredentials());
+	        String token = tokenService.generateToken(authentication);
+	     
+	        return token;
+	    }
+
 	
 }
