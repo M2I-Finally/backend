@@ -60,6 +60,11 @@ public class Staff implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role));
 	}
+	
+	@Override
+	public boolean isAccountNonLocked() {
+		return ((this.passwordTrial >= 50000) ? false: true);
+	}
 
 	@Override
 	// Overriden getter for Spring Security from UserDetails implementation
@@ -75,11 +80,6 @@ public class Staff implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
 		return true;
 	}
 

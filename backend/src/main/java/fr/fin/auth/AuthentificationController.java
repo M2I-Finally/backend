@@ -2,7 +2,9 @@ package fr.fin.auth;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,8 +38,9 @@ public class AuthentificationController {
 
 
 	@PostMapping("/login")
-	public ResponseEntity<JwtTokenResponse> jwtLogin(@RequestBody JwtLoginRequest jwtLoginRequest, BindingResult bindingResult, HttpServletRequest request) {
-		return ResponseEntity.ok(authenticationService.authenticate(jwtLoginRequest));
+	public ResponseEntity<JwtTokenResponse> jwtLogin(@RequestBody JwtLoginRequest jwtLoginRequest, BindingResult bindingResult, HttpServletRequest request) throws Exception {
+		JwtTokenResponse tokenResponse = authenticationService.authenticate(jwtLoginRequest);
+		return ResponseEntity.ok(tokenResponse);
 	}
 
 	@GetMapping("/bcrypt")

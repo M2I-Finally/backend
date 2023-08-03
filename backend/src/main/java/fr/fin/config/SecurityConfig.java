@@ -53,7 +53,6 @@ public class SecurityConfig {
 	    return http
 	        .authorizeHttpRequests(customizer -> customizer
 	            .requestMatchers("/login").permitAll()
-	            .requestMatchers("/bcrypt").permitAll()
 	            // .requestMatchers("/login/csrf").permitAll()
 	            .requestMatchers("/**").authenticated())
 	        // .csrf().ignoringRequestMatchers("/login", "/logout").and()
