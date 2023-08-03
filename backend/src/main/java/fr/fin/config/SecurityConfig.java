@@ -55,8 +55,8 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(customizer -> customizer
 	            .requestMatchers("/login").permitAll()
 	            .requestMatchers("/**").authenticated())
-	        .csrf(csrf -> csrf.disable())
 	        .cors(Customizer.withDefaults())
+	        .csrf(csrf -> csrf.disable())
 	        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	        .authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 	        .logout(logout -> logout

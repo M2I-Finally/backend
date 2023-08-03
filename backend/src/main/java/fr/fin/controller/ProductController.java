@@ -34,7 +34,7 @@ import fr.fin.service.ProductService;
 import jakarta.validation.Valid;
 
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin
 @RestController
 public class ProductController {
 
