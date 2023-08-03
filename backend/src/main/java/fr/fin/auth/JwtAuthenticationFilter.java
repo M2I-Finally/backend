@@ -42,6 +42,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		String jwt = authHeader.substring(7); // Removing "Bearer" from the header
+		
+		// Check if token is null before processing extraction
+		if(jwt == null || "null".equals(jwt)) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		String username = jwtService.extractUsername(jwt);
 
 		/* We only process the authentication if the user is not authenticated yet
