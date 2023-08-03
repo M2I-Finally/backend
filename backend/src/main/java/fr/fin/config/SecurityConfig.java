@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -53,11 +54,10 @@ public class SecurityConfig {
 	    return http
 	        .authorizeHttpRequests(customizer -> customizer
 	            .requestMatchers("/login").permitAll()
-	            // .requestMatchers("/login/csrf").permitAll()
 	            .requestMatchers("/**").authenticated())
-	        // .csrf().ignoringRequestMatchers("/login", "/logout").and()
-	        .csrf().disable()
-	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+	        .csrf(csrf -> csrf.disable())
+	        .cors(Customizer.withDefaults())
+	        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	        .authenticationProvider(authenticationProvider()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 	        .logout(logout -> logout
 	                .logoutSuccessUrl("/logout/success")

@@ -28,14 +28,13 @@ public class AuthenticationService {
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 		} catch(BadCredentialsException e) {
+			// Catch BadCredentials to increment passwordTrial
 			Staff staff = (Staff) staffService.loadUserByUsername(request.getUsername());
-			
-			if(staff.getPasswordTrial() < 1) {
-				staff.setPasswordTrial(staff.getPasswordTrial() + 1);
-				staffService.saveStaff(staff);
-			} 
+			staff.setPasswordTrial(staff.getPasswordTrial() + 1);
+			staffService.saveStaff(staff);
 			throw new BadCredentialsException("Bad credentials");	
 		} catch(LockedException e) {
+			// Catch LockedException for locked account
 			throw new LockedException("Account is locked");
 		}
 
