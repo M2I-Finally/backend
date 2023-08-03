@@ -1,4 +1,4 @@
-package fr.fin.service;
+package fr.fin.auth;
 
 import java.util.Date;
 import java.util.HashMap;

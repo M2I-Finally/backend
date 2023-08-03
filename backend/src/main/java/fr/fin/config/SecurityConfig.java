@@ -17,7 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import fr.fin.service.LoginService;
+import fr.fin.auth.JwtAuthenticationFilter;
+import fr.fin.service.StaffService;
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +28,7 @@ public class SecurityConfig {
 	private JwtAuthenticationFilter jwtAuthFilter;
 
 	@Autowired
-	private LoginService userDetailsService;
+	private StaffService staffService;
 
 	@Bean
 	PasswordEncoder getPasswordEncoder() {
@@ -37,7 +38,7 @@ public class SecurityConfig {
 	@Bean
 	AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-		authProvider.setUserDetailsService(userDetailsService);
+		authProvider.setUserDetailsService(staffService);
 		authProvider.setPasswordEncoder(getPasswordEncoder());
 		return authProvider;
 	}
@@ -51,7 +52,7 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	    return http
 	        .authorizeHttpRequests(customizer -> customizer
-	            .requestMatchers("/jwt").permitAll()
+	            .requestMatchers("/login").permitAll()
 	            // .requestMatchers("/login/csrf").permitAll()
 	            .requestMatchers("/**").authenticated())
 	        // .csrf().ignoringRequestMatchers("/login", "/logout").and()

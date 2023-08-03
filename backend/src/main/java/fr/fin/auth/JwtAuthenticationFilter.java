@@ -1,4 +1,4 @@
-package fr.fin.config;
+package fr.fin.auth;
 
 import java.io.IOException;
 
@@ -10,8 +10,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import fr.fin.service.JwtService;
-import fr.fin.service.LoginService;
+import fr.fin.service.StaffService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,38 +19,38 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	// We can intercept request and provide new data for each new request
-	// FilterChain contains the other filter from SecurityConfig
-
 	@Autowired
 	private JwtService jwtService;
 
 	@Autowired
-	private LoginService loginService;
+	private StaffService staffService;
 
+	/**
+	 * This method intercepts every request and check for the authorization header
+	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
 		String authHeader = request.getHeader("Authorization");
-		String jwt;
-		String username;
 
+		/* We first check for the authentication header.
+		 * If it doesn't exist or doesn't start with Bearer we abort the authentication process */
 		if(authHeader == null || !authHeader.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		jwt = authHeader.substring(7);
-		System.out.println("DEBUG JWT : " + jwt);
-		System.out.println(jwtService.extractUsername(jwt));
+		String jwt = authHeader.substring(7); // Removing "Bearer" from the header
+		String username = jwtService.extractUsername(jwt);
 
-		username = jwtService.extractUsername(jwt);
-		System.out.println(username);
-
-		// Check if user is not connected yet
+		/* We only process the authentication if the user is not authenticated yet
+		 * It avoids useless processing for the server */
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails staff = this.loginService.loadUserByUsername(username);
+			
+			UserDetails staff = staffService.loadUserByUsername(username);
+			
+			// We check the token validity, if it's valid, we can authenticate the user
 			if(jwtService.isTokenValid(jwt, staff)) {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(staff, null, staff.getAuthorities());
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -59,6 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 		}
 
+		// We tell Spring Security to process the remaining FilterChain methods
 		filterChain.doFilter(request, response);
 	}
 }

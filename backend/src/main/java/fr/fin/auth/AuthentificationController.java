@@ -1,4 +1,4 @@
-package fr.fin.controller;
+package fr.fin.auth;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ import fr.fin.model.dto.JwtLoginDto;
 import fr.fin.model.dto.LoginDto;
 import fr.fin.model.dto.LoginForm;
 import fr.fin.model.entity.Staff;
-import fr.fin.service.AuthenticationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,32 +46,6 @@ public class AuthentificationController {
 	}
 
 	@PostMapping("/login")
-	public LoginDto login(@Valid @RequestBody LoginForm form, BindingResult bindingResult, HttpServletRequest request)
-			throws Exception {
-
-		if (bindingResult.hasErrors()) {
-			throw new Exception("Invalid username or password");
-		}
-
-		try {
-			request.login(form.getUsername(), form.getPassword());
-		} catch (ServletException e) {
-			throw new Exception("Invalid username or password");
-		}
-
-		Authentication auth = (Authentication) request.getUserPrincipal();
-		CsrfToken csrf =  (CsrfToken) request.getAttribute("_csrf");
-		Staff user = (Staff) auth.getPrincipal();
-
-		LoginDto loginDto = convertToTableDto(user);
-		loginDto.setToken(csrf);
-
-		System.out.println("User "+ user.getUsername()+" logged in." );
-
-		return loginDto;
-	}
-
-	@PostMapping("/jwt")
 	public ResponseEntity<AuthenticationResponse> jwtLogin(@RequestBody JwtLoginDto form, BindingResult bindingResult, HttpServletRequest request)
 			throws Exception {
 		return ResponseEntity.ok(authenticationService.authenticate(form));
