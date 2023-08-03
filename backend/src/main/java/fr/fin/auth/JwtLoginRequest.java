@@ -1,6 +1,10 @@
-package fr.fin.model.dto;
+package fr.fin.auth;
 
-public class JwtLoginDto {
+/**
+ * JwtLoginRequest represents the needed informations for JWT Login
+ * It needs a username and a password
+ */
+public class JwtLoginRequest {
 
 	private String username;
 	private String password;
@@ -21,12 +25,12 @@ public class JwtLoginDto {
 		this.password = password;
 	}
 
-	public JwtLoginDto(String username, String password) {
+	public JwtLoginRequest(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
 
-	public JwtLoginDto() {
+	public JwtLoginRequest() {
 	}
 
 }

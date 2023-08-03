@@ -12,18 +12,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.fin.model.dto.AuthenticationResponse;
 import fr.fin.model.dto.CrsfTokenDto;
-import fr.fin.model.dto.JwtLoginDto;
 import fr.fin.model.dto.LoginDto;
-import fr.fin.model.dto.LoginForm;
 import fr.fin.model.entity.Staff;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 
 @RestController
 public class AuthentificationController {
@@ -37,24 +34,15 @@ public class AuthentificationController {
 	@Autowired
 	private AuthenticationService authenticationService;
 
-	private LoginDto convertToTableDto(Staff staff) {
-		return modelMapper.map(staff, LoginDto.class);
-	}
-
-	private Staff convertToStaff(LoginDto loginDto) {
-		return modelMapper.map(loginDto, Staff.class);
-	}
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthenticationResponse> jwtLogin(@RequestBody JwtLoginDto form, BindingResult bindingResult, HttpServletRequest request)
-			throws Exception {
-		return ResponseEntity.ok(authenticationService.authenticate(form));
+	public ResponseEntity<JwtTokenResponse> jwtLogin(@RequestBody JwtLoginRequest jwtLoginRequest, BindingResult bindingResult, HttpServletRequest request) {
+		return ResponseEntity.ok(authenticationService.authenticate(jwtLoginRequest));
 	}
 
-	@GetMapping("/login")
-	public String test() {
-		String pass = bCryptPasswordEncoder.encode("admin");
-		return pass;
+	@GetMapping("/bcrypt")
+	public String test(@RequestParam(value = "secret", required = true) String secret) {
+		return bCryptPasswordEncoder.encode(secret);
 	}
 
 	@GetMapping("/login/current-user")
@@ -67,7 +55,6 @@ public class AuthentificationController {
 		CsrfToken csrf =  (CsrfToken) request.getAttribute("_csrf");
 		return new CrsfTokenDto(csrf.getToken());
 	}
-
 
 	@PostMapping("/logout")
 	public String performLogout(Authentication authentication, HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -82,6 +69,10 @@ public class AuthentificationController {
 	public String success() {
 		//this will be recap of daily sell
 		return "logout";
+	}
+	
+	private LoginDto convertToTableDto(Staff staff) {
+		return modelMapper.map(staff, LoginDto.class);
 	}
 
 }
