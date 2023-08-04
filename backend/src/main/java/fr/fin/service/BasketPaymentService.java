@@ -26,14 +26,14 @@ public class BasketPaymentService {
 	@Autowired
 	private BasketRepository basketRepository;
 	
-	public void createBasket(Basket basket) {
+	public Integer createBasket(Basket basket) {
 		
 		Basket basketToSave = basketRepository.save(basket);
 		basketId = basketToSave.getBasketId();
 		List<BasketDetail> listDetailInsert = basketDetailService.insertBasketDetails(basket.getBasketDetails(), basketId);
 		List<Payment> listPaymentInsert = paymentService.insertPayments(basket, basketId);
 		//System.out.println(basketToSave);
-		
+		return basketId;
 	}
 	
 	

@@ -63,6 +63,7 @@ public class SecurityConfig {
 	        .authorizeHttpRequests(customizer -> customizer
 	            .requestMatchers("/login").permitAll()
 	            .requestMatchers("/bcrypt").permitAll()
+	            .requestMatchers("/images/**").permitAll()
 	            .requestMatchers("/**").authenticated())
 	        .cors(Customizer.withDefaults())
 	        .csrf(csrf -> csrf.disable())
