@@ -131,7 +131,7 @@ public class BasketController {
 			System.out.println(payment);
 		}
 		Staff staff = new Staff();
-		staff.setStaffId(dto.getSellerId());		
+		staff.setId(dto.getSellerId());		
 		
 		return new Basket(null,dto.getDiscount(), new Date(), staff,listBasketDetail,payments);
 				

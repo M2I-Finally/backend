@@ -28,7 +28,7 @@ public class Staff implements UserDetails {
 	@Id
 	@Column(name = "staff_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer staffId;
+	private Integer id;
 
 	@Column(name = "username", length = 50)
 	private String username;
@@ -105,13 +105,13 @@ public class Staff implements UserDetails {
 		this.password = password;
 	}
 
-	public Staff(Integer staffId) {
-		this.staffId = staffId;
+	public Staff(Integer id) {
+		this.id = id;
 	}
 
 	// for Spring Security
-	public Staff(Integer staffId, String username, String role) {
-		this.staffId = staffId;
+	public Staff(Integer id, String username, String role) {
+		this.id = id;
 		this.username = username;
 		this.role = role;
 	}
@@ -131,7 +131,7 @@ public class Staff implements UserDetails {
 	// constructor w/ id
 	public Staff(Integer id, String userName, String password, Integer passwordTrial, String role, boolean status,
 			Date createdAt, Date updateAt) {
-		this.staffId = id;
+		this.id = id;
 		this.username = userName;
 		this.password = password;
 		this.passwordTrial = passwordTrial;
@@ -144,9 +144,6 @@ public class Staff implements UserDetails {
 	/*
 	 * getters & setters (no id setter)
 	 */
-	public Integer getId() {
-		return staffId;
-	}
 
 	public void setUsername(String username) {
 		this.username = username;
@@ -196,12 +193,12 @@ public class Staff implements UserDetails {
 		this.updateAt = updateAt;
 	}
 
-	public Integer getStaffId() {
-		return staffId;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setStaffId(Integer staffId) {
-		this.staffId = staffId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public List<Basket> getBaskets() {

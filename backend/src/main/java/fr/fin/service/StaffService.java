@@ -44,7 +44,7 @@ public class StaffService implements UserDetailsService  {
 	}
 
 	public List<Staff> getManager() {
-		return staffRepository.findByRoleOrderByUsername("Manager");
+		return staffRepository.findByRoleOrderByUsername("manager");
 	}
 
 	public void saveStaff(Staff staff) {

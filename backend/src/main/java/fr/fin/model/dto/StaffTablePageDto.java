@@ -2,19 +2,25 @@ package fr.fin.model.dto;
 
 public class StaffTablePageDto {
 	
-	private Integer staffId;
+	private Integer id;
 	private String username;
 	
 	public StaffTablePageDto() {
 	}
 
-	public Integer getStaffId() {
-		return staffId;
+
+
+	public Integer getId() {
+		return id;
 	}
 
-	public void setStaffId(Integer staffId) {
-		this.staffId = staffId;
+
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
+
+
 
 	public String getUsername() {
 		return username;

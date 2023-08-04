@@ -2,7 +2,7 @@ package fr.fin.model.dto;
 
 public class StaffGestionPageDto {
 	
-	private Integer staffId;
+	private Integer id;
 	private String username;
 	private String password;
 	private String passwordConfirm;
@@ -11,12 +11,12 @@ public class StaffGestionPageDto {
 	public StaffGestionPageDto() {
 	}
 
-	public Integer getStaffId() {
-		return staffId;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setStaffId(Integer staffId) {
-		this.staffId = staffId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getUsername() {
