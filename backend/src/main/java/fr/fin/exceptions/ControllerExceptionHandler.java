@@ -1,6 +1,8 @@
 package fr.fin.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -39,4 +41,17 @@ public class ControllerExceptionHandler {
 	public ResponseError handleValidationErrorException(Exception ex, WebRequest request) {
 		return new ResponseError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
 	}
+	
+	@ExceptionHandler(BadCredentialsException.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public ResponseError handleBadCredentialsException(Exception ex, WebRequest request) {
+		return new ResponseError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+	}
+	
+	@ExceptionHandler(LockedException.class)
+	@ResponseStatus(value = HttpStatus.FORBIDDEN)
+	public ResponseError handleLockedException(Exception ex, WebRequest request) {
+		return new ResponseError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+	}
+	
 }
