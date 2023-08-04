@@ -39,7 +39,7 @@ public class AuthentificationController {
 		} catch (BadCredentialsException e) {
 			throw new BadCredentialsException("Les identifiants sont incorrects");
 		} catch (LockedException e) {
-			throw new BadCredentialsException("Le compte est verouillé");
+			throw new LockedException("Le compte est verouillé");
 		}
 		
 		return ResponseEntity.ok(tokenResponse);

@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import fr.fin.model.entity.Staff;
@@ -42,9 +44,9 @@ public class AuthenticationService {
 			throw new LockedException("Account is locked");
 		}
 
-		// If authentication manager authenticates, it process the JWT token generation
+		// If authentication manager authenticates, it process the JWT token generation 
 		Staff staff = (Staff) staffService.loadUserByUsername(request.getUsername());
-		
+	
 		// Proccess extra claims
 		HashMap<String, Object> extraClaims = new HashMap<>();
 		extraClaims.put("id", staff.getId());
