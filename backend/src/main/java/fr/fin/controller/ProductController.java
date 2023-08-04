@@ -24,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import fr.fin.exceptions.custom.ResourceNotFoundException;
+import fr.fin.exceptions.custom.ValidationErrorException;
 import fr.fin.model.dto.product.ProductGestionPageDto;
 import fr.fin.model.dto.product.ProductShopPageDto;
 import fr.fin.model.entity.Category;
@@ -78,7 +80,7 @@ public class ProductController {
 	 * @throws ResourceNotFoundException 
 	 */
 	@GetMapping("/{id}")
-	public ProductGestionPageDto getProductById(@PathVariable("id") Integer id) {
+	public ProductGestionPageDto getProductById(@PathVariable("id") Integer id) throws ResourceNotFoundException {
 		if (productService.getProductById(id) != null) {
 			Product product = productService.getProductById(id);
 			if(product.getPicture() != null) {
@@ -87,7 +89,7 @@ public class ProductController {
 			return convertToGestionDto(product);
 		}
 		
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produit pas trouvé");
+		throw new ResourceNotFoundException("Le produit n'a pas été trouvé");
 	}
 
 	/**
@@ -96,15 +98,17 @@ public class ProductController {
 	 * @param file			File that will be uploaded as an image (not required)
 	 * @return				The product created in database
 	 * @throws IOException	If the file was not processed correctly
+	 * @throws ResourceNotFoundException 
+	 * @throws ValidationErrorException 
 	 */
 	@PostMapping
 	public ResponseEntity<ProductGestionPageDto> addProduct(
 			@RequestPart("product") @Valid ProductGestionPageDto productDto,
 			BindingResult bindingResult,
-			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException, ResourceNotFoundException, ValidationErrorException {
 		
 		if(bindingResult.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur lors de la validation");
+			throw new ValidationErrorException("Erreur de validation");
 		}
 		
 		if (productDto != null) {
@@ -125,7 +129,7 @@ public class ProductController {
 			return new ResponseEntity<ProductGestionPageDto>(modelMapper.map(productToCreate, ProductGestionPageDto.class), HttpStatus.CREATED);
 		}
 
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le produit n'existe pas");
+		throw new ResourceNotFoundException("Le produit n'a pas été trouvé");
 	}
     
 	/**
@@ -135,16 +139,18 @@ public class ProductController {
 	 * @param file			File that will be uploaded as an image (not required)
 	 * @return				The product created in database
 	 * @throws IOException	If the file was not processed correctly
+	 * @throws ResourceNotFoundException 
+	 * @throws ValidationErrorException 
 	 */
 	@PutMapping("/{id}")
 	public ResponseEntity<ProductGestionPageDto> updateProduct(
 			@PathVariable("id") Integer id,
 			@Valid @RequestPart("product") ProductGestionPageDto productDto,
 			BindingResult bindingResult,
-			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException, ResourceNotFoundException, ValidationErrorException {
 		
 		if(bindingResult.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur de validation");
+			throw new ValidationErrorException("Erreur de validation");
 		}
 		
 		if (productService.getProductById(id) != null) {
@@ -174,7 +180,8 @@ public class ProductController {
 			updatedProduct = productService.createProduct(updatedProduct);
 			return new ResponseEntity<ProductGestionPageDto>(convertToGestionDto(updatedProduct), HttpStatus.CREATED);
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le produit n'existe pas");
+		
+		throw new ResourceNotFoundException("Le produit n'a pas été trouvé");
 	}
 
 	/**
@@ -191,14 +198,15 @@ public class ProductController {
 	 * DELETE a product, given its id
 	 * @param id	The id of the product
 	 * @return		An empty object
+	 * @throws ResourceNotFoundException 
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteProduct(@PathVariable("id") Integer id) {
+	public ResponseEntity<String> deleteProduct(@PathVariable("id") Integer id) throws ResourceNotFoundException {
 		if (productService.getProductById(id) != null) {
 			productService.delete(id);
 			return new ResponseEntity<String>("[]", HttpStatus.OK);
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le produit n'existe pas");
+		throw new ResourceNotFoundException("Le produit n'a pas été trouvé");
 	}
 	
 	/**
