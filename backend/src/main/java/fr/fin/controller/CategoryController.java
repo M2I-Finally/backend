@@ -7,8 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.model.dto.category.CategoryDto;
 import fr.fin.model.dto.category.CreateUpdateCategoryDto;
 import fr.fin.model.entity.Category;
@@ -59,15 +60,16 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to get
 	 * @return	JSON containing the category information
+	 * @throws ResourceNotFoundException 
 	 */
 	@GetMapping("/{id}")
-	public CategoryDto getCategoryById(@PathVariable("id") Integer categoryId) {
+	public CategoryDto getCategoryById(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
 			return convertToDto(category);
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
+		throw new ResourceNotFoundException("catégorie");
 	}
 
 	/**
