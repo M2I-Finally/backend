@@ -149,7 +149,7 @@ BEGIN
 INSERT INTO staff (username, password, role, status, created_at, update_at)
 VALUES
   ('admin', '$2a$10$hOASRloZ5pTbCLUZDbluI.fpNO1YloINDz/u5QdQzVlg63aWvAC8W', 'ADMIN', true, NOW(), NOW()),
-  ('employee', '$2a$10$bc.V.MImH0U9pmc.PPiwQuvk0VpjEnMmSyvT3EzSankdnP.H5b3Qq', 'EMPLOYEE', true, NOW(), NOW());  
+  ('employee', '$2a$10$bc.V.MImH0U9pmc.PPiwQuvk0VpjEnMmSyvT3EzSankdnP.H5b3Qq', 'EMPLOYEE', true, NOW(), NOW()),  
   ('manager', '$2a$10$xHzkWuSFd.BvN.GCvo7fWuNSlV1uxNvldHM5c21IGsXcJLHAnV16C', 'MANAGER', true, NOW(), NOW());  
 END IF;
 END$$;
