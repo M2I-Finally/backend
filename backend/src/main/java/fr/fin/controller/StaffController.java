@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import fr.fin.exceptions.custom.ActionForbiddenException;
+import fr.fin.exceptions.custom.ResourceNotFoundException;
+import fr.fin.exceptions.custom.ValidationErrorException;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
@@ -66,9 +67,12 @@ public class StaffController {
 	 * 
 	 * @param staffDto
 	 * @return
+	 * @throws ValidationErrorException 
+	 * @throws ResourceNotFoundException 
 	 */
 	@PostMapping
-	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto) {
+	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
+		
 		if (staffDto != null && !staffDto.getUsername().isBlank()
 				&& ROLE_CAN_UPDATE_USER.equals(staffDto.getRole().toLowerCase())) {
 			
@@ -76,13 +80,12 @@ public class StaffController {
 			
 			//password needs to match the pattern
 			if (!passwordValidator.isValid(staffDto.getPassword())) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,passwordValidator.getMessage());
+				throw new ValidationErrorException(passwordValidator.getMessage());
 			}
 			
 			//passwordConfirm needs to be identical than password
 			if (!staffDto.getPassword().equals(staffDto.getPasswordConfirm())) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"La confirmation de mot de passe doit être identique que le mot de passe.");
+				throw new ValidationErrorException("La confirmation de mot de passe doit être identique que le mot de passe.");
 			}
 			
 			staffDto.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
@@ -90,7 +93,8 @@ public class StaffController {
 			staffService.createStaff(convertToGestionEntity(staffDto));
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+		
+		throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
 	}
 
 	private Staff convertToGestionEntity(StaffGestionPageDto staffDto) {
@@ -102,14 +106,15 @@ public class StaffController {
 	 * 
 	 * @param id
 	 * @return
+	 * @throws ResourceNotFoundException 
 	 */
 	@GetMapping("{id}")
-	public StaffGestionPageDto getStaffById(@PathVariable("id") Integer id) {
+	public StaffGestionPageDto getStaffById(@PathVariable("id") Integer id) throws ResourceNotFoundException {
 		if (staffService.getStaffById(id) != null) {
 			Staff staff = staffService.getStaffById(id);
 			return convertToGestionDto(staff);
 		}
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Staff not found");
+		throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
 	}
 
 	private StaffGestionPageDto convertToGestionDto(Staff staff) {
@@ -121,10 +126,11 @@ public class StaffController {
 	 * 
 	 * @param id
 	 * @return
+	 * @throws ValidationErrorException 
 	 */
 	@PutMapping("{id}")
 	public ResponseEntity<StaffGestionPageDto> updateStaffById(@PathVariable("id") Integer id,
-			@RequestBody StaffGestionPageDto staffDto) {
+			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException {
 		if (staffDto != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
 
@@ -140,13 +146,12 @@ public class StaffController {
 				
 				//password needs to match the pattern
 				if (!passwordValidator.isValid(staffDto.getPassword())) {
-					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,passwordValidator.getMessage());
+					throw new ValidationErrorException(passwordValidator.getMessage());
 				}
 
 				//passwordConfirm needs to be identical than password
 				if (!staffDto.getPassword().equals(staffDto.getPasswordConfirm())) {
-					throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-							"La confirmation de mot de passe doit être identique que le mot de passe.");
+					throw new ValidationErrorException("La confirmation de mot de passe doit être identique que le mot de passe.");
 				}
 
 
@@ -170,17 +175,19 @@ public class StaffController {
 	 * 
 	 * @param id
 	 * @return
+	 * @throws ResourceNotFoundException 
+	 * @throws ActionForbiddenException 
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteStaff(@PathVariable("id") Integer id) {
+	public ResponseEntity<String> deleteStaff(@PathVariable("id") Integer id) throws ResourceNotFoundException, ActionForbiddenException {
 		List<Staff> managers = staffService.getManager();
 
 		if (staffService.getStaffById(id) == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le staff n'existe pas");
+			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
 		}
 
 		if (Arrays.asList(managers).contains(id)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un manager ne peut pas être supprimé.");
+			throw new ActionForbiddenException("Un manager ne peut pas être supprimé.");
 		}
 		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
 		

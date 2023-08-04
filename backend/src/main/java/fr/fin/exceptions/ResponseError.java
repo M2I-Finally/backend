@@ -1,11 +1,11 @@
-package fr.fin.config;
+package fr.fin.exceptions;
 
-public class ErrorMessage {
+public class ResponseError {
 
 	private Integer status;
 	private String message;
 	
-	public ErrorMessage(Integer status, String message) {
+	public ResponseError(Integer status, String message) {
 		this.status = status;
 		this.message = message;
 	}

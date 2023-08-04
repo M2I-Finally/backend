@@ -9,8 +9,10 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,7 @@ import fr.fin.service.StaffService;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
 	@Autowired
@@ -43,6 +46,11 @@ public class SecurityConfig {
 		authProvider.setPasswordEncoder(getPasswordEncoder());
 		return authProvider;
 	}
+	
+	@Bean
+	GrantedAuthorityDefaults grantedAuthorityDefaults() {
+	    return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+	}
 
 	@Bean
 	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -54,6 +62,7 @@ public class SecurityConfig {
 	    return http
 	        .authorizeHttpRequests(customizer -> customizer
 	            .requestMatchers("/login").permitAll()
+	            .requestMatchers("/bcrypt").permitAll()
 	            .requestMatchers("/images/**").permitAll()
 	            .requestMatchers("/**").authenticated())
 	        .cors(Customizer.withDefaults())
@@ -64,7 +73,7 @@ public class SecurityConfig {
 	                .logoutSuccessUrl("/logout/success")
 	                .permitAll())
 	        .exceptionHandling(customizer -> customizer
-	            .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+	           .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 	        .build();
 	 }
 }

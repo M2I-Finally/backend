@@ -7,8 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import fr.fin.exceptions.custom.ActionForbiddenException;
+import fr.fin.exceptions.custom.ResourceAlreadyExistsException;
+import fr.fin.exceptions.custom.ResourceNotFoundException;
+import fr.fin.exceptions.custom.ValidationErrorException;
 import fr.fin.model.dto.category.CategoryDto;
 import fr.fin.model.dto.category.CreateUpdateCategoryDto;
 import fr.fin.model.entity.Category;
@@ -59,15 +63,16 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to get
 	 * @return	JSON containing the category information
+	 * @throws ResourceNotFoundException 
 	 */
 	@GetMapping("/{id}")
-	public CategoryDto getCategoryById(@PathVariable("id") Integer categoryId) {
+	public CategoryDto getCategoryById(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
 			return convertToDto(category);
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
+		throw new ResourceNotFoundException("La catégorie n'existe pas");
 	}
 
 	/**
@@ -75,12 +80,15 @@ public class CategoryController {
 	 *
 	 * @param createCategoryDto	The DTO containing fields for the required data
 	 * @return	JSON containing the created category information
+	 * @throws ResourceAlreadyExistsException 
+	 * @throws ValidationErrorException 
 	 */
 	@PostMapping
-	public CategoryDto createCategory(@Valid @RequestBody CreateUpdateCategoryDto createCategoryDto, BindingResult bindingResult) {
+	// @PreAuthorize("hasRole('ADMIN')")
+	public CategoryDto createCategory(@Valid @RequestBody CreateUpdateCategoryDto createCategoryDto, BindingResult bindingResult) throws ResourceAlreadyExistsException, ValidationErrorException {
 		
 		if(bindingResult.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur de validation");
+			throw new ValidationErrorException("Erreur de validation");
 		}
 		
 		if (!categoryService.checkIfCategoryExistsByName(createCategoryDto.getName())) {
@@ -89,8 +97,7 @@ public class CategoryController {
 			return convertToDto(categoryToSave);
 		}
 
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-				"La catégorie avec le nom \"" + createCategoryDto.getName() + "\" existe déjà");
+		throw new ResourceAlreadyExistsException("La catégorie avec le nom " + createCategoryDto.getName() + " existe déjà");
 	}
 
 	/**
@@ -98,16 +105,17 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to update
 	 * @return	JSON containing the updated category information
+	 * @throws ResourceNotFoundException 
 	 */
 	@PatchMapping("/status/{id}")
-	public CategoryDto changeCategoryName(@PathVariable("id") Integer categoryId) {
+	public CategoryDto changeCategoryName(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException {
 
 		if (categoryService.getCategoryById(categoryId) != null) {
 			Category category = categoryService.patchCategoryStatus(categoryId);
 			return convertToDto(category);
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
+		throw new ResourceNotFoundException("La catégorie n'existe pas");
 	}
 
 	/**
@@ -116,13 +124,16 @@ public class CategoryController {
 	 * @param categoryId	The id of the category to update
 	 * @param updateCategoryNameDto	The DTO containg the name field required for update
 	 * @return	JSON containing the updated category information
+	 * @throws ResourceNotFoundException 
+	 * @throws ResourceAlreadyExistsException 
+	 * @throws ValidationErrorException 
 	 */
 	@PatchMapping("/name/{id}")
 	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId,
-			@Valid @RequestBody CreateUpdateCategoryDto updateCategoryNameDto, BindingResult bindingResult) {
+			@Valid @RequestBody CreateUpdateCategoryDto updateCategoryNameDto, BindingResult bindingResult) throws ResourceNotFoundException, ResourceAlreadyExistsException, ValidationErrorException {
 
 		if(bindingResult.hasErrors()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur de validation");
+			throw new ValidationErrorException("Erreur de validation");
 		}
 		
 		if (categoryService.getCategoryById(categoryId) != null) {
@@ -131,11 +142,10 @@ public class CategoryController {
 				return convertToDto(category);
 			}
 			
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"La catégorie avec le nom \"" + updateCategoryNameDto.getName() + "\" existe déjà");
+			throw new ResourceAlreadyExistsException("La catégorie avec le nom " + updateCategoryNameDto.getName() + " existe déjà");
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
+		throw new ResourceNotFoundException("La catégorie n'existe pas");
 	}
 
 	/**
@@ -143,9 +153,11 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to delete
 	 * @return	String that confirms if the deletion was successful or not
+	 * @throws ResourceNotFoundException 
+	 * @throws ActionForbiddenException 
 	 */
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteCategory(@PathVariable("id") Integer categoryId) {
+	public ResponseEntity<String> deleteCategory(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException, ActionForbiddenException {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
 			if (category.getProducts().isEmpty() || category.getProducts() == null) {
@@ -156,11 +168,10 @@ public class CategoryController {
 				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur inconnue s'est produite lors de la suppression");
 			}
 
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-					"La catégorie contient des produits, impossible de la supprimer");
+			throw new ActionForbiddenException("La catégorie contient des produits, impossible de la supprimer");
 		}
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La catégorie avec l'ID indiqué n'existe pas");
+		throw new ResourceNotFoundException("La catégorie n'existe pas");
 	}
 
 	/*

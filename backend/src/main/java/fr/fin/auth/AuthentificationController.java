@@ -1,7 +1,6 @@
 package fr.fin.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -13,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
+import fr.fin.exceptions.custom.ValidationErrorException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -38,9 +37,9 @@ public class AuthentificationController {
 		try {
 			tokenResponse = authenticationService.authenticate(jwtLoginRequest);
 		} catch (BadCredentialsException e) {
-			return ResponseEntity.badRequest().body(null);
+			throw new BadCredentialsException("Les identifiants sont incorrects");
 		} catch (LockedException e) {
-			return ResponseEntity.status(403).body(null);
+			throw new LockedException("Le compte est verouillé");
 		}
 		
 		return ResponseEntity.ok(tokenResponse);
@@ -50,12 +49,15 @@ public class AuthentificationController {
 	 * Generate BCrypt password utility route (will be disabled later)
 	 * @param secret	The string to encode using BCrypt
 	 * @return			The encoded string
+	 * @throws ValidationErrorException 
 	 */
 	@GetMapping("/bcrypt")
-	public String bcryptPasswordGenerator(@RequestParam(value = "secret", required = true) String secret) {
+	public String bcryptPasswordGenerator(@RequestParam(value = "secret", required = true) String secret) throws ValidationErrorException {
+		
 		if(secret == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veuillez préciser un paramètre 'secret' pour la génération ");
+			throw new ValidationErrorException("Il manque le paramètre 'secret'");
 		}
+		
 		return new BCryptPasswordEncoder().encode(secret);
 	}
 }
