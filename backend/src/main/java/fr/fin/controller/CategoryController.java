@@ -7,7 +7,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -63,13 +62,14 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to get
 	 * @return	JSON containing the category information
-	 * @throws ResourceNotFoundException 
 	 */
 	@GetMapping("/{id}")
 	public CategoryDto getCategoryById(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
-			return convertToDto(category);
+			CategoryDto categoryDto = convertToDto(category);
+			categoryDto.setProductCount(category.getProducts().size());
+			return categoryDto;
 		}
 
 		throw new ResourceNotFoundException("La catégorie n'existe pas");
@@ -80,17 +80,15 @@ public class CategoryController {
 	 *
 	 * @param createCategoryDto	The DTO containing fields for the required data
 	 * @return	JSON containing the created category information
-	 * @throws ResourceAlreadyExistsException 
-	 * @throws ValidationErrorException 
 	 */
 	@PostMapping
 	// @PreAuthorize("hasRole('ADMIN')")
 	public CategoryDto createCategory(@Valid @RequestBody CreateUpdateCategoryDto createCategoryDto, BindingResult bindingResult) throws ResourceAlreadyExistsException, ValidationErrorException {
-		
+
 		if(bindingResult.hasErrors()) {
 			throw new ValidationErrorException("Erreur de validation");
 		}
-		
+
 		if (!categoryService.checkIfCategoryExistsByName(createCategoryDto.getName())) {
 			Category categoryFromDto = modelMapper.map(createCategoryDto, Category.class);
 			Category categoryToSave = categoryService.createNewCategory(categoryFromDto);
@@ -105,7 +103,6 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to update
 	 * @return	JSON containing the updated category information
-	 * @throws ResourceNotFoundException 
 	 */
 	@PatchMapping("/status/{id}")
 	public CategoryDto changeCategoryName(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException {
@@ -124,9 +121,6 @@ public class CategoryController {
 	 * @param categoryId	The id of the category to update
 	 * @param updateCategoryNameDto	The DTO containg the name field required for update
 	 * @return	JSON containing the updated category information
-	 * @throws ResourceNotFoundException 
-	 * @throws ResourceAlreadyExistsException 
-	 * @throws ValidationErrorException 
 	 */
 	@PatchMapping("/name/{id}")
 	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId,
@@ -135,13 +129,13 @@ public class CategoryController {
 		if(bindingResult.hasErrors()) {
 			throw new ValidationErrorException("Erreur de validation");
 		}
-		
+
 		if (categoryService.getCategoryById(categoryId) != null) {
 			if (!categoryService.checkIfCategoryExistsByName(updateCategoryNameDto.getName())) {
 				Category category = categoryService.patchCategoryName(categoryId, updateCategoryNameDto.getName());
 				return convertToDto(category);
 			}
-			
+
 			throw new ResourceAlreadyExistsException("La catégorie avec le nom " + updateCategoryNameDto.getName() + " existe déjà");
 		}
 
@@ -153,8 +147,6 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to delete
 	 * @return	String that confirms if the deletion was successful or not
-	 * @throws ResourceNotFoundException 
-	 * @throws ActionForbiddenException 
 	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteCategory(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException, ActionForbiddenException {
@@ -164,7 +156,7 @@ public class CategoryController {
 				if (categoryService.deleteCategoryById(categoryId)) {
 					return new ResponseEntity<String>("[]", HttpStatus.OK);
 				}
-				
+
 				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur inconnue s'est produite lors de la suppression");
 			}
 
