@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		String jwt = authHeader.substring(7); // Removing "Bearer" from the header
-		
+
 		// Check if token is null before processing extraction
 		if(jwt == null || "null".equals(jwt)) {
 			filterChain.doFilter(request, response);
@@ -54,13 +54,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		/* We only process the authentication if the user is not authenticated yet
 		 * It avoids useless processing for the server */
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			
+
 			UserDetails staff = staffService.loadUserByUsername(username);
-			
+
 			// We check the token validity, if it's valid, we can authenticate the user
 			if(jwtService.isTokenValid(jwt, staff)) {
 				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(staff, null, staff.getAuthorities());
-				System.out.println(staff.getAuthorities());
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}
