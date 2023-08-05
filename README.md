@@ -15,13 +15,13 @@ Environement.ts =>
 ## Staff 👨‍🍳👩‍🍳🧑‍🍳
 available Api:
 * GET/users
-  * get all users  
+  * get all active users  
 * POST/users
-  *   create new user
+  *   create new user with active status by default
 * DELETE/users/{id}
-  *   delete user by id
+  *   delete user by id => put the status to false
 * PUT/users/{id}
-  *   update user information
+  *   update active user information 
 
 
 
