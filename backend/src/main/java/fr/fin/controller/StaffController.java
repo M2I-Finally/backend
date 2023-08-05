@@ -155,7 +155,8 @@ public class StaffController {
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
 		if (staffDto != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
-
+			
+			// staff cannot be 'deleted'
 			if (staffToUpdate.isStatus()) {
 				
 				// update username
@@ -206,7 +207,6 @@ public class StaffController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteStaff(@PathVariable("id") Integer id)
 			throws ResourceNotFoundException, ActionForbiddenException {
-		List<Staff> managers = staffService.getManager();
 
 		if (staffService.getStaffById(id) == null) {
 			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
@@ -216,9 +216,6 @@ public class StaffController {
 			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
 		}
 
-		if (Arrays.asList(managers).contains(staffService.getStaffById(id))) {
-			throw new ActionForbiddenException("Un manager ne peut pas être supprimé.");
-		}
 		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
 
 		staffService.deleteStaffById(id);

@@ -12,11 +12,10 @@ import fr.fin.model.entity.Staff;
 import fr.fin.repository.StaffRepository;
 
 @Service
-public class StaffService implements UserDetailsService  {
+public class StaffService implements UserDetailsService {
 
 	@Autowired
 	private StaffRepository staffRepository;
-	
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -24,9 +23,7 @@ public class StaffService implements UserDetailsService  {
 	}
 
 	public List<Staff> getAllStaffs() {
-		
 		return staffRepository.findByStatusTrue();
-			
 	}
 
 	public Staff createStaff(Staff staff) {
@@ -40,12 +37,7 @@ public class StaffService implements UserDetailsService  {
 		if (staffRepository.findById(id).isPresent()) {
 			return staffRepository.findById(id).get();
 		}
-
 		return null;
-	}
-
-	public List<Staff> getManager() {
-		return staffRepository.findByRoleOrderByUsername("manager");
 	}
 
 	public void saveStaff(Staff staff) {
@@ -56,7 +48,7 @@ public class StaffService implements UserDetailsService  {
 	public void deleteStaffById(Integer id) {
 		Staff staffToBeDelete = staffRepository.findById(id).get();
 		if (staffToBeDelete.isStatus()) {
-			staffToBeDelete.setStatus(false);			
+			staffToBeDelete.setStatus(false);
 			staffRepository.save(staffToBeDelete);
 		}
 	}
