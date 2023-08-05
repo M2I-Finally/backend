@@ -62,7 +62,6 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to get
 	 * @return	JSON containing the category information
-	 * @throws ResourceNotFoundException
 	 */
 	@GetMapping("/{id}")
 	public CategoryDto getCategoryById(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException {
@@ -81,8 +80,6 @@ public class CategoryController {
 	 *
 	 * @param createCategoryDto	The DTO containing fields for the required data
 	 * @return	JSON containing the created category information
-	 * @throws ResourceAlreadyExistsException
-	 * @throws ValidationErrorException
 	 */
 	@PostMapping
 	// @PreAuthorize("hasRole('ADMIN')")
@@ -106,7 +103,6 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to update
 	 * @return	JSON containing the updated category information
-	 * @throws ResourceNotFoundException
 	 */
 	@PatchMapping("/status/{id}")
 	public CategoryDto changeCategoryName(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException {
@@ -125,9 +121,6 @@ public class CategoryController {
 	 * @param categoryId	The id of the category to update
 	 * @param updateCategoryNameDto	The DTO containg the name field required for update
 	 * @return	JSON containing the updated category information
-	 * @throws ResourceNotFoundException
-	 * @throws ResourceAlreadyExistsException
-	 * @throws ValidationErrorException
 	 */
 	@PatchMapping("/name/{id}")
 	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId,
@@ -154,8 +147,6 @@ public class CategoryController {
 	 *
 	 * @param categoryId	The id of the category to delete
 	 * @return	String that confirms if the deletion was successful or not
-	 * @throws ResourceNotFoundException
-	 * @throws ActionForbiddenException
 	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteCategory(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException, ActionForbiddenException {
