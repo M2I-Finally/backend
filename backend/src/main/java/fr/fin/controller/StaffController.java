@@ -91,7 +91,8 @@ public class StaffController {
 			}
 			
 			staffDto.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
-
+			staffDto.setPasswordConfirm("OK");
+			
 			staffService.createStaff(convertToGestionEntity(staffDto));
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}
@@ -131,7 +132,7 @@ public class StaffController {
 	 * @throws ValidationErrorException 
 	 */
 	@PutMapping("{id}")
-	public ResponseEntity<StaffGestionPageDto> updateStaffById(@PathVariable("id") Integer id,
+	public ResponseEntity<String> updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException {
 		if (staffDto != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
@@ -157,7 +158,7 @@ public class StaffController {
 				}
 
 
-				staffToUpdate.setPassword(staffDto.getPassword());
+				staffToUpdate.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
 			}
 
 			staffToUpdate.setRole(staffDto.getRole());
@@ -166,7 +167,7 @@ public class StaffController {
 			//update staff
 			staffService.createStaff(staffToUpdate);
 
-			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.OK);
+			return new ResponseEntity<String>("Staff updated", HttpStatus.OK);
 		}
 
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
