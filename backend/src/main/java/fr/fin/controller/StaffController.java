@@ -34,7 +34,7 @@ import fr.fin.service.StaffService;
 @CrossOrigin
 public class StaffController {
 	// only manager can CRUD users/staffs
-	private final String ROLE_CAN_UPDATE_USER = "manager";
+	private final String ROLE_CAN_UPDATE_USER = "ADMIN";
 
 	@Autowired
 	private StaffService staffService;
@@ -45,6 +45,25 @@ public class StaffController {
 	@Autowired
 	private PasswordEncoder bCryptPasswordEncoder;
 
+	/**
+	 * Map Staff to Dto
+	 * @param StaffGestionPageDto
+	 * @return Staff
+	 */
+	private Staff convertToGestionEntity(StaffGestionPageDto staffDto) {
+		return modelMapper.map(staffDto, Staff.class);
+	}
+	
+	/**
+	 * Map Dto to Staff
+	 * @param staff
+	 * @return StaffTablePageDto
+	 */
+	private StaffTablePageDto convertToTableDto(Staff staff) {
+		return modelMapper.map(staff, StaffTablePageDto.class);
+	}
+	
+	
 	/**
 	 * User table
 	 * @return staffsDto view
@@ -59,10 +78,6 @@ public class StaffController {
 		return staffsDto;
 	}
 
-	private StaffTablePageDto convertToTableDto(Staff staff) {
-		return modelMapper.map(staff, StaffTablePageDto.class);
-	}
-
 	/**
 	 * Create a new staff, only manager can create a new staff, and control the
 	 * validity of every input
@@ -75,8 +90,7 @@ public class StaffController {
 	@PostMapping
 	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
 		
-		if (staffDto != null && !staffDto.getUsername().isBlank()
-				&& ROLE_CAN_UPDATE_USER.equals(staffDto.getRole().toLowerCase())) {
+		if (staffDto != null && !staffDto.getUsername().isBlank()) {
 			
 			PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
 			
@@ -92,16 +106,15 @@ public class StaffController {
 			
 			staffDto.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
 			staffDto.setPasswordConfirm("OK");
+			staffDto.setStatus(true);
+			staffDto.setCreatedAt(new Date());
+			staffDto.setUpdateAt(new Date());
 			
 			staffService.createStaff(convertToGestionEntity(staffDto));
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}
 		
 		throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
-	}
-
-	private Staff convertToGestionEntity(StaffGestionPageDto staffDto) {
-		return modelMapper.map(staffDto, Staff.class);
 	}
 
 	/**
@@ -113,7 +126,8 @@ public class StaffController {
 	 */
 	@GetMapping("{id}")
 	public StaffGestionPageDto getStaffById(@PathVariable("id") Integer id) throws ResourceNotFoundException {
-		if (staffService.getStaffById(id) != null) {
+
+		if (staffService.getStaffById(id) != null && staffService.getStaffById(id).isStatus()) {
 			Staff staff = staffService.getStaffById(id);
 			return convertToGestionDto(staff);
 		}
@@ -188,8 +202,12 @@ public class StaffController {
 		if (staffService.getStaffById(id) == null) {
 			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
 		}
-
-		if (Arrays.asList(managers).contains(id)) {
+		
+		if (!staffService.getStaffById(id).isStatus()) {
+			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");			
+		}
+		
+		if (Arrays.asList(managers).contains(staffService.getStaffById(id))) {
 			throw new ActionForbiddenException("Un manager ne peut pas être supprimé.");
 		}
 		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé

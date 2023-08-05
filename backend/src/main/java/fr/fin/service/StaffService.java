@@ -24,8 +24,9 @@ public class StaffService implements UserDetailsService  {
 	}
 
 	public List<Staff> getAllStaffs() {
-
-		return (List<Staff>) staffRepository.findAll();
+		
+		return staffRepository.findByStatusTrue();
+			
 	}
 
 	public Staff createStaff(Staff staff) {
@@ -53,7 +54,11 @@ public class StaffService implements UserDetailsService  {
 	}
 
 	public void deleteStaffById(Integer id) {
-		staffRepository.deleteById(id);
+		Staff staffToBeDelete = staffRepository.findById(id).get();
+		if (staffToBeDelete.isStatus()) {
+			staffToBeDelete.setStatus(false);			
+			staffRepository.save(staffToBeDelete);
+		}
 	}
 
 }
