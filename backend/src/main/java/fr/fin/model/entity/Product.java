@@ -64,7 +64,7 @@ public class Product {
 	private Boolean deleted;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="category_id", nullable=true)
+	@JoinColumn(name="category_id")
 	private Category category;
 
 	@OneToMany(mappedBy="product")
