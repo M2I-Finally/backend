@@ -182,10 +182,15 @@ public class ProductController {
 	 * UPDATE the status of a product, given its id
 	 * @param id	The id of the product
 	 * @return		The product with its status updated
+	 * @throws ResourceNotFoundException
 	 */
 	@PatchMapping("/{id}")
-	public ProductGestionPageDto updateProductStatus(@PathVariable("id") Integer id) {
-		return convertToGestionDto(productService.updateProductStatus(id));
+	public ProductGestionPageDto updateProductStatus(@PathVariable("id") Integer id) throws ResourceNotFoundException {
+		Product product = productService.getProductById(id);
+		if(product != null) {
+			return convertToGestionDto(productService.updateProductStatus(id));
+		}
+		throw new ResourceNotFoundException("Le produit n'a pas été trouvé");
 	}
 
 	/**
@@ -196,7 +201,7 @@ public class ProductController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteProduct(@PathVariable("id") Integer id) throws ResourceNotFoundException {
 		Product product = productService.getProductById(id);
-		if (product != null && !product.isDeleted()) {
+		if (product != null) {
 			productService.delete(id);
 			return new ResponseEntity<String>("[]", HttpStatus.OK);
 		}
