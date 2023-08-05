@@ -9,8 +9,8 @@ import fr.fin.model.entity.Product;
 
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Integer> {
-	
-	List<Product> findAllByOrderByProductId();
 
-	List<Product> findAllByCategoryId(Integer id);
+	List<Product> findAllByDeletedFalseOrderByProductId();
+
+	List<Product> findAllByDeletedFalseAndCategoryId(Integer id);
 }

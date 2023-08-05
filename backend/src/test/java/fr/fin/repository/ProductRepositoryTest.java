@@ -18,20 +18,20 @@ public class ProductRepositoryTest {
 
 	@Autowired
 	private ProductRepository productRepository;
-	
+
 	@Test
 	@Sql("findAllByOrderByProductId_ShouldReturn_OrderedProducts.sql")
 	void findAllByOrderByProductId_ShouldReturn_OrderedProducts() {
-		List<Product> products = productRepository.findAllByOrderByProductId();
+		List<Product> products = productRepository.findAllByDeletedFalseOrderByProductId();
 		assertThat(products.get(0).getProductId()).isEqualTo(1);
 		assertThat(products.get(1).getProductId()).isEqualTo(2);
 		assertThat(products.get(2).getProductId()).isEqualTo(3);
 	}
-	
+
 	@Test
 	@Sql("findAllByCategoryId_ShouldReturn_ProductsOfGivenCategory.sql")
 	void findAllByCategoryId_ShouldReturn_ProductsOfGivenCategory() {
-		List<Product> products = productRepository.findAllByCategoryId(1);
+		List<Product> products = productRepository.findAllByDeletedFalseAndCategoryId(1);
 		assertThat(products.size()).isEqualTo(2);
 	}
 }
