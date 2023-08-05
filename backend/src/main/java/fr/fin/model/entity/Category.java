@@ -3,6 +3,8 @@ package fr.fin.model.entity;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.Where;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -18,40 +20,41 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(name="category")
 public class Category {
-	
+
 	@Id
 	@Column(name = "category_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	@Column(length=50)
 	private String name;
-	
+
 	@Column
 	private Boolean status;
-	
+
 	@Column(name="created_by",nullable=false)
 	private String createdBy;
-	
+
 	@Column(name="updated_by")
 	private String updatedBy;
-	
+
 	@Column(name = "created_at")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
-	
+
 	@Column(name = "update_at")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
-	
+
 	@JsonBackReference
 	@OneToMany(mappedBy = "category")
+	@Where(clause = "deleted = false")
 	private List<Product> products;
-	
+
 	public Category() {
-		
+
 	}
-	
+
 	public Category(Integer id, String name, Boolean status, String createdBy, Date createdAt) {
 		super();
 		this.id = id;
@@ -64,7 +67,7 @@ public class Category {
 	public Integer getId() {
 		return id;
 	}
-	
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -139,5 +142,5 @@ public class Category {
 				+ ", updatedBy=" + updatedBy + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", products="
 				+ products + "]";
 	}
-	
+
 }
