@@ -33,9 +33,10 @@ public class ProductService {
 	}
 
 	public Product createProduct(Product product) {
-		Product newProduct = productRepository.save(product);
-		newProduct.setName(trimAndCapitalize(newProduct.getName()));
-		return newProduct;
+		product.setName(trimAndCapitalize(product.getName()));
+		product.setDeleted(false);
+		product = productRepository.save(product);
+		return product;
 	}
 
 	public boolean delete(Integer id) {
