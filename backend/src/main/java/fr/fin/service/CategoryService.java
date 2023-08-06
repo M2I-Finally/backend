@@ -23,7 +23,7 @@ public class CategoryService {
 	 * @return List<Category> containing the categories
 	 */
 	public List<Category> getAllCategories() {
-		return categoryRepository.findAllByOrderById();
+		return categoryRepository.findAllByDeletedFalseOrderById();
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class CategoryService {
 	 */
 	public Category getCategoryById(Integer id) {
 		Optional<Category> category = categoryRepository.findById(id);
-		if (category.isPresent()) {
+		if (category.isPresent() && !category.get().isDeleted()) {
 			return category.get();
 		}
 		return null;
@@ -51,11 +51,12 @@ public class CategoryService {
 		category.setStatus(true);
 		category.setCreatedBy("Administrator");
 		category.setCreatedAt(new Date());
+		category.setDeleted(false);
 		return categoryRepository.save(category);
 	}
 
 	public boolean checkIfCategoryExistsByName(String name) {
-		Category category = categoryRepository.findCategoryByNameIgnoreCase(name);
+		Category category = categoryRepository.findCategoryByNameIgnoreCaseAndDeletedFalse(name);
 		return !(category == null);
 	}
 
@@ -87,7 +88,7 @@ public class CategoryService {
 	 * @return		The patched category
 	 */
 	public Category patchCategoryName(Integer id, String newName) {
-		Category category = getCategoryById(id);
+		Category category = this.getCategoryById(id);
 
 		if (category != null) {
 			category.setName(trimAndCapitalize(newName));
@@ -107,16 +108,25 @@ public class CategoryService {
 	 */
 	public boolean deleteCategoryById(Integer id) {
 		Category category = this.getCategoryById(id);
-		if (category != null) {
-			categoryRepository.deleteById(id);
+
+		if (category != null && !category.isDeleted()) {
+
+			if(category.getProducts().isEmpty() && category.getInactiveProducts().isEmpty()) {
+				categoryRepository.deleteById(id);
+				return true;
+			}
+
+			category.setDeleted(true);
+			categoryRepository.save(category);
 			return true;
 		}
+
 		return false;
 	}
-	
+
 	/**
 	 * Trim useless spaces character and capitalize the first letter of the string
-	 * @param processedString	The string to process 
+	 * @param processedString	The string to process
 	 * @return trimmed and capitalized string
 	 */
 	private String trimAndCapitalize(String processedString) {

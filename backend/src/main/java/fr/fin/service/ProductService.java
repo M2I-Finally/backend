@@ -41,8 +41,16 @@ public class ProductService {
 	public boolean delete(Integer id) {
 		Product product = this.getProductById(id);
 		if(product != null && !product.isDeleted()) {
-			product.setDeleted(true);
-			productRepository.save(product);
+
+			// If product has foreign keys constraint we set the product to "deleted" instead of deleting it really
+			if( !product.getBasketDetails().isEmpty()) {
+				product.setDeleted(true);
+				productRepository.save(product);
+				return true;
+			} else {
+				productRepository.delete(product);
+				return true;
+			}
 		}
 		return false;
 	}

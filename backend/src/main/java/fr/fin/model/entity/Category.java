@@ -51,6 +51,14 @@ public class Category {
 	@Where(clause = "deleted = false")
 	private List<Product> products;
 
+	@JsonBackReference
+	@OneToMany(mappedBy = "category")
+	@Where(clause = "deleted = true")
+	private List<Product> inactiveProducts;
+
+	@Column(name = "deleted")
+	private Boolean deleted;
+
 	public Category() {
 
 	}
@@ -134,6 +142,23 @@ public class Category {
 
 	public void setStatus(Boolean status) {
 		this.status = status;
+	}
+
+	public Boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+
+	public List<Product> getInactiveProducts() {
+		return inactiveProducts;
+	}
+
+	public void setInactiveProducts(List<Product> inactiveProducts) {
+		this.inactiveProducts = inactiveProducts;
 	}
 
 	@Override

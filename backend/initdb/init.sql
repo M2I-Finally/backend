@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS category (
   created_by VARCHAR(50) ,
   updated_by VARCHAR(50) ,
   created_at TIMESTAMP DEFAULT NOW(),
-  update_at TIMESTAMP DEFAULT NOW()
+  update_at TIMESTAMP DEFAULT NOW(),
+  deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS staff (
@@ -99,12 +100,12 @@ BEGIN
   SELECT COUNT(*) INTO row_count FROM category;
   IF row_count = 0 THEN
   -- Insère des enregistrements dans la table "category" seulement si la table est vide.
-  INSERT INTO public.category (name,status,created_by,updated_by,created_at,update_at) VALUES
-	 ('Viennoiseries',true,'admin','admin','2023-07-31 12:15:46.891816','2023-07-31 12:15:46.891816'),
-	 ('Pâtisseries',true,'admin','admin','2023-07-31 12:15:46.891816','2023-07-31 12:15:46.891816'),
-	 ('Boissons chaudes',true,'admin','admin','2023-07-31 12:15:46.891816','2023-07-31 12:15:46.891816'),
-	 ('Boissons froides',true,'admin','admin','2023-07-31 12:15:46.891816','2023-07-31 12:15:46.891816'),
-	 ('Pains',true,'admin','admin','2023-07-31 12:15:46.891816','2023-08-02 09:06:05.451');
+  INSERT INTO public.category (name,status,created_by,updated_by,created_at,update_at, deleted) VALUES
+	 ('Viennoiseries',true,'admin','admin','2023-07-31 12:15:46.891816','2023-07-31 12:15:46.891816', false),
+	 ('Pâtisseries',true,'admin','admin','2023-07-31 12:15:46.891816','2023-07-31 12:15:46.891816', false),
+	 ('Boissons chaudes',true,'admin','admin','2023-07-31 12:15:46.891816','2023-07-31 12:15:46.891816', false),
+	 ('Boissons froides',true,'admin','admin','2023-07-31 12:15:46.891816','2023-07-31 12:15:46.891816', false),
+	 ('Pains',true,'admin','admin','2023-07-31 12:15:46.891816','2023-08-02 09:06:05.451', false);
 END IF;
 END$$;
 
