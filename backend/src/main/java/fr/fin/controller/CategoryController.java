@@ -92,7 +92,9 @@ public class CategoryController {
 		if (!categoryService.checkIfCategoryExistsByName(createCategoryDto.getName())) {
 			Category categoryFromDto = modelMapper.map(createCategoryDto, Category.class);
 			Category categoryToSave = categoryService.createNewCategory(categoryFromDto);
-			return convertToDto(categoryToSave);
+			CategoryDto categoryResult = convertToDto(categoryToSave);
+			categoryResult.setProductCount(0);
+			return categoryResult;
 		}
 
 		throw new ResourceAlreadyExistsException("La catégorie avec le nom " + createCategoryDto.getName() + " existe déjà");

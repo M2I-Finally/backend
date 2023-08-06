@@ -10,7 +10,7 @@ import fr.fin.model.entity.Category;
 @Repository
 public interface CategoryRepository extends CrudRepository<Category, Integer> {
 
-	List<Category> findAllByOrderById();
+	List<Category> findAllByDeletedFalseOrderById();
 
-	Category findCategoryByNameIgnoreCase(String name);
+	Category findCategoryByNameIgnoreCaseAndDeletedFalse(String name);
 }

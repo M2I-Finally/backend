@@ -7,7 +7,6 @@ import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,9 +47,17 @@ public class Category {
 	private Date updatedAt;
 
 	@JsonBackReference
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
+	@OneToMany(mappedBy = "category")
 	@Where(clause = "deleted = false")
 	private List<Product> products;
+
+	@JsonBackReference
+	@OneToMany(mappedBy = "category")
+	@Where(clause = "deleted = true")
+	private List<Product> inactiveProducts;
+
+	@Column(name = "deleted")
+	private Boolean deleted;
 
 	public Category() {
 
@@ -135,6 +142,23 @@ public class Category {
 
 	public void setStatus(Boolean status) {
 		this.status = status;
+	}
+
+	public Boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+
+	public List<Product> getInactiveProducts() {
+		return inactiveProducts;
+	}
+
+	public void setInactiveProducts(List<Product> inactiveProducts) {
+		this.inactiveProducts = inactiveProducts;
 	}
 
 	@Override
