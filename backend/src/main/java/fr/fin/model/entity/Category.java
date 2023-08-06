@@ -7,6 +7,7 @@ import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -47,7 +48,7 @@ public class Category {
 	private Date updatedAt;
 
 	@JsonBackReference
-	@OneToMany(mappedBy = "category")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
 	@Where(clause = "deleted = false")
 	private List<Product> products;
 
