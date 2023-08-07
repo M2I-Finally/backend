@@ -36,7 +36,7 @@ public class PasswordValidator {
 
 	public boolean isValid(String password) {
 		
-		// password should be longer than 8
+		// password should be longer than 8		
 		if (password.length() < 8) {
 			setMessage( "Le password doit avoir minimume 8 characters.");
 			return false;

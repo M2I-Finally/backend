@@ -33,7 +33,7 @@ import fr.fin.service.StaffService;
 @RequestMapping("/users")
 @CrossOrigin
 public class StaffController {
-	// only manager can CRUD users/staffs
+	// only admin can CRUD users/staffs
 	private final String ROLE_CAN_UPDATE_USER = "ADMIN";
 
 	@Autowired
@@ -164,8 +164,16 @@ public class StaffController {
 					staffToUpdate.setUsername(staffDto.getUsername());
 				}
 
-				// update password & passwordConfirm
-				if (staffDto.getPassword() != null) {
+				
+				if ((staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank()) || 
+					(staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null )|| 
+					(staffDto.getPassword().isEmpty()&& staffDto.getPasswordConfirm().isEmpty() )) {
+					
+					// leave password null will keep old password
+					staffToUpdate.setPassword(staffToUpdate.getPassword());	
+					
+				} else { 
+					// update password & passwordConfirm
 					// objectify a password validator
 					PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
 
@@ -181,7 +189,7 @@ public class StaffController {
 					}
 
 					staffToUpdate.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
-				}
+				} 
 
 				staffToUpdate.setRole(staffDto.getRole());
 				staffToUpdate.setUpdateAt(new Date());
