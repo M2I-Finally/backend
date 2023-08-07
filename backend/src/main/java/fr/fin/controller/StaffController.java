@@ -152,7 +152,7 @@ public class StaffController {
 	 * @throws ResourceNotFoundException 
 	 */
 	@PutMapping("{id}")
-	public ResponseEntity<String> updateStaffById(@PathVariable("id") Integer id,
+	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
 		if (staffDto != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
@@ -196,9 +196,9 @@ public class StaffController {
 				staffToUpdate.setUpdateAt(new Date());
 
 				// update staff
-				staffService.createStaff(staffToUpdate);
+				StaffTablePageDto staffUpdated = convertToTableDto(staffService.createStaff(staffToUpdate));
 
-				return new ResponseEntity<String>("Staff updated", HttpStatus.OK);
+				return staffUpdated;
 			}
 			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
 		}
