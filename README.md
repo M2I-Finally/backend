@@ -21,7 +21,9 @@ available Api:
 * DELETE/users/{id}
   *   delete user by id => put the status to false
 * PUT/users/{id}
-  *   update active user information 
+  *   update active user information => leave the password = donot modify password
+* * GET/users/{id}
+  * get active users with id defined => do not send password 
 
 
 

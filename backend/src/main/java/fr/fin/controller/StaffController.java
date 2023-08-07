@@ -133,6 +133,7 @@ public class StaffController {
 
 		if (staffService.getStaffById(id) != null && staffService.getStaffById(id).isStatus()) {
 			Staff staff = staffService.getStaffById(id);
+			staff.setPassword(null);
 			return convertToGestionDto(staff);
 		}
 		throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
