@@ -4,6 +4,7 @@ public class StaffTablePageDto {
 	
 	private Integer id;
 	private String username;
+	private String role;
 	private boolean status;
 	
 	public StaffTablePageDto() {
@@ -25,6 +26,14 @@ public class StaffTablePageDto {
 		this.username = username;
 	}
 
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
 	public boolean isStatus() {
 		return status;
 	}
@@ -32,7 +41,4 @@ public class StaffTablePageDto {
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
-	
-	
-	
 }
