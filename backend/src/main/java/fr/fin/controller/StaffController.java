@@ -166,9 +166,9 @@ public class StaffController {
 				}
 
 				
-				if ((staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank()) || 
-					(staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null )|| 
-					(staffDto.getPassword().isEmpty()&& staffDto.getPasswordConfirm().isEmpty() )) {
+				if (staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null || 
+					staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank() || 
+					staffDto.getPassword().isEmpty()&& staffDto.getPasswordConfirm().isEmpty() ) {
 					
 					// leave password null will keep old password
 					staffToUpdate.setPassword(staffToUpdate.getPassword());	
