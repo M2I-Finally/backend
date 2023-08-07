@@ -83,7 +83,7 @@ public class StaffControllerTest {
 				new Date(),
 				new Date()
 				);
-		jordan.setStaffId(2);
+		jordan.setId(2);
 		
 		StaffGestionPageDto staffDto = new StaffGestionPageDto();
 		
