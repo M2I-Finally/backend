@@ -22,7 +22,7 @@ class CategoryRepositoryTests {
 
 	@Test
 	@DisplayName("FindAllByOrderById(), Should return categories ordered by ID")
-	@Sql("findAllOrderById_ShouldReturn_OrderedCategories.sql")
+	@Sql("Category_findAllByDeletedFalseOrderById.sql")
 	void findAllOrderById_ShouldReturn_OrderedCategories() {
 		List<Category> categories = categoryRepository.findAllByDeletedFalseOrderById();
 		assertThat(categories.get(0).getId()).isEqualTo(1);
@@ -31,7 +31,7 @@ class CategoryRepositoryTests {
 
 	@Test
 	@DisplayName("FindCategoryByNameIgnoreCase(), should return category")
-	@Sql("findCategoryByNameIgnoreCase_ShouldReturn_Categories.sql")
+	@Sql("Category_findCategoryByNameIgnoreCaseAndDeletedFalse.sql")
 	void findCategoryByNameIgnoreCase_ShouldReturn_Categories() {
 		Category category = categoryRepository.findCategoryByNameIgnoreCaseAndDeletedFalse("bonBONS");
 		assertThat(category.getName()).isEqualTo("Bonbons");
