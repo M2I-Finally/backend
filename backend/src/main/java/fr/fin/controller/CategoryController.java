@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.exceptions.custom.ActionForbiddenException;
 import fr.fin.exceptions.custom.ResourceAlreadyExistsException;
@@ -166,12 +165,9 @@ public class CategoryController {
 	public ResponseEntity<String> deleteCategory(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException, ActionForbiddenException {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
-			if (category.getProducts().isEmpty() || category.getProducts() == null) {
-				if (categoryService.deleteCategoryById(categoryId)) {
-					return new ResponseEntity<String>("[]", HttpStatus.OK);
-				}
-
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur inconnue s'est produite lors de la suppression");
+			if (category.getProducts() == null || category.getProducts().isEmpty()) {
+				categoryService.deleteCategoryById(categoryId);
+				return new ResponseEntity<String>("[]", HttpStatus.OK);
 			}
 
 			throw new ActionForbiddenException("La catégorie contient des produits, impossible de la supprimer");

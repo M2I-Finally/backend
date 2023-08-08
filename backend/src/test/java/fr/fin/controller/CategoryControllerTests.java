@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.fin.model.dto.category.CreateUpdateCategoryDto;
 import fr.fin.model.entity.Category;
+import fr.fin.model.entity.Product;
 import fr.fin.service.CategoryService;
 
 @SpringBootTest
@@ -268,6 +269,54 @@ public class CategoryControllerTests {
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/categories/name/1").content(json).contentType(MediaType.APPLICATION_JSON);
 
 		// Execute and Assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenACategoryWithoutProduct_WhenDeleteCategory_ShouldReturnStatusOk() throws Exception {
+
+		// Arrange
+		Category category = new Category(1, "Tartes", true, "Administrator", new Date(), false);
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+		when(categoryService.deleteCategoryById(1)).thenReturn(true);
+
+		// Execute
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete("/categories/1");
+
+		// Assert
+		mvc.perform(request).andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenACategoryWithProduct_WhenDeleteCategory_ShouldReturnStatusForbidden() throws Exception {
+
+		// Arrange
+		Category category = new Category(1, "Tartes", true, "Administrator", new Date(), false);
+		Product product = new Product(1, "Tarte à la framboise", true, 12.0d, false);
+		category.setProducts(List.of(product));
+
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+
+		// Execute
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete("/categories/1");
+
+		// Assert
+		mvc.perform(request).andExpect(status().isForbidden());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenANonExistentCategory_WhenDeleteCategory_ShouldReturnStatusNotFound() throws Exception {
+
+		// Arrange
+		when(categoryService.getCategoryById(1)).thenReturn(null);
+
+		// Execute
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete("/categories/1");
+
+		// Assert
 		mvc.perform(request).andExpect(status().isNotFound());
 	}
 
