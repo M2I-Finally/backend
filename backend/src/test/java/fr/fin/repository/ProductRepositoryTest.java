@@ -20,7 +20,7 @@ public class ProductRepositoryTest {
 	private ProductRepository productRepository;
 
 	@Test
-	@Sql("findAllByOrderByProductId_ShouldReturn_OrderedProducts.sql")
+	@Sql("Product_findAllByDeletedFalseOrderByProductId.sql")
 	void findAllByOrderByProductId_ShouldReturn_OrderedProducts() {
 		List<Product> products = productRepository.findAllByDeletedFalseOrderByProductId();
 		assertThat(products.get(0).getProductId()).isEqualTo(1);
@@ -29,7 +29,7 @@ public class ProductRepositoryTest {
 	}
 
 	@Test
-	@Sql("findAllByCategoryId_ShouldReturn_ProductsOfGivenCategory.sql")
+	@Sql("Product_findAllByDeletedFalseAndCategoryId.sql")
 	void findAllByCategoryId_ShouldReturn_ProductsOfGivenCategory() {
 		List<Product> products = productRepository.findAllByDeletedFalseAndCategoryId(1);
 		assertThat(products.size()).isEqualTo(2);
