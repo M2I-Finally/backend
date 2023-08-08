@@ -57,7 +57,7 @@ public class ProductService {
 
 	public Product updateProductStatus(Integer id) {
 		Product updatedProduct = this.getProductById(id);
-		if(updatedProduct != null && !updatedProduct.isDeleted()) {
+		if(updatedProduct != null) {
 			updatedProduct.setStatus(updatedProduct.getStatus() ? false : true);
 			productRepository.save(updatedProduct);
 			return updatedProduct;
