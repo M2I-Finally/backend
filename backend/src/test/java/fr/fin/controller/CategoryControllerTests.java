@@ -3,6 +3,7 @@ package fr.fin.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -162,7 +163,113 @@ public class CategoryControllerTests {
 
 		// Execute and Assert
 		mvc.perform(request).andExpect(status().isBadRequest());
-
 	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenACategoryId_WhenPatchStatus_ReturnUpdatedCategory() throws Exception {
+
+		// Arrange
+		Category category = new Category(1, "Boissons", true, "Administrator", new Date(), false);
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+
+		Category categoryPatched = category;
+		categoryPatched.setStatus(false);
+		when(categoryService.patchCategoryStatus(1)).thenReturn(categoryPatched);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/categories/status/1");
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(jsonPath("$.status").value("false"));
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAnNonExistentCategory_WhenPatchStatus_ReturnNotFoundStatus() throws Exception {
+
+		// Arrange
+		when(categoryService.getCategoryById(2)).thenReturn(null);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/categories/status/2");
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenACategoryId_WhenPatchName_ReturnUpdatedCategory() throws Exception {
+
+		// Arrange
+		Category category = new Category(1, "Boissons", true, "Administrator", new Date(), false);
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+
+		Category categoryPatched = category;
+		categoryPatched.setName("Boissons froides");
+		when(categoryService.checkIfCategoryExistsByName("Boissons froides")).thenReturn(false);
+		when(categoryService.patchCategoryName(1, "Boissons froides")).thenReturn(categoryPatched);
+
+		CreateUpdateCategoryDto createUpdateCategoryDto = new CreateUpdateCategoryDto();
+		createUpdateCategoryDto.setName("Boissons froides");
+
+		String json = mapper.writeValueAsString(createUpdateCategoryDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/categories/name/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(jsonPath("$.name").value("Boissons froides"));
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenACategoryDtoWithErrors_WhenPatchName_ReturnStatusBadRequest() throws Exception {
+
+		// Arrange
+		CreateUpdateCategoryDto createUpdateCategoryDto = new CreateUpdateCategoryDto();
+		createUpdateCategoryDto.setName("Boissons froides !!!!<<<!e!!");
+		String badJson = mapper.writeValueAsString(createUpdateCategoryDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/categories/name/1").content(badJson).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenACategoryExisting_WhenPatchName_ShouldReturnBadRequest() throws Exception {
+
+		// Arrange
+		Category category = new Category(1, "Boissons", true, "Administrator", new Date(), false);
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+		when(categoryService.checkIfCategoryExistsByName("Boissons froides")).thenReturn(true);
+
+		CreateUpdateCategoryDto createUpdateCategoryDto = new CreateUpdateCategoryDto();
+		createUpdateCategoryDto.setName("Boissons froides");
+		String json = mapper.writeValueAsString(createUpdateCategoryDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/categories/name/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenANonExistentCategoryId_WhenPatchName_ShouldReturnNotFound() throws Exception {
+
+		// Arrange
+		when(categoryService.getCategoryById(1)).thenReturn(null);
+
+		CreateUpdateCategoryDto createUpdateCategoryDto = new CreateUpdateCategoryDto();
+		createUpdateCategoryDto.setName("Category");
+		String json = mapper.writeValueAsString(createUpdateCategoryDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/categories/name/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
+
 
 }
