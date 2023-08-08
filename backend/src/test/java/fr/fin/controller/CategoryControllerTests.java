@@ -1,7 +1,9 @@
 package fr.fin.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.fin.model.dto.category.CreateUpdateCategoryDto;
 import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
 
@@ -37,7 +41,7 @@ public class CategoryControllerTests {
 	private CategoryService categoryService;
 
 	@Test
-	@WithMockUser(username = "user", roles = "ADMIN")
+	@WithMockUser(username = "admin", roles = "ADMIN")
 	void GivenCategoriesWithDeletedFalse_WhenGetAllCategories_ShouldReturnThem() throws Exception {
 
 		// Arrange
@@ -56,13 +60,105 @@ public class CategoryControllerTests {
 
 		// Assert
 		String expectedResponse = """
-			[
+		[
 			{"id":1,"name":"Pains","status":true,"productCount":0},
 			{"id":2,"name":"Patisseries","status":true,"productCount":0}
-			]
+		]
 		""";
 
 		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenCategoryWithDeletedFalse_WhenGetCategoryById_ShouldReturnOne() throws Exception {
+
+		// Arrange
+		Category category = new Category(1, "Pains", true, "Administrator", new Date(), false);
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.get("/categories/1");
+
+		// Execute
+		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
+
+		// Assert
+		String expectedResponse = """
+			{"id":1,"name":"Pains","status":true,"productCount":0}
+		""";
+
+		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenCategoryWithDeletedTrue_WhenGetCategoryById_ShouldThrowException() throws Exception {
+
+		// Arrange
+		when(categoryService.getCategoryById(2)).thenReturn(null);
+
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.get("/categories/2");
+
+		// Execute and assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenCategoryDto_WhenCreateCategory_ShouldReturnNewCategory() throws Exception {
+
+		// Arrange
+		CreateUpdateCategoryDto createUpdateCategoryDto = new CreateUpdateCategoryDto();
+		createUpdateCategoryDto.setName("Bonbons");
+
+		Category expectedCategory = new Category(1, "Bonbons", true, "Administrator", new Date(), false);
+
+		String json = mapper.writeValueAsString(createUpdateCategoryDto);
+		when(categoryService.checkIfCategoryExistsByName("Bonbons")).thenReturn(false);
+		when(categoryService.createNewCategory(any(Category.class))).thenReturn(expectedCategory);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/categories").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute
+		MockHttpServletResponse response  = mvc.perform(request).andReturn().getResponse();
+
+		// Assert
+		String expectedResponse = """
+			{"id":1,"name":"Bonbons","status":true,"productCount":0}
+		""";
+
+		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenCategoryDtoWithBadName_WhenCreateCategory_ShouldReturnValidationError() throws Exception {
+
+		// Arrange
+		CreateUpdateCategoryDto createUpdateCategoryDto = new CreateUpdateCategoryDto();
+		createUpdateCategoryDto.setName("--- Bonbons !!!0999((<!");
+
+		String badContentJson = mapper.writeValueAsString(createUpdateCategoryDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/categories").content(badContentJson).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenExistingCategory_WhenCreateCategory_ThenReturnBadRequest() throws Exception {
+
+		// Arrange
+		when(categoryService.checkIfCategoryExistsByName("Gateaux")).thenReturn(true);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/categories").content("").contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
 
 	}
 
