@@ -77,12 +77,12 @@ public class Product {
 		this.createdAt = new Date();
 	}
 
-	public Product(Integer productId, String name, Double price, Category category, boolean status) {
+	public Product(Integer productId, String name, Boolean isActive, Double price, Boolean isDeleted) {
 		this.productId = productId;
 		this.name = name;
+		this.status = isActive;
 		this.price = price;
-		this.category = category;
-		this.status = status;
+		this.deleted = isDeleted;
 	}
 
 	public Product(String name, String description, Double price, Double tax, String picture,

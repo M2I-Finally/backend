@@ -154,8 +154,11 @@ public class CategoryControllerTests {
 
 		// Arrange
 		when(categoryService.checkIfCategoryExistsByName("Gateaux")).thenReturn(true);
+		String json = """
+			{"id":2,"name":"Gateaux","status":true,"productCount":0}
+		""";
 
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/categories").content("").contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/categories").content(json).contentType(MediaType.APPLICATION_JSON);
 
 		// Execute and Assert
 		mvc.perform(request).andExpect(status().isBadRequest());

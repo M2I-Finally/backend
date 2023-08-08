@@ -63,13 +63,14 @@ public class Category {
 
 	}
 
-	public Category(Integer id, String name, Boolean status, String createdBy, Date createdAt) {
+	public Category(Integer id, String name, Boolean status, String createdBy, Date createdAt, Boolean isDeleted) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.status = status;
 		this.createdBy = createdBy;
 		this.createdAt = createdAt;
+		this.deleted = isDeleted;
 	}
 
 	public Integer getId() {

@@ -29,9 +29,9 @@ import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
 import jakarta.validation.Valid;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/categories")
-@CrossOrigin
 public class CategoryController {
 
 	@Autowired
@@ -50,7 +50,13 @@ public class CategoryController {
 
 		for (Category c : categoriesAsEntity) {
 			CategoryDto categoryDto = convertToDto(c);
-			categoryDto.setProductCount(c.getProducts().size());
+
+			if(c.getProducts() == null) {
+				categoryDto.setProductCount(0);
+			} else {
+				categoryDto.setProductCount(c.getProducts().size());
+			}
+
 			categoriesAsDto.add(categoryDto);
 		}
 
@@ -68,7 +74,13 @@ public class CategoryController {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
 			CategoryDto categoryDto = convertToDto(category);
-			categoryDto.setProductCount(category.getProducts().size());
+
+			if(category.getProducts() == null) {
+				categoryDto.setProductCount(0);
+			} else {
+				categoryDto.setProductCount(category.getProducts().size());
+			}
+
 			return categoryDto;
 		}
 
