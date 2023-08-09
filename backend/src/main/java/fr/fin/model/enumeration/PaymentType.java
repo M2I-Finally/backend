@@ -6,7 +6,7 @@ import java.util.Map;
 public enum PaymentType {
 	
 	CASH(0), 
-	BANK_CAR(1),
+	BANK_CARD(1),
 	OTHER(2);
 
 	private static final Map<Integer, PaymentType> BY_POSITION = new HashMap<>();

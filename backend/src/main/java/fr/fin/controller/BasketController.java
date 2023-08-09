@@ -11,14 +11,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.model.dto.BasketDetailDto;
 import fr.fin.model.dto.BasketPaymentDto;
 import fr.fin.model.dto.PaymentDto;
+import fr.fin.model.dto.TodaySaleDto;
 import fr.fin.model.entity.Basket;
 import fr.fin.model.entity.BasketDetail;
 import fr.fin.model.entity.Payment;
@@ -27,7 +30,6 @@ import fr.fin.service.BasketPaymentService;
 import fr.fin.service.BasketService;
 
 @RestController
-@RequestMapping("/payment")
 @CrossOrigin
 public class BasketController {
 	
@@ -52,10 +54,11 @@ public class BasketController {
 		return availableProductsDto;
 	}*/
 	
-	@PostMapping()
+	@PostMapping("/payment")
 	public ResponseEntity<Integer> insertBasket(@RequestBody BasketPaymentDto basketPaymentDto) {
 		System.out.println(basketPaymentDto);
 		Basket basketFromApp = convertToEntities(basketPaymentDto);
+		System.out.println(basketFromApp);
 		Integer basketId = basketPaymentService.createBasket(basketFromApp);
 		return new ResponseEntity<Integer>(basketId, HttpStatus.CREATED);
 	}
@@ -87,14 +90,20 @@ public class BasketController {
 		return basketPaymentDto;
 	};
 	
-	/*
-	private ProductShopPageDto convertToDto(Product product) {
-		return modelMapper.map(product, ProductShopPageDto.class);
+	@GetMapping("/today-sale/{id}")
+	public TodaySaleDto getTodaySale(@PathVariable("id") Integer sellerId) throws ResourceNotFoundException {
+		
+		List<Basket> listBaskets = basketService.getBasketsByStaffId(sellerId);
+		
+		if(listBaskets.size() >0) {
+			
+			return makerSaleDto(listBaskets);
+		}
+		
+		throw new ResourceNotFoundException("il n'y a pas encore eu de vente réalisé pour cette journée");
 	}
 	
-	private Product convertToEntity(ProductShopPageDto productDto) {
-		return modelMapper.map(productDto, Product.class);
-	}*/
+	
 	/*
 	private Basket convertToEntity(BasketPaymentDto dto) {
 		Basket basket = new Basket();
@@ -133,7 +142,7 @@ public class BasketController {
 		Staff staff = new Staff();
 		staff.setId(dto.getSellerId());		
 		
-		return new Basket(null,dto.getDiscount(), new Date(), staff,listBasketDetail,payments);
+		return new Basket(null,dto.getDiscount(), new Date(), staff,dto.getTotal(),listBasketDetail,payments);
 				
 	}
 	
@@ -150,6 +159,51 @@ public class BasketController {
 	      .stream()
 	      .map(element -> modelMapper.map(element, targetClass))
 	      .collect(Collectors.toList());
+	}
+	
+	/**
+	 * Make TodaySaleDto for the route GET /today-sale
+	 * 
+	 * @param listBaskets found in database
+	 * @return TodaySaleDto
+	 * PAymentType : cash = 0 , bank_card = 1 , other = 2
+	 * 
+	 */
+	private TodaySaleDto makerSaleDto(List<Basket> listBaskets) {
+		
+		TodaySaleDto todaySales = new TodaySaleDto();
+		Float total = 0f;
+		PaymentDto cash = new PaymentDto(0f , 0);
+		PaymentDto card = new PaymentDto(0f , 1);
+		PaymentDto other = new PaymentDto(0f , 2);
+		List<PaymentDto> paymentsDto = new ArrayList<>();
+		
+		//add datas to variables
+		
+		for (Basket basket : listBaskets) {
+			total += basket.getTotal();
+			List<Payment> payments = basket.getPayments();
+			
+			for (Payment payment : payments) {
+				if(payment.getType() == 0) {
+					cash.setAmount(cash.getAmount() + payment.getAmount());
+				}else if(payment.getType() == 1) {
+					card.setAmount(card.getAmount() + payment.getAmount());
+				}else if(payment.getType() == 2) {
+					other.setAmount(other.getAmount() + payment.getAmount());
+				}
+				
+			}
+		}
+		paymentsDto.add(cash);
+		paymentsDto.add(card);
+		paymentsDto.add(other);
+		
+		todaySales.setTotal(total);
+		todaySales.setSeller(listBaskets.get(0).getStaff().getUsername());
+		todaySales.setPayments(paymentsDto);
+		
+		return todaySales;
 	}
 		
 

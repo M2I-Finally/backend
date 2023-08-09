@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS basket (
 	discount DECIMAL(3,2) DEFAULT 0.00,
 	created_at TIMESTAMP DEFAULT NOW(),
 	staff_id INT,
+	total DECIMAL(5,2) DEFAULT 0.00,
 	CONSTRAINT fk_staff
 	FOREIGN KEY (staff_id)
 	REFERENCES staff (staff_id)

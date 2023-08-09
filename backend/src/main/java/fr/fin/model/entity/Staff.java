@@ -209,4 +209,13 @@ public class Staff implements UserDetails {
 		this.baskets = baskets;
 	}
 
+	@Override
+	public String toString() {
+		return "Staff [id=" + id + ", username=" + username + ", password=" + password + ", passwordTrial="
+				+ passwordTrial + ", role=" + role + ", status=" + status + ", createdAt=" + createdAt + ", updateAt="
+				+ updateAt + ", baskets=" + baskets + "]";
+	}
+	
+	
+
 }
