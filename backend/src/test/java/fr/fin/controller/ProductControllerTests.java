@@ -214,5 +214,157 @@ class ProductControllerTests {
 			.andExpect(status().isBadRequest());
 	}
 
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAProductDtoWithImage_WhenUpdateProduct_ShouldReturnUpdatedProduct() throws Exception {
+
+		// Arrange
+		// Mock Dto
+		ProductGestionPageDto dto = new ProductGestionPageDto();
+		Category category = new Category(1, "Sucreries", true, "Administrator", new Date(), false);
+		dto.setName("Cookie");
+		dto.setCategoryId(1);
+		dto.setPrice(1.0d);
+		dto.setTax(0.20d);
+		String jsonDto = mapper.writeValueAsString(dto);
+
+		// Mock Product
+		Product product = new Product(1, "Cookie", true, 1.0d, false);
+		product.setTax(0.20d);
+		product.setCategory(category);
+
+		// Mock Multipart
+		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
+		MockMultipartFile imagePart = new MockMultipartFile("file", "image.png", "image/*", "1".getBytes());
+
+		when(productService.getProductById(1)).thenReturn(product);
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+		when(productService.createProduct(any(Product.class))).thenReturn(product);
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.multipart("/products/1")
+					.file(productPart)
+					.file(imagePart)
+					.with(req -> {
+						req.setMethod("PUT");
+						return req;
+					});
+
+		// Assert
+		mvc.perform(request)
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.productId").value(1))
+			.andExpect(jsonPath("$.name").value("Cookie"));
+
+		verify(fileService, times(1)).createImage(any());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAProductDtoWithoutImage_WhenUpdateProduct_ShouldReturnUpdatedProduct() throws Exception {
+
+		// Arrange
+		// Mock Dto
+		ProductGestionPageDto dto = new ProductGestionPageDto();
+		Category category = new Category(1, "Sucreries", true, "Administrator", new Date(), false);
+		dto.setName("Cookie");
+		dto.setCategoryId(1);
+		dto.setPrice(1.0d);
+		dto.setTax(0.20d);
+		String jsonDto = mapper.writeValueAsString(dto);
+
+		// Mock Product
+		Product product = new Product(1, "Cookie", true, 1.0d, false);
+		product.setTax(0.20d);
+		product.setCategory(category);
+
+		// Mock Multipart
+		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
+
+		when(productService.getProductById(1)).thenReturn(product);
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+		when(productService.createProduct(any(Product.class))).thenReturn(product);
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.multipart("/products/1")
+					.file(productPart)
+					.with(req -> {
+						req.setMethod("PUT");
+						return req;
+					});
+
+		// Assert
+		mvc.perform(request)
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.productId").value(1))
+			.andExpect(jsonPath("$.name").value("Cookie"));
+
+		verify(fileService, never()).createImage(any());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenANonExistentId_WhenUpdateProduct_ShouldReturnStatusNotFound() throws Exception {
+
+		// Arrange
+		// Mock Dto
+		ProductGestionPageDto dto = new ProductGestionPageDto();
+		dto.setName("Cookie");
+		dto.setCategoryId(1);
+		dto.setPrice(1.0d);
+		dto.setTax(0.20d);
+		String jsonDto = mapper.writeValueAsString(dto);
+
+		// Mock Multipart
+		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
+
+		when(productService.getProductById(1)).thenReturn(null);
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.multipart("/products/1")
+					.file(productPart)
+					.with(req -> {
+						req.setMethod("PUT");
+						return req;
+					});
+
+		// Assert
+		mvc.perform(request)
+			.andExpect(status().isNotFound());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenABadDto_WhenUpdateProduct_ShouldReturnStatusBadRequest() throws Exception {
+
+		// Arrange
+		// Mock Dto
+		ProductGestionPageDto dto = new ProductGestionPageDto();
+		dto.setName("Cookie!!!!<<<$$$$&&&");
+		dto.setCategoryId(null);
+		dto.setPrice(-1d);
+		dto.setTax(-0.20d);
+		String jsonDto = mapper.writeValueAsString(dto);
+
+		// Mock Multipart
+		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.multipart("/products/1")
+					.file(productPart)
+					.with(req -> {
+						req.setMethod("PUT");
+						return req;
+					});
+
+		// Assert
+		mvc.perform(request)
+			.andExpect(status().isBadRequest());
+	}
+
 
 }

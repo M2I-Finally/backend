@@ -161,7 +161,6 @@ public class ProductController {
 
 			// If file is null and product has already a picture, we set it again to avoid deletion
 			if(file == null && productDto.getPicture() != null) {
-				System.out.println(productDto.getPicture());
 				updatedProduct.setPicture(productDto.getPicture());
 			}
 
