@@ -309,7 +309,6 @@ class ProductControllerTests {
 	void givenANonExistentId_WhenUpdateProduct_ShouldReturnStatusNotFound() throws Exception {
 
 		// Arrange
-		// Mock Dto
 		ProductGestionPageDto dto = new ProductGestionPageDto();
 		dto.setName("Cookie");
 		dto.setCategoryId(1);
@@ -317,9 +316,8 @@ class ProductControllerTests {
 		dto.setTax(0.20d);
 		String jsonDto = mapper.writeValueAsString(dto);
 
-		// Mock Multipart
-		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
 
+		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
 		when(productService.getProductById(1)).thenReturn(null);
 
 		// Execute
@@ -341,15 +339,12 @@ class ProductControllerTests {
 	void givenABadDto_WhenUpdateProduct_ShouldReturnStatusBadRequest() throws Exception {
 
 		// Arrange
-		// Mock Dto
 		ProductGestionPageDto dto = new ProductGestionPageDto();
 		dto.setName("Cookie!!!!<<<$$$$&&&");
 		dto.setCategoryId(null);
 		dto.setPrice(-1d);
 		dto.setTax(-0.20d);
 		String jsonDto = mapper.writeValueAsString(dto);
-
-		// Mock Multipart
 		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
 
 		// Execute
@@ -365,6 +360,39 @@ class ProductControllerTests {
 		mvc.perform(request)
 			.andExpect(status().isBadRequest());
 	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAProductId_WhenUpdateProductStatus_ShouldReturnUpdatedStatus() throws Exception {
+
+		// Arrange
+		Product product = new Product(34, "Thé", true, 0.50d, false);
+		when(productService.getProductById(34)).thenReturn(product);
+
+		product.setStatus(false);
+		when(productService.updateProductStatus(34)).thenReturn(product);
+
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.patch("/products/34");
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAWrongProductId_WhenUpdateProductStatus_ShouldReturnNotFoundStatus() throws Exception {
+
+		// Arrange
+		when(productService.getProductById(23)).thenReturn(null);
+
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.patch("/products/23");
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
+
 
 
 }
