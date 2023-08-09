@@ -393,6 +393,37 @@ class ProductControllerTests {
 		mvc.perform(request).andExpect(status().isNotFound());
 	}
 
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAnExistingProductId_WhenDeleteProduct_ShouldReturnStatusOk() throws Exception {
+
+		// Arrange
+		Product product = new Product(34, "Thé", true, 0.50d, false);
+		when(productService.getProductById(34)).thenReturn(product);
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.delete("/products/34");
+
+		// Assert
+		mvc.perform(request).andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAWrongProductId_WhenDeleteProduct_ShouldReturnStatusNotFound() throws Exception {
+
+		// Arrange
+		when(productService.getProductById(55)).thenReturn(null);
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.delete("/products/55");
+
+		// Assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
+
 
 
 }
