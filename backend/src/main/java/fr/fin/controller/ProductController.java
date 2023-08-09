@@ -107,25 +107,20 @@ public class ProductController {
 			throw new ValidationErrorException("Erreur de validation");
 		}
 
-		if (productDto != null) {
-
-			// If there is a file, we process it and generate a relative URL
-      		if (file != null) {
-				String pictureRelativeURL = fileService.createImage(file);
-				productDto.setPicture(pictureRelativeURL);
-			}
-
-      		// We need to set the category before creating the product
-      		Category productCategory = categoryService.getCategoryById(productDto.getCategoryId());
-      		Product productToCreate = modelMapper.map(productDto, Product.class);
-      		productToCreate.setCategory(productCategory);
-
-      		productToCreate = productService.createProduct(productToCreate);
-
-			return new ResponseEntity<ProductGestionPageDto>(modelMapper.map(productToCreate, ProductGestionPageDto.class), HttpStatus.CREATED);
+		// If there is a file, we process it and generate a relative URL
+  		if (file != null) {
+			String pictureRelativeURL = fileService.createImage(file);
+			productDto.setPicture(pictureRelativeURL);
 		}
 
-		throw new ResourceNotFoundException("Le produit n'a pas été trouvé");
+  		// We need to set the category before creating the product
+  		Category productCategory = categoryService.getCategoryById(productDto.getCategoryId());
+  		Product productToCreate = modelMapper.map(productDto, Product.class);
+  		productToCreate.setCategory(productCategory);
+
+  		productToCreate = productService.createProduct(productToCreate);
+
+		return new ResponseEntity<ProductGestionPageDto>(modelMapper.map(productToCreate, ProductGestionPageDto.class), HttpStatus.CREATED);
 	}
 
 	/**

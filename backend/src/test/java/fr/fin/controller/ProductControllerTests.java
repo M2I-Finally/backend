@@ -1,6 +1,7 @@
 package fr.fin.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -121,7 +122,6 @@ class ProductControllerTests {
 		dto.setCategoryId(1);
 		dto.setPrice(1.0d);
 		dto.setTax(0.20d);
-		dto.setCategory(category);
 		String jsonDto = mapper.writeValueAsString(dto);
 
 		// Mock Product
@@ -149,6 +149,69 @@ class ProductControllerTests {
 			.andExpect(jsonPath("$.productId").value(1))
 			.andExpect(jsonPath("$.name").value("Cookie"));
 		verify(fileService, times(1)).createImage(imagePart);
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAProductDtoWithoutImage_WhenAddProduct_ShouldReturnNewProduct() throws Exception {
+
+		// Arrange
+		// Mock Dto
+		ProductGestionPageDto dto = new ProductGestionPageDto();
+		Category category = new Category(1, "Sucreries", true, "Administrator", new Date(), false);
+		dto.setName("Cookie");
+		dto.setCategoryId(1);
+		dto.setPrice(1.0d);
+		dto.setTax(0.20d);
+		String jsonDto = mapper.writeValueAsString(dto);
+
+		// Mock Product
+		Product product = new Product(1, "Cookie", true, 1.0d, false);
+		product.setTax(0.20d);
+		product.setCategory(category);
+
+		// Mock Multipart
+		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
+
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+		when(productService.createProduct(any(Product.class))).thenReturn(product);
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.multipart("/products")
+					.file(productPart);
+
+		// Assert
+		mvc.perform(request)
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.productId").value(1))
+			.andExpect(jsonPath("$.name").value("Cookie"));
+
+		verify(fileService, never()).createImage(any());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAnInvalidErrorDto_WhenAddProduct_ShouldReturnBadRequestStatus() throws Exception {
+
+		// Arrange
+		// Mock Dto
+		ProductGestionPageDto dto = new ProductGestionPageDto();
+		dto.setName("Cooki!!!<<<@$$$e");
+		dto.setCategoryId(1);
+		String jsonDto = mapper.writeValueAsString(dto);
+
+		// Mock Multipart
+		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.multipart("/products")
+					.file(productPart);
+
+		// Assert
+		mvc.perform(request)
+			.andExpect(status().isBadRequest());
 	}
 
 
