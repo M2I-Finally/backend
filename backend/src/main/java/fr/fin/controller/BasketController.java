@@ -41,18 +41,6 @@ public class BasketController {
 	
 	@Autowired
 	private BasketPaymentService basketPaymentService;
-	/*
-	@GetMapping("/payment")
-	public List<ProductShopPageDto> getAllAvailableProducts() {
-		List<Product> availableProducts = productService.getAvailableProducts();
-		System.out.println(availableProducts.size());
-		
-		List<ProductShopPageDto> availableProductsDto = new ArrayList<ProductShopPageDto>();
-		for( Product availableProduct: availableProducts ) {
-			availableProductsDto.add(convertToDto(availableProduct));
-		}
-		return availableProductsDto;
-	}*/
 	
 	@PostMapping("/payment")
 	public ResponseEntity<Integer> insertBasket(@RequestBody BasketPaymentDto basketPaymentDto) {
@@ -63,6 +51,7 @@ public class BasketController {
 		return new ResponseEntity<Integer>(basketId, HttpStatus.CREATED);
 	}
 	
+	/*
 	@GetMapping()
 	public BasketPaymentDto getBasket() {
 		BasketPaymentDto basketPaymentDto = new BasketPaymentDto();
@@ -88,7 +77,7 @@ public class BasketController {
 		basketPaymentDto.setTotal(56.3f);
 		convertToEntities(basketPaymentDto);
 		return basketPaymentDto;
-	};
+	};*/
 	
 	@GetMapping("/today-sale/{id}")
 	public TodaySaleDto getTodaySale(@PathVariable("id") Integer sellerId) throws ResourceNotFoundException {
