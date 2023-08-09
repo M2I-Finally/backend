@@ -1,9 +1,13 @@
 package fr.fin.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -20,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fr.fin.model.dto.product.ProductGestionPageDto;
 import fr.fin.model.entity.Category;
 import fr.fin.model.entity.Product;
 import fr.fin.service.CategoryService;
@@ -102,6 +108,48 @@ class ProductControllerTests {
 			.andExpect(status().isNotFound());
 	}
 
+
+	@Test
+	@WithMockUser(username = "admin", roles = "ADMIN")
+	void givenAProductDtoWithImage_WhenAddProduct_ShouldReturnNewProduct() throws Exception {
+
+		// Arrange
+		// Mock Dto
+		ProductGestionPageDto dto = new ProductGestionPageDto();
+		Category category = new Category(1, "Sucreries", true, "Administrator", new Date(), false);
+		dto.setName("Cookie");
+		dto.setCategoryId(1);
+		dto.setPrice(1.0d);
+		dto.setTax(0.20d);
+		dto.setCategory(category);
+		String jsonDto = mapper.writeValueAsString(dto);
+
+		// Mock Product
+		Product product = new Product(1, "Cookie", true, 1.0d, false);
+		product.setTax(0.20d);
+		product.setCategory(category);
+
+		// Mock Multipart
+		MockMultipartFile imagePart = new MockMultipartFile("file", "image.png", "image/*", "1".getBytes());
+		MockMultipartFile productPart = new MockMultipartFile("product", "", "application/json", jsonDto.getBytes(Charset.forName("UTF-8")));
+
+		when(fileService.createImage(imagePart)).thenReturn("images/image.png");
+		when(categoryService.getCategoryById(1)).thenReturn(category);
+		when(productService.createProduct(any(Product.class))).thenReturn(product);
+
+		// Execute
+		MockHttpServletRequestBuilder request =
+				MockMvcRequestBuilders.multipart("/products")
+					.file(imagePart)
+					.file(productPart);
+
+		// Assert
+		mvc.perform(request)
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.productId").value(1))
+			.andExpect(jsonPath("$.name").value("Cookie"));
+		verify(fileService, times(1)).createImage(imagePart);
+	}
 
 
 }
