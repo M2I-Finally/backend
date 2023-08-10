@@ -3,6 +3,7 @@ package fr.fin.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
@@ -30,8 +31,8 @@ public class AuthentificationController {
 	@PostMapping("/login")
 	public ResponseEntity<JwtTokenResponse> jwtLogin(@RequestBody JwtLoginRequest jwtLoginRequest, BindingResult bindingResult, HttpServletRequest request) throws Exception {
 		JwtTokenResponse tokenResponse;
-		
-		/* ResponseStatusException can't be thrown if there was an exception because the body won't be readable by the client 
+
+		/* ResponseStatusException can't be thrown if there was an exception because the body won't be readable by the client
 		 * Http status is set primarily for the frontend to process the different cases
 		 * */
 		try {
@@ -39,9 +40,11 @@ public class AuthentificationController {
 		} catch (BadCredentialsException e) {
 			throw new BadCredentialsException("Les identifiants sont incorrects");
 		} catch (LockedException e) {
-			throw new LockedException("Le compte est verouillé");
+			throw new LockedException("Le compte est verrouillé");
+		} catch (DisabledException e) {
+			throw new DisabledException("Le compte est désactivé");
 		}
-		
+
 		return ResponseEntity.ok(tokenResponse);
 	}
 
@@ -49,15 +52,15 @@ public class AuthentificationController {
 	 * Generate BCrypt password utility route (will be disabled later)
 	 * @param secret	The string to encode using BCrypt
 	 * @return			The encoded string
-	 * @throws ValidationErrorException 
+	 * @throws ValidationErrorException
 	 */
 	@GetMapping("/bcrypt")
 	public String bcryptPasswordGenerator(@RequestParam(value = "secret", required = true) String secret) throws ValidationErrorException {
-		
+
 		if(secret == null) {
 			throw new ValidationErrorException("Il manque le paramètre 'secret'");
 		}
-		
+
 		return new BCryptPasswordEncoder().encode(secret);
 	}
 }

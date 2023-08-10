@@ -60,7 +60,7 @@ public class Staff implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role));
 	}
-	
+
 	@Override
 	public boolean isAccountNonLocked() {
 		return ((this.passwordTrial >= 50000) ? false: true);
@@ -90,7 +90,7 @@ public class Staff implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return this.status;
 	}
 
 	// default constructor
@@ -215,7 +215,7 @@ public class Staff implements UserDetails {
 				+ passwordTrial + ", role=" + role + ", status=" + status + ", createdAt=" + createdAt + ", updateAt="
 				+ updateAt + ", baskets=" + baskets + "]";
 	}
-	
-	
+
+
 
 }
