@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,6 +27,8 @@ import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.exceptions.custom.ValidationErrorException;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
+import fr.fin.model.dto.product.ProductGestionPageDto;
+import fr.fin.model.entity.Product;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.StaffService;
 
@@ -114,7 +117,9 @@ public class StaffController {
 			staffDto.setCreatedAt(new Date());
 			staffDto.setUpdateAt(new Date());
 
-			staffService.createStaff(convertToGestionEntity(staffDto));
+			Staff staffToCreate = convertToGestionEntity(staffDto);
+			staffToCreate.setPasswordTrial(0);
+			staffService.createStaff(staffToCreate);
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}
 
@@ -152,7 +157,7 @@ public class StaffController {
 	 * @throws ResourceNotFoundException 
 	 */
 	@PutMapping("{id}")
-	public ResponseEntity<String> updateStaffById(@PathVariable("id") Integer id,
+	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
 		if (staffDto != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
@@ -166,9 +171,9 @@ public class StaffController {
 				}
 
 				
-				if (staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null || 
-					staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank() || 
-					staffDto.getPassword().isEmpty()&& staffDto.getPasswordConfirm().isEmpty() ) {
+				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null ) ||
+					(staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank()) ||
+					(staffDto.getPassword().isEmpty()&& staffDto.getPasswordConfirm().isEmpty() )) {
 					
 					// leave password null will keep old password
 					staffToUpdate.setPassword(staffToUpdate.getPassword());	
@@ -196,40 +201,55 @@ public class StaffController {
 				staffToUpdate.setUpdateAt(new Date());
 
 				// update staff
-				staffService.createStaff(staffToUpdate);
+				StaffTablePageDto staffUpdated = convertToTableDto(staffService.createStaff(staffToUpdate));
 
-				return new ResponseEntity<String>("Staff updated", HttpStatus.OK);
+				return staffUpdated;
 			}
 			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
 	}
 
+//	/**
+//	 * Only manager can delete staff, manager cannot delete himself
+//	 * 
+//	 * @param id
+//	 * @return
+//	 * @throws ResourceNotFoundException
+//	 * @throws ActionForbiddenException
+//	 */
+//	@DeleteMapping("/{id}")
+//	public ResponseEntity<String> deleteStaff(@PathVariable("id") Integer id)
+//			throws ResourceNotFoundException, ActionForbiddenException {
+//
+//		if (staffService.getStaffById(id) == null) {
+//			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+//		}
+//
+//		if (!staffService.getStaffById(id).isStatus()) {
+//			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+//		}
+//
+//		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
+//
+//		staffService.deleteStaffById(id);
+//		return new ResponseEntity<String>("Staff supprimé", HttpStatus.OK);
+//
+//	}
+	
 	/**
-	 * Only manager can delete staff, manager cannot delete himself
-	 * 
-	 * @param id
-	 * @return
+	 * UPDATE the status of user, given its id, instead of completely deleting it from DB
+	 * @param id	The id of the user
+	 * @return		The user
 	 * @throws ResourceNotFoundException
-	 * @throws ActionForbiddenException
 	 */
-	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteStaff(@PathVariable("id") Integer id)
-			throws ResourceNotFoundException, ActionForbiddenException {
-
-		if (staffService.getStaffById(id) == null) {
-			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+	@PatchMapping("/{id}")
+	public StaffGestionPageDto updateUserStatus(@PathVariable("id") Integer id) throws ResourceNotFoundException {
+		Staff staff = staffService.getStaffById(id);
+		if(staff != null) {
+			return convertToGestionDto(staffService.updateStaffStatus(id));
 		}
-
-		if (!staffService.getStaffById(id).isStatus()) {
-			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
-		}
-
-		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
-
-		staffService.deleteStaffById(id);
-		return new ResponseEntity<String>("Staff supprimé", HttpStatus.OK);
-
+		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé");
 	}
 
 }
