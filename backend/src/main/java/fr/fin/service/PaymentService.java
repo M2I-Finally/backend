@@ -19,7 +19,7 @@ public class PaymentService {
 	public List<Payment> insertPayments(Basket basket, Integer basketId){
 		
 		for (Payment payment : basket.getPayments()) {
-			Basket basket1 = new Basket(basketId, null, null, null, null, null);
+			Basket basket1 = new Basket(basketId, null,null, null, null, null, null);
 			payment.setBasket(basket1);
 			payment.setCreatedAt(new Date());
 		}

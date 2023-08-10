@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.exceptions.custom.ActionForbiddenException;
 import fr.fin.exceptions.custom.ResourceAlreadyExistsException;
@@ -29,9 +28,9 @@ import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
 import jakarta.validation.Valid;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/categories")
-@CrossOrigin
 public class CategoryController {
 
 	@Autowired
@@ -50,7 +49,13 @@ public class CategoryController {
 
 		for (Category c : categoriesAsEntity) {
 			CategoryDto categoryDto = convertToDto(c);
-			categoryDto.setProductCount(c.getProducts().size());
+
+			if(c.getProducts() == null) {
+				categoryDto.setProductCount(0);
+			} else {
+				categoryDto.setProductCount(c.getProducts().size());
+			}
+
 			categoriesAsDto.add(categoryDto);
 		}
 
@@ -68,7 +73,13 @@ public class CategoryController {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
 			CategoryDto categoryDto = convertToDto(category);
-			categoryDto.setProductCount(category.getProducts().size());
+
+			if(category.getProducts() == null) {
+				categoryDto.setProductCount(0);
+			} else {
+				categoryDto.setProductCount(category.getProducts().size());
+			}
+
 			return categoryDto;
 		}
 
@@ -154,12 +165,9 @@ public class CategoryController {
 	public ResponseEntity<String> deleteCategory(@PathVariable("id") Integer categoryId) throws ResourceNotFoundException, ActionForbiddenException {
 		Category category = categoryService.getCategoryById(categoryId);
 		if (category != null) {
-			if (category.getProducts().isEmpty() || category.getProducts() == null) {
-				if (categoryService.deleteCategoryById(categoryId)) {
-					return new ResponseEntity<String>("[]", HttpStatus.OK);
-				}
-
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur inconnue s'est produite lors de la suppression");
+			if (category.getProducts() == null || category.getProducts().isEmpty()) {
+				categoryService.deleteCategoryById(categoryId);
+				return new ResponseEntity<String>("[]", HttpStatus.OK);
 			}
 
 			throw new ActionForbiddenException("La catégorie contient des produits, impossible de la supprimer");

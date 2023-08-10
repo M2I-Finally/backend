@@ -109,7 +109,7 @@ public class CategoryService {
 	public boolean deleteCategoryById(Integer id) {
 		Category category = this.getCategoryById(id);
 
-		if (category != null && !category.isDeleted()) {
+		if (category != null) {
 
 			if(category.getProducts().isEmpty() && category.getInactiveProducts().isEmpty()) {
 				categoryRepository.deleteById(id);
