@@ -1,6 +1,7 @@
 package fr.fin.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import fr.fin.auth.UnauthorizedType;
 import fr.fin.exceptions.custom.ActionForbiddenException;
 import fr.fin.exceptions.custom.ResourceAlreadyExistsException;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
@@ -44,21 +46,28 @@ public class ControllerExceptionHandler {
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public ResponseError handleBadCredentialsException(Exception ex, WebRequest request) {
-		return new ResponseError(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), UnauthorizedType.BAD_CREDENTIALS);
 	}
 
 	@ExceptionHandler(LockedException.class)
-	@ResponseStatus(value = HttpStatus.FORBIDDEN)
+	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public ResponseError handleLockedException(Exception ex, WebRequest request) {
-		return new ResponseError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), UnauthorizedType.ACCOUNT_LOCKED);
 	}
 
 	@ExceptionHandler(DisabledException.class)
-	@ResponseStatus(value = HttpStatus.FORBIDDEN)
+	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public ResponseError handleDisabledException(Exception ex, WebRequest request) {
-		return new ResponseError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), UnauthorizedType.ACCOUNT_DISABLED);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+	public ResponseError handleAccessDeniedException(Exception ex, WebRequest request) {
+		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Vous n'avez pas les droits pour accéder à cette page", UnauthorizedType.INSUFFICIENT_RIGHTS);
+
 	}
 
 }
