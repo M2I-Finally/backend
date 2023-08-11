@@ -209,33 +209,6 @@ public class StaffController {
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
 	}
-
-//	/**
-//	 * Only manager can delete staff, manager cannot delete himself
-//	 * 
-//	 * @param id
-//	 * @return
-//	 * @throws ResourceNotFoundException
-//	 * @throws ActionForbiddenException
-//	 */
-//	@DeleteMapping("/{id}")
-//	public ResponseEntity<String> deleteStaff(@PathVariable("id") Integer id)
-//			throws ResourceNotFoundException, ActionForbiddenException {
-//
-//		if (staffService.getStaffById(id) == null) {
-//			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
-//		}
-//
-//		if (!staffService.getStaffById(id).isStatus()) {
-//			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
-//		}
-//
-//		// peut pas supprimer lui-même => besoin d'un utilisateur de loggé
-//
-//		staffService.deleteStaffById(id);
-//		return new ResponseEntity<String>("Staff supprimé", HttpStatus.OK);
-//
-//	}
 	
 	/**
 	 * UPDATE the status of user, given its id, instead of completely deleting it from DB
@@ -251,5 +224,19 @@ public class StaffController {
 		}
 		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé");
 	}
-
+	
+	/**
+	 * GET the user given its username
+	 * @param userName	The username of the user
+	 * @return		The user
+	 * @throws ResourceNotFoundException
+	 */	
+	@GetMapping("/username/{userName}")
+	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) {
+		Staff staff = staffService.getStaffByUserName(userName);
+		if( staff != null ) {
+			return convertToGestionDto(staffService.getStaffByUserName(userName));
+		}
+		return null;
+	}
 }

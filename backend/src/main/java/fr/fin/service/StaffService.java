@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import fr.fin.model.entity.Product;
 import fr.fin.model.entity.Staff;
 import fr.fin.repository.StaffRepository;
 
@@ -40,6 +39,13 @@ public class StaffService implements UserDetailsService {
 		}
 		return null;
 	}
+	
+	public Staff getStaffByUserName(String userName) {
+		if ( staffRepository.findByUsername(userName) != null ) {
+			return staffRepository.findByUsername(userName);
+		}
+		return null;
+	}
 
 	public void saveStaff(Staff staff) {
 		staffRepository.save(staff);
@@ -54,13 +60,4 @@ public class StaffService implements UserDetailsService {
 		}
 		return null;
 	}
-
-//	public void deleteStaffById(Integer id) {
-//		Staff staffToBeDelete = staffRepository.findById(id).get();
-//		if (staffToBeDelete.isStatus()) {
-//			staffToBeDelete.setStatus(false);
-//			staffRepository.save(staffToBeDelete);
-//		}
-//	}
-
 }
