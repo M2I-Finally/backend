@@ -132,7 +132,7 @@ public class StaffController {
 	 * @return
 	 * @throws ResourceNotFoundException
 	 */
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	public StaffGestionPageDto getStaffById(@PathVariable("id") Integer id) throws ResourceNotFoundException {
 
 		if (staffService.getStaffById(id) != null && staffService.getStaffById(id).isStatus()) {
@@ -155,7 +155,7 @@ public class StaffController {
 	 * @throws ValidationErrorException
 	 * @throws ResourceNotFoundException
 	 */
-	@PutMapping("{id}")
+	@PutMapping("/{id}")
 	@IsAdmin
 	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
