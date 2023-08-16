@@ -31,7 +31,6 @@ import fr.fin.service.StaffService;
 @RestController
 @RequestMapping("/users")
 @CrossOrigin
-@IsAdmin
 public class StaffController {
 
 	// only admin can CRUD users/staffs
@@ -72,6 +71,7 @@ public class StaffController {
 	 * @return staffsDto view
 	 */
 	@GetMapping
+	@IsAdmin
 	public List<StaffTablePageDto> getAllStaff() {
 		List<Staff> staffs = staffService.getAllStaffs();
 		List<StaffTablePageDto> staffsDto = new ArrayList<StaffTablePageDto>();
@@ -91,6 +91,7 @@ public class StaffController {
 	 * @throws ResourceNotFoundException
 	 */
 	@PostMapping
+	@IsAdmin
 	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto)
 			throws ValidationErrorException, ResourceNotFoundException {
 
@@ -155,6 +156,7 @@ public class StaffController {
 	 * @throws ResourceNotFoundException
 	 */
 	@PutMapping("{id}")
+	@IsAdmin
 	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
 		if (staffDto != null) {
@@ -215,6 +217,7 @@ public class StaffController {
 	 * @throws ResourceNotFoundException
 	 */
 	@PatchMapping("/{id}")
+	@IsAdmin
 	public StaffGestionPageDto updateUserStatus(@PathVariable("id") Integer id) throws ResourceNotFoundException {
 		Staff staff = staffService.getStaffById(id);
 		if(staff != null) {
@@ -230,6 +233,7 @@ public class StaffController {
 	 * @throws ResourceNotFoundException
 	 */
 	@GetMapping("/username/{userName}")
+	@IsAdmin
 	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) {
 		Staff staff = staffService.getStaffByUserName(userName);
 		if( staff != null ) {
