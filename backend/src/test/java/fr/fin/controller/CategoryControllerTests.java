@@ -43,7 +43,7 @@ public class CategoryControllerTests {
 	private CategoryService categoryService;
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void GivenCategoriesWithDeletedFalse_WhenGetAllCategories_ShouldReturnThem() throws Exception {
 
 		// Arrange
@@ -72,7 +72,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenCategoryWithDeletedFalse_WhenGetCategoryById_ShouldReturnOne() throws Exception {
 
 		// Arrange
@@ -94,7 +94,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenCategoryWithDeletedTrue_WhenGetCategoryById_ShouldThrowException() throws Exception {
 
 		// Arrange
@@ -108,7 +108,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenCategoryDto_WhenCreateCategory_ShouldReturnNewCategory() throws Exception {
 
 		// Arrange
@@ -135,7 +135,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenCategoryDtoWithBadName_WhenCreateCategory_ShouldReturnValidationError() throws Exception {
 
 		// Arrange
@@ -151,7 +151,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenExistingCategory_WhenCreateCategory_ThenReturnBadRequest() throws Exception {
 
 		// Arrange
@@ -167,7 +167,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenACategoryId_WhenPatchStatus_ReturnUpdatedCategory() throws Exception {
 
 		// Arrange
@@ -185,7 +185,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAnNonExistentCategory_WhenPatchStatus_ReturnNotFoundStatus() throws Exception {
 
 		// Arrange
@@ -198,7 +198,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenACategoryId_WhenPatchName_ReturnUpdatedCategory() throws Exception {
 
 		// Arrange
@@ -222,7 +222,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenACategoryDtoWithErrors_WhenPatchName_ReturnStatusBadRequest() throws Exception {
 
 		// Arrange
@@ -237,7 +237,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenACategoryExisting_WhenPatchName_ShouldReturnBadRequest() throws Exception {
 
 		// Arrange
@@ -256,7 +256,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenANonExistentCategoryId_WhenPatchName_ShouldReturnNotFound() throws Exception {
 
 		// Arrange
@@ -273,7 +273,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenACategoryWithoutProduct_WhenDeleteCategory_ShouldReturnStatusOk() throws Exception {
 
 		// Arrange
@@ -289,7 +289,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenACategoryWithProduct_WhenDeleteCategory_ShouldReturnStatusForbidden() throws Exception {
 
 		// Arrange
@@ -307,7 +307,7 @@ public class CategoryControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenANonExistentCategory_WhenDeleteCategory_ShouldReturnStatusNotFound() throws Exception {
 
 		// Arrange

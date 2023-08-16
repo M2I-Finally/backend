@@ -53,7 +53,7 @@ class ProductControllerTests {
 	private FileService fileService;
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenExistingProducts_WhenGetAllProducts_ShouldReturnProducts() throws Exception {
 
 		// Arrange
@@ -77,7 +77,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenExistingProduct_WhenGetProductById_ShouldReturnProduct() throws Exception {
 
 		// Arrange
@@ -95,7 +95,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenNonExistingProduct_WhenGetProductById_ShouldReurnStatusNotFound() throws Exception {
 
 		// Arrange
@@ -111,7 +111,7 @@ class ProductControllerTests {
 
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAProductDtoWithImage_WhenAddProduct_ShouldReturnNewProduct() throws Exception {
 
 		// Arrange
@@ -152,7 +152,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAProductDtoWithoutImage_WhenAddProduct_ShouldReturnNewProduct() throws Exception {
 
 		// Arrange
@@ -191,7 +191,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAnInvalidErrorDto_WhenAddProduct_ShouldReturnBadRequestStatus() throws Exception {
 
 		// Arrange
@@ -215,7 +215,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAProductDtoWithImage_WhenUpdateProduct_ShouldReturnUpdatedProduct() throws Exception {
 
 		// Arrange
@@ -261,7 +261,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAProductDtoWithoutImage_WhenUpdateProduct_ShouldReturnUpdatedProduct() throws Exception {
 
 		// Arrange
@@ -305,7 +305,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenANonExistentId_WhenUpdateProduct_ShouldReturnStatusNotFound() throws Exception {
 
 		// Arrange
@@ -335,7 +335,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenABadDto_WhenUpdateProduct_ShouldReturnStatusBadRequest() throws Exception {
 
 		// Arrange
@@ -362,7 +362,7 @@ class ProductControllerTests {
 	}
 
 	@Test
-	@WithMockUser(username = "admin", roles = "ADMIN")
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAProductId_WhenUpdateProductStatus_ShouldReturnUpdatedStatus() throws Exception {
 
 		// Arrange
