@@ -60,4 +60,9 @@ public class StaffService implements UserDetailsService {
 		}
 		return null;
 	}
+	
+	public String getPasswordById(Integer id) {
+		String hashedPassword = staffRepository.findPasswordById(id);
+		return hashedPassword;
+	}
 }

@@ -12,4 +12,5 @@ public interface StaffRepository extends CrudRepository<Staff, Integer> {
 
 	List<Staff> findByStatusTrue();
 	Staff findByUsername(String username);
+	String findPasswordById(Integer id);
 }

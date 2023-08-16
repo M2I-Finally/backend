@@ -241,4 +241,14 @@ public class StaffController {
 		}
 		return null;
 	}
+	
+	@PostMapping("/check")
+	public boolean checkPasswordToLogout(@RequestBody Integer userId, String password) {
+		//récupérer le mdp crypté via l'id du user
+		String hashedPassword = staffService.getPasswordById(userId);
+		//comparer le mdp envoyé par le user à celui récupéré
+		//renvoyer vrai si OK
+		//renvoyer faux si pas OK
+		return bCryptPasswordEncoder.matches(password, hashedPassword);
+	}
 }
