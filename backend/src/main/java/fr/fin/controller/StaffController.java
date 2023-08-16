@@ -31,11 +31,9 @@ import fr.fin.service.StaffService;
 @RestController
 @RequestMapping("/users")
 @CrossOrigin
-@IsAdmin
+@IsAdmin // only admin can CRUD users/staffs
 public class StaffController {
 
-	// only admin can CRUD users/staffs
-	private final String ROLE_CAN_UPDATE_USER = "ADMIN";
 
 	@Autowired
 	private StaffService staffService;
