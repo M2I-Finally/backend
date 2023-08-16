@@ -1,7 +1,6 @@
 package fr.fin.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,20 +20,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import fr.fin.exceptions.custom.ActionForbiddenException;
+import fr.fin.auth.IsAdmin;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.exceptions.custom.ValidationErrorException;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
-import fr.fin.model.dto.product.ProductGestionPageDto;
-import fr.fin.model.entity.Product;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.StaffService;
 
 @RestController
 @RequestMapping("/users")
 @CrossOrigin
+@IsAdmin
 public class StaffController {
+
 	// only admin can CRUD users/staffs
 	private final String ROLE_CAN_UPDATE_USER = "ADMIN";
 
@@ -50,7 +48,7 @@ public class StaffController {
 
 	/**
 	 * Map Staff to Dto
-	 * 
+	 *
 	 * @param StaffGestionPageDto
 	 * @return Staff
 	 */
@@ -60,7 +58,7 @@ public class StaffController {
 
 	/**
 	 * Map Dto to Staff
-	 * 
+	 *
 	 * @param staff
 	 * @return StaffTablePageDto
 	 */
@@ -70,7 +68,7 @@ public class StaffController {
 
 	/**
 	 * User table
-	 * 
+	 *
 	 * @return staffsDto view
 	 */
 	@GetMapping
@@ -86,7 +84,7 @@ public class StaffController {
 	/**
 	 * Create a new staff, only manager can create a new staff, and control the
 	 * validity of every input
-	 * 
+	 *
 	 * @param staffDto
 	 * @return
 	 * @throws ValidationErrorException
@@ -128,7 +126,7 @@ public class StaffController {
 
 	/**
 	 * get staff info by id, prepare for updating
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 * @throws ResourceNotFoundException
@@ -150,35 +148,35 @@ public class StaffController {
 
 	/**
 	 * edit the staff, only manager can modify, need validaty input check
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 * @throws ValidationErrorException
-	 * @throws ResourceNotFoundException 
+	 * @throws ResourceNotFoundException
 	 */
 	@PutMapping("{id}")
 	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
 		if (staffDto != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
-			
+
 			// staff cannot be 'deleted'
 			if (staffToUpdate.isStatus()) {
-				
+
 				// update username
 				if (staffDto.getUsername() != null) {
 					staffToUpdate.setUsername(staffDto.getUsername());
 				}
 
-				
+
 				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null ) ||
 					(staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank()) ||
 					(staffDto.getPassword().isEmpty()&& staffDto.getPasswordConfirm().isEmpty() )) {
-					
+
 					// leave password null will keep old password
-					staffToUpdate.setPassword(staffToUpdate.getPassword());	
-					
-				} else { 
+					staffToUpdate.setPassword(staffToUpdate.getPassword());
+
+				} else {
 					// update password & passwordConfirm
 					// objectify a password validator
 					PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
@@ -195,7 +193,7 @@ public class StaffController {
 					}
 
 					staffToUpdate.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
-				} 
+				}
 
 				staffToUpdate.setRole(staffDto.getRole());
 				staffToUpdate.setUpdateAt(new Date());
@@ -209,7 +207,7 @@ public class StaffController {
 		}
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
 	}
-	
+
 	/**
 	 * UPDATE the status of user, given its id, instead of completely deleting it from DB
 	 * @param id	The id of the user
@@ -224,13 +222,13 @@ public class StaffController {
 		}
 		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé");
 	}
-	
+
 	/**
 	 * GET the user given its username
 	 * @param userName	The username of the user
 	 * @return		The user
 	 * @throws ResourceNotFoundException
-	 */	
+	 */
 	@GetMapping("/username/{userName}")
 	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) {
 		Staff staff = staffService.getStaffByUserName(userName);

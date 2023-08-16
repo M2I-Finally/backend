@@ -7,7 +7,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.fin.auth.IsAdminOrIsManager;
 import fr.fin.exceptions.custom.ActionForbiddenException;
 import fr.fin.exceptions.custom.ResourceAlreadyExistsException;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
@@ -94,7 +94,7 @@ public class CategoryController {
 	 * @return	JSON containing the created category information
 	 */
 	@PostMapping
-	@PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+	@IsAdminOrIsManager
 	public CategoryDto createCategory(@Valid @RequestBody CreateUpdateCategoryDto createCategoryDto, BindingResult bindingResult) throws ResourceAlreadyExistsException, ValidationErrorException {
 
 		if(bindingResult.hasErrors()) {
