@@ -1,0 +1,3 @@
+INSERT INTO staff (username, password, password_trial, role, status, created_at, update_at) VALUES ('Mael','Password123!',0, 'ADMIN', true, NOW(), NOW());
+INSERT INTO staff (username, password, password_trial, role, status, created_at, update_at) VALUES ('Jordin','Password123!',0, 'EMPLOYEE', true, NOW(), NOW());
+INSERT INTO staff (username, password, password_trial, role, status, created_at, update_at) VALUES ('Zoe','Password123!',0, 'MANAGER', false, NOW(), NOW());

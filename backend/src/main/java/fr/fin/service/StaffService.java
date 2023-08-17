@@ -23,7 +23,7 @@ public class StaffService implements UserDetailsService {
 	}
 
 	public List<Staff> getAllStaffs() {
-		return staffRepository.findByStatusTrue();
+		return staffRepository.findAllByStatusTrue();
 	}
 
 	public Staff createStaff(Staff staff) {
