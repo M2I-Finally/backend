@@ -6,7 +6,7 @@
   },
   {
     "name": "finally.password.trial",
-    "type": "java.lang.Integer",
+    "type": "java.lang.String",
     "description": "The number of maximum trials for password until the application blocks the account"
   }
 ]}

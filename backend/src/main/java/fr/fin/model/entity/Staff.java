@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,8 +27,7 @@ public class Staff implements UserDetails {
 	private static final long serialVersionUID = -4414646490025845750L;
 
 	@Transient
-	@Value("${finally.password.trial}")
-	private static int passwordTrialLimit;
+	private Integer passwordTrialLimit = 50000;
 
 	@Id
 	@Column(name = "staff_id")
