@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,18 +24,17 @@ import org.springframework.web.server.ResponseStatusException;
 import fr.fin.auth.IsAdmin;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.exceptions.custom.ValidationErrorException;
+import fr.fin.model.dto.CheckPasswordDto;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.StaffService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
 @CrossOrigin
 public class StaffController {
-
-	// only admin can CRUD users/staffs
-	private final String ROLE_CAN_UPDATE_USER = "ADMIN";
 
 	@Autowired
 	private StaffService staffService;
@@ -241,14 +241,15 @@ public class StaffController {
 		}
 		return null;
 	}
-	
+
 	@PostMapping("/check")
-	public boolean checkPasswordToLogout(@RequestBody Integer userId, String password) {
-		//récupérer le mdp crypté via l'id du user
-		String hashedPassword = staffService.getPasswordById(userId);
-		//comparer le mdp envoyé par le user à celui récupéré
-		//renvoyer vrai si OK
-		//renvoyer faux si pas OK
-		return bCryptPasswordEncoder.matches(password, hashedPassword);
+	public boolean checkPasswordToLogout(@Valid @RequestBody CheckPasswordDto checkPasswordDto, BindingResult bindingResult) throws ValidationErrorException {
+
+		if(bindingResult.hasErrors()) {
+			throw new ValidationErrorException("Les champs sont invalides");
+		}
+
+		String hashedPassword = staffService.getPasswordById(checkPasswordDto.getUserId());
+		return bCryptPasswordEncoder.matches(checkPasswordDto.getPassword(), hashedPassword);
 	}
 }
