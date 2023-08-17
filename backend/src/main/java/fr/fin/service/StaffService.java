@@ -47,8 +47,8 @@ public class StaffService implements UserDetailsService {
 		return null;
 	}
 
-	public void saveStaff(Staff staff) {
-		staffRepository.save(staff);
+	public Staff saveStaff(Staff staff) {
+		return staffRepository.save(staff);
 	}
 	
 	public Staff updateStaffStatus(Integer id) {

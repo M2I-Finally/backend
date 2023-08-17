@@ -224,7 +224,7 @@ public class StaffController {
 	/**
 	 * GET the user given its username
 	 * @param userName	The username of the user
-	 * @return		The user
+	 * @return The user
 	 * @throws ResourceNotFoundException
 	 */
 	@GetMapping("/username/{userName}")

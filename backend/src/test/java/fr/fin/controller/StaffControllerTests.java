@@ -206,7 +206,7 @@ public class StaffControllerTests {
 
 //	@Test
 //	@WithMockUser(username = "admin", authorities = "ADMIN")
-//	void givenExistingStaffName_WhenCreateStaff_ThenReturnBadRequest() throws Exception {
+//	void givenExistingStaffName_whenCreateStaff_thenReturnBadRequest() throws Exception {
 //
 //		// Arrange
 //		when(staffService.checkIfStaffExistsByName("Jordan")).thenReturn(true);
@@ -240,39 +240,54 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isNotFound());
 	}
 
-//	@Test
-//	@WithMockUser(username = "admin", authorities = "ADMIN")
-//	void givenAStaffId_whenEditName_ReturnUpdatedStaff() throws Exception {
-//
-//		// Arrange
-//		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
-//		when(staffService.getStaffById(1)).thenReturn(staff);
-//
-//		Staff staffToUpdate = staff;
-//		staffToUpdate.setUsername("MaelLePatron");
-//		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
-//		
-//		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1");
-//
-//		// Execute
-//		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
-//
-//		// Assert
-//		String expectedResponse = """
-//						{
-//					    "id": 1,
-//					    "username": "MaelLePatron",
-//					    "role": "ADMIN",
-//					    "status": true
-//						}
-//				""";
-//
-//		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
-//	}
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaffId_whenEditName_thenReturnUpdatedStaff() throws Exception {
+
+		// Arrange
+		
+			
+		//Simulate an existing staff
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+		
+		Staff staffToUpdate = staff;
+		staffToUpdate.setUsername("MaelLePatron");
+		
+		//simulate update staff
+		staff.setUsername("MaelLePatron");
+		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
+		String json = """
+			{
+			"id":1,
+		    "username":"MaelLePatron",
+		    "role": "ADMIN"
+		    }
+		""";
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+
+		// Execute
+		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
+
+        
+		// Assert
+		String expectedResponse = """
+						{
+					    "id": 1,
+					    "username": "MaelLePatron",
+					    "role": "ADMIN",
+					    "status": true
+						}
+				""";
+
+		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
+	}
 
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
-	void givenAStaffWithoutProduct_WhenDeleteStaff_ShouldReturnStatusOk() throws Exception {
+	void givenAnActiveStaff_WhenDeleteStaff_ShouldReturnStatusOk() throws Exception {
 
 		// Arrange
 		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
@@ -290,7 +305,7 @@ public class StaffControllerTests {
 
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
-	void givenANonExistentCategory_WhenDeleteCategory_ShouldReturnStatusNotFound() throws Exception {
+	void givenANonExistentStaff_whenDeleteStaff_ShouldReturnStatusNotFound() throws Exception {
 
 		// Arrange
 		when(staffService.getStaffById(1)).thenReturn(null);
