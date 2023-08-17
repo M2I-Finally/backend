@@ -39,7 +39,7 @@ public class StaffService implements UserDetailsService {
 		}
 		return null;
 	}
-	
+
 	public Staff getStaffByUserName(String userName) {
 		if ( staffRepository.findByUsername(userName) != null ) {
 			return staffRepository.findByUsername(userName);
@@ -50,13 +50,21 @@ public class StaffService implements UserDetailsService {
 	public void saveStaff(Staff staff) {
 		staffRepository.save(staff);
 	}
-	
+
 	public Staff updateStaffStatus(Integer id) {
 		Staff updatedStaff = this.getStaffById(id);
 		if(updatedStaff != null) {
 			updatedStaff.setStatus(updatedStaff.isStatus() ? false : true);
 			staffRepository.save(updatedStaff);
 			return updatedStaff;
+		}
+		return null;
+	}
+
+	public String getPasswordById(Integer id) {
+		Staff staff = this.getStaffById(id);
+		if(staff != null) {
+			return staff.getPassword();
 		}
 		return null;
 	}
