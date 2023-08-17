@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 public class CreateUpdateCategoryDto {
 
 	@NotNull
-	@Pattern(regexp = "[a-zA-Z  ']+", message = "Le nom ne peut contenir que des lettres et des espaces")
+	@Pattern(regexp = "[A-Za-zÀ-ÖØ-öø-ÿ0-9  ']+", message = "Le nom ne peut contenir que des lettres et des espaces")
 	private String name;
 
 	public CreateUpdateCategoryDto() {
