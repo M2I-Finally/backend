@@ -203,6 +203,7 @@ public class StaffControllerTests {
 		// Execute and Assert
 		mvc.perform(request).andExpect(status().isBadRequest());
 	}
+	
 
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
@@ -261,7 +262,7 @@ public class StaffControllerTests {
 
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
-	void givenAStaffId_whenEditName_thenReturnUpdatedStaff() throws Exception {
+	void givenAStaffId_whenEditNameAndPassword_thenReturnUpdatedStaff() throws Exception {
 
 		// Arrange
 
@@ -280,8 +281,8 @@ public class StaffControllerTests {
 			{
 			"id":1,
 		    "username":"MaelLePatron",
-		    "password":"passWord123!",
-		    "passwordConfirm":"passWord123!",
+		    "password":"!passWord123",
+		    "passwordConfirm":"!passWord123",
 		    "role": "ADMIN"
 		    }
 		""";
@@ -304,6 +305,52 @@ public class StaffControllerTests {
 		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
 	}
 
+
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaffId_whenEditName_thenReturnUpdatedStaff() throws Exception {
+
+		// Arrange
+
+
+		//Simulate an existing staff
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+
+		Staff staffToUpdate = staff;
+		staffToUpdate.setUsername("MaelLePatron");
+
+		//simulate update staff
+		staff.setUsername("MaelLePatron");
+		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
+		String json = """
+			{
+			"id":1,
+		    "username":"MaelLePatron",
+		    "password":null,
+		    "passwordConfirm":null,
+		    "role": "ADMIN"
+		    }
+		""";
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute
+		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
+
+		// Assert
+		String expectedResponse = """
+						{
+					    "id": 1,
+					    "username": "MaelLePatron",
+					    "role": "ADMIN",
+					    "status": true
+						}
+				""";
+
+		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
+	}
+	
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAnActiveStaff_WhenDeleteStaff_ShouldReturnStatusOk() throws Exception {
