@@ -95,7 +95,7 @@ public class StaffControllerTests {
 
 		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
 	}
-	
+
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenStaffWithDeletedFalse_whenGetStaffById_shouldReturnOne() throws Exception {
@@ -139,7 +139,7 @@ public class StaffControllerTests {
 		// Execute and Assert
 		mvc.perform(request).andExpect(status().isNotFound());
 	}
-	
+
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenStaffWithDeletedTrue_whenGetStaffById_shouldThrowException() throws Exception {
@@ -245,18 +245,19 @@ public class StaffControllerTests {
 	void givenAStaffId_whenEditName_thenReturnUpdatedStaff() throws Exception {
 
 		// Arrange
-		
-			
+
+
 		//Simulate an existing staff
 		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
 		when(staffService.getStaffById(1)).thenReturn(staff);
-		
+
 		Staff staffToUpdate = staff;
 		staffToUpdate.setUsername("MaelLePatron");
-		
+
 		//simulate update staff
 		staff.setUsername("MaelLePatron");
 		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
+		when(staffService.createStaff(staffToUpdate)).thenReturn(staffToUpdate);
 		String json = """
 			{
 			"id":1,
