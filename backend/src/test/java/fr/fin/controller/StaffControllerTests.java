@@ -261,17 +261,17 @@ public class StaffControllerTests {
 			{
 			"id":1,
 		    "username":"MaelLePatron",
+		    "password":"passWord123!",
+		    "passwordConfirm":"passWord123!",
 		    "role": "ADMIN"
 		    }
 		""";
 
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
 
-
 		// Execute
 		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
 
-        
 		// Assert
 		String expectedResponse = """
 						{
