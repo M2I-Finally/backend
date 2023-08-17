@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,12 +19,17 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "staff")
 public class Staff implements UserDetails {
 
 	private static final long serialVersionUID = -4414646490025845750L;
+
+	@Transient
+	@Value("${finally.password.trial}")
+	private static int passwordTrialLimit;
 
 	@Id
 	@Column(name = "staff_id")
@@ -63,7 +69,7 @@ public class Staff implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return ((this.passwordTrial >= 50000) ? false: true);
+		return ((this.passwordTrial >= passwordTrialLimit) ? false: true);
 	}
 
 	@Override
