@@ -115,7 +115,7 @@ public class StaffController {
 
 			Staff staffToCreate = convertToGestionEntity(staffDto);
 			staffToCreate.setPasswordTrial(0);
-			staffService.createStaff(staffToCreate);
+			staffService.saveStaff(staffToCreate);
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}
 
@@ -197,7 +197,7 @@ public class StaffController {
 				staffToUpdate.setUpdateAt(new Date());
 
 				// update staff
-				StaffTablePageDto staffUpdated = convertToTableDto(staffService.createStaff(staffToUpdate));
+				StaffTablePageDto staffUpdated = convertToTableDto(staffService.saveStaff(staffToUpdate));
 
 				return staffUpdated;
 			}

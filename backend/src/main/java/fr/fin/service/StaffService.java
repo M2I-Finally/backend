@@ -26,10 +26,8 @@ public class StaffService implements UserDetailsService {
 		return staffRepository.findByStatusTrue();
 	}
 
-	public Staff createStaff(Staff staff) {
-
-		Staff newStaff = staffRepository.save(staff);
-		return newStaff;
+	public Staff saveStaff(Staff staff) {
+		return staffRepository.save(staff);
 	}
 
 	public Staff getStaffById(Integer id) {
@@ -47,9 +45,6 @@ public class StaffService implements UserDetailsService {
 		return null;
 	}
 
-	public Staff saveStaff(Staff staff) {
-		return staffRepository.save(staff);
-	}
 	
 	public Staff updateStaffStatus(Integer id) {
 		Staff updatedStaff = this.getStaffById(id);

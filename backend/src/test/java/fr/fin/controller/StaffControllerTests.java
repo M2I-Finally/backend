@@ -204,6 +204,25 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isBadRequest());
 	}
 
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenStaffGesionPageDtoWithValidatedInfo_whenCreateStaff_shouldReturnValidationStatusOk() throws Exception {
+
+		// Arrange
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername("Zoe");
+		createStaffGestionPageDto.setPassword("passWord123!");
+		createStaffGestionPageDto.setPasswordConfirm("passWord123!");
+		createStaffGestionPageDto.setRole("MANAGER");
+
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/users").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isCreated());
+	}
+	
 //	@Test
 //	@WithMockUser(username = "admin", authorities = "ADMIN")
 //	void givenExistingStaffName_whenCreateStaff_thenReturnBadRequest() throws Exception {
@@ -257,7 +276,6 @@ public class StaffControllerTests {
 		//simulate update staff
 		staff.setUsername("MaelLePatron");
 		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
-		when(staffService.createStaff(staffToUpdate)).thenReturn(staffToUpdate);
 		String json = """
 			{
 			"id":1,
