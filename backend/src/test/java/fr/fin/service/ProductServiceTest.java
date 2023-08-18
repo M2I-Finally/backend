@@ -74,7 +74,7 @@ public class ProductServiceTest {
 		List<Product> products = productService.getAllProducts();
 
 		// Assert
-		assertThat(products.size()).isEqualTo(2);
+		assertThat(products).hasSize(2);
 	}
 
 	@Test
