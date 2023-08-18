@@ -487,4 +487,36 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isNotFound());
 	}
 
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenStaff_whenGetStaffByUsername_shouldReturnStaff() throws Exception {
+
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, new Date(), new Date());
+		when(staffService.getStaffByUserName("Mael")).thenReturn(staff);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/users/username/Mael");
+
+		// Execute
+		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
+
+		// Assert
+		mvc.perform(request).andExpect(status().isOk());
+	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenStaffNotExist_whenGetStaffByUsername_shouldReturnStaff() throws Exception {
+
+		// Arrange
+		when(staffService.getStaffByUserName("Mael")).thenReturn(null);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/users/username/Mael");
+
+		// Execute
+		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
+
+		// Assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
 }
