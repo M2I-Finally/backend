@@ -13,7 +13,7 @@ public class ProductGestionPageDto {
 	private Integer productId;
 
 	@NotNull
-	@Pattern(regexp = "[a-zA-Z0-9 ']+", message = "Un nom de produit ne peut contenir des lettres, des chiffres et des espaces")
+	@Pattern(regexp = "[A-Za-zÀ-ÖØ-öø-ÿ0-9 ']+", message = "Un nom de produit ne peut contenir des lettres, des chiffres et des espaces")
 	private String name;
 
 	private String description;

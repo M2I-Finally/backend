@@ -6,9 +6,11 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,20 +22,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.fin.auth.IsAdmin;
+import fr.fin.exceptions.custom.ActionForbiddenException;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.exceptions.custom.ValidationErrorException;
+import fr.fin.model.dto.CheckPasswordDto;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
 import fr.fin.repository.StaffRepository;
 import fr.fin.service.StaffService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
 @CrossOrigin
-@IsAdmin // only admin can CRUD users/staffs
 public class StaffController {
 
+	@Value("${finally.masteraccount}")
+	private String masterAccountName;
 
 	@Autowired
 	private StaffService staffService;
@@ -70,6 +76,7 @@ public class StaffController {
 	 * @return staffsDto view
 	 */
 	@GetMapping
+	@IsAdmin
 	public List<StaffTablePageDto> getAllStaff() {
 		List<Staff> staffs = staffService.getAllStaffs();
 		List<StaffTablePageDto> staffsDto = new ArrayList<StaffTablePageDto>();
@@ -89,6 +96,7 @@ public class StaffController {
 	 * @throws ResourceNotFoundException
 	 */
 	@PostMapping
+	@IsAdmin
 	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto)
 			throws ValidationErrorException, ResourceNotFoundException {
 
@@ -159,6 +167,7 @@ public class StaffController {
 	 * @throws ResourceNotFoundException
 	 */
 	@PutMapping("/{id}")
+	@IsAdmin
 	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
 		if (staffDto != null) {
@@ -217,12 +226,17 @@ public class StaffController {
 	 * @param id	The id of the user
 	 * @return		The user
 	 * @throws ResourceNotFoundException
+	 * @throws ActionForbiddenException
 	 */
 	@PatchMapping("/{id}")
-	public StaffGestionPageDto updateUserStatus(@PathVariable("id") Integer id) throws ResourceNotFoundException {
+	@IsAdmin
+	public StaffGestionPageDto updateUserStatus(@PathVariable("id") Integer id) throws ResourceNotFoundException, ActionForbiddenException {
 		Staff staff = staffService.getStaffById(id);
 		if(staff != null) {
-			return convertToGestionDto(staffService.updateStaffStatus(id));
+			if(!masterAccountName.equals(staff.getUsername())) {
+				return convertToGestionDto(staffService.updateStaffStatus(id));
+			}
+			throw new ActionForbiddenException("Impossible de supprimer le compte");
 		}
 		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
 	}
@@ -234,11 +248,23 @@ public class StaffController {
 	 * @throws ResourceNotFoundException
 	 */
 	@GetMapping("/username/{userName}")
-	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) throws ResourceNotFoundException {
+	@IsAdmin
+	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) {
 		Staff staff = staffService.getStaffByUserName(userName);
 		if( staff != null ) {
 			return convertToGestionDto(staffService.getStaffByUserName(userName));
 		}
 		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
+	}
+
+	@PostMapping("/check")
+	public boolean checkPasswordToLogout(@Valid @RequestBody CheckPasswordDto checkPasswordDto, BindingResult bindingResult) throws ValidationErrorException {
+
+		if(bindingResult.hasErrors()) {
+			throw new ValidationErrorException("Les champs sont invalides");
+		}
+
+		String hashedPassword = staffService.getPasswordById(checkPasswordDto.getUserId());
+		return bCryptPasswordEncoder.matches(checkPasswordDto.getPassword(), hashedPassword);
 	}
 }

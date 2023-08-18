@@ -9,7 +9,6 @@ import fr.fin.model.entity.Staff;
 
 @Repository
 public interface StaffRepository extends CrudRepository<Staff, Integer> {
-
-	List<Staff> findByStatusTrue();
-	Staff findByUsernameIgnoreCase(String username);
+	List<Staff> findAllByStatusTrue();
+	Staff findByUsername(String username);
 }
