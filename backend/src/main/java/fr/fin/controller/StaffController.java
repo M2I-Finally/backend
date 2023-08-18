@@ -25,6 +25,7 @@ import fr.fin.exceptions.custom.ValidationErrorException;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
+import fr.fin.repository.StaffRepository;
 import fr.fin.service.StaffService;
 
 @RestController
@@ -94,7 +95,13 @@ public class StaffController {
 		if (staffDto.getUsername() != null && !staffDto.getUsername().isBlank() && !staffDto.getUsername().isEmpty()) {
 
 			PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
-
+			
+			//username cannot be exist already
+			if (staffService.getStaffByUserName(staffDto.getUsername()) != null) {
+				throw new ValidationErrorException(
+						"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
+			}
+			
 			// password needs to match the pattern
 			if (!passwordValidator.isValid(staffDto.getPassword())) {
 				throw new ValidationErrorException(passwordValidator.getMessage());

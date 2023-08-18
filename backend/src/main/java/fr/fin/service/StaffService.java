@@ -19,7 +19,7 @@ public class StaffService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return staffRepository.findByUsername(username);
+		return staffRepository.findByUsernameIgnoreCase(username);
 	}
 
 	public List<Staff> getAllStaffs() {
@@ -39,8 +39,8 @@ public class StaffService implements UserDetailsService {
 	}
 	
 	public Staff getStaffByUserName(String userName) {
-		if ( staffRepository.findByUsername(userName) != null ) {
-			return staffRepository.findByUsername(userName);
+		if ( staffRepository.findByUsernameIgnoreCase(userName) != null ) {
+			return staffRepository.findByUsernameIgnoreCase(userName);
 		}
 		return null;
 	}
@@ -55,4 +55,5 @@ public class StaffService implements UserDetailsService {
 		}
 		return null;
 	}
+	
 }
