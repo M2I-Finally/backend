@@ -206,6 +206,28 @@ public class StaffControllerTests {
 	
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaff_whenCreateStaffWithNotValidatedPassword_thenReturnError() throws Exception {
+
+		// Arrange
+
+
+		//Simulate an existing staff
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername("Mael");
+		createStaffGestionPageDto.setPassword("123");
+		createStaffGestionPageDto.setPasswordConfirm("123!");
+		createStaffGestionPageDto.setRole("ADMIN");
+
+		//simulate update staff
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/users").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenStaffGesionPageDtoWithValidatedInfo_whenCreateStaff_shouldReturnValidationStatusOk() throws Exception {
 
 		// Arrange
