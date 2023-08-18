@@ -285,18 +285,7 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isBadRequest());
 	}
 
-	@Test
-	@WithMockUser(username = "admin", authorities = "ADMIN")
-	void givenAnNonExistentStaff_whenPatchStatus_returnNotFoundStatus() throws Exception {
-
-		// Arrange
-		when(staffService.getStaffById(2)).thenReturn(null);
-
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/users/2");
-
-		// Execute and Assert
-		mvc.perform(request).andExpect(status().isNotFound());
-	}
+	
 
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
@@ -342,8 +331,73 @@ public class StaffControllerTests {
 
 		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
 	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaffId_whenEditNameWithExistingUsername_thenReturnError() throws Exception {
+
+		// Arrange
 
 
+		//Simulate an existing staff
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+
+		Staff staffToUpdate = staff;
+		staffToUpdate.setUsername("Mael");
+
+		//simulate update staff
+		when(staffService.getStaffByUserName("Mael")).thenReturn(staff);
+		String json = """
+			{
+			"id":1,
+		    "username":"Mael",
+		    "password":"!passWord123",
+		    "passwordConfirm":"!passWord123",
+		    "role": "ADMIN"
+		    }
+		""";
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaffId_whenEditNameWithNotValidatedPassword_thenReturnError() throws Exception {
+
+		// Arrange
+
+
+		//Simulate an existing staff
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+
+		Staff staffToUpdate = staff;
+		staffToUpdate.setUsername("MaelLePatron");
+		staffToUpdate.setPassword("123");
+		
+		//simulate update staff
+		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
+		String json = """
+			{
+			"id":1,
+		    "username":"Mael",
+		    "password":"123",
+		    "passwordConfirm":"123",
+		    "role": "ADMIN"
+		    }
+		""";
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+	
+	
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAStaffId_whenEditName_thenReturnUpdatedStaff() throws Exception {
@@ -406,6 +460,18 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isOk());
 	}
 
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAnNonExistentStaff_whenPatchStatus_returnNotFoundStatus() throws Exception {
+
+		// Arrange
+		when(staffService.getStaffById(2)).thenReturn(null);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/users/2");
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
 
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
@@ -421,4 +487,36 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isNotFound());
 	}
 
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenStaff_whenGetStaffByUsername_shouldReturnStaff() throws Exception {
+
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, new Date(), new Date());
+		when(staffService.getStaffByUserName("Mael")).thenReturn(staff);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/users/username/Mael");
+
+		// Execute
+		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
+
+		// Assert
+		mvc.perform(request).andExpect(status().isOk());
+	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenStaffNotExist_whenGetStaffByUsername_shouldReturnStaff() throws Exception {
+
+		// Arrange
+		when(staffService.getStaffByUserName("Mael")).thenReturn(null);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/users/username/Mael");
+
+		// Execute
+		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
+
+		// Assert
+		mvc.perform(request).andExpect(status().isNotFound());
+	}
 }

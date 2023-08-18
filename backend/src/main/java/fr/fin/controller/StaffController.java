@@ -104,13 +104,13 @@ public class StaffController {
 		if (staffDto.getUsername() != null && !staffDto.getUsername().isBlank() && !staffDto.getUsername().isEmpty()) {
 
 			PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
-			
-			//username cannot be exist already
+
+			// username cannot be exist already
 			if (staffService.getStaffByUserName(staffDto.getUsername()) != null) {
 				throw new ValidationErrorException(
 						"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
 			}
-			
+
 			// password needs to match the pattern
 			if (!passwordValidator.isValid(staffDto.getPassword())) {
 				throw new ValidationErrorException(passwordValidator.getMessage());
@@ -169,31 +169,29 @@ public class StaffController {
 	 */
 	@PutMapping("/{id}")
 	@IsAdmin
-	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
-			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
-		if (staffDto != null) {
+	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id, @RequestBody StaffGestionPageDto staffDto)
+			throws ValidationErrorException, ResourceNotFoundException {
+		if (staffDto.getUsername() != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
 
 			// staff cannot be 'deleted'
 			if (staffToUpdate.isStatus()) {
-				
-				
+
 				// update username
 				if (staffDto.getUsername() != null) {
-					
-					//username cannot be exist already
+
+					// username cannot be exist already
 					if (staffService.getStaffByUserName(staffDto.getUsername()) != null) {
 						throw new ValidationErrorException(
 								"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
 					}
-					
+
 					staffToUpdate.setUsername(staffDto.getUsername());
 				}
 
-
-				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null ) ||
-					(staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank()) ||
-					(staffDto.getPassword().isEmpty()&& staffDto.getPasswordConfirm().isEmpty() )) {
+				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null)
+						|| (staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank())
+						|| (staffDto.getPassword().isEmpty() && staffDto.getPasswordConfirm().isEmpty())) {
 
 					// leave password null will keep old password
 					staffToUpdate.setPassword(staffToUpdate.getPassword());
@@ -231,18 +229,21 @@ public class StaffController {
 	}
 
 	/**
-	 * UPDATE the status of user, given its id, instead of completely deleting it from DB
-	 * @param id	The id of the user
-	 * @return		The user
+	 * UPDATE the status of user, given its id, instead of completely deleting it
+	 * from DB
+	 * 
+	 * @param id The id of the user
+	 * @return The user
 	 * @throws ResourceNotFoundException
 	 * @throws ActionForbiddenException
 	 */
 	@PatchMapping("/{id}")
 	@IsAdmin
-	public StaffGestionPageDto updateUserStatus(@PathVariable("id") Integer id) throws ResourceNotFoundException, ActionForbiddenException {
+	public StaffGestionPageDto updateUserStatus(@PathVariable("id") Integer id)
+			throws ResourceNotFoundException, ActionForbiddenException {
 		Staff staff = staffService.getStaffById(id);
-		if(staff != null) {
-			if(!masterAccountName.equals(staff.getUsername())) {
+		if (staff != null) {
+			if (!masterAccountName.equals(staff.getUsername())) {
 				return convertToGestionDto(staffService.updateStaffStatus(id));
 			}
 			throw new ActionForbiddenException("Impossible de supprimer le compte");
@@ -252,24 +253,27 @@ public class StaffController {
 
 	/**
 	 * GET the user given its username
-	 * @param userName	The username of the user
+	 * 
+	 * @param userName The username of the user
 	 * @return The user
 	 * @throws ResourceNotFoundException
 	 */
 	@GetMapping("/username/{userName}")
 	@IsAdmin
-	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) throws ResourceNotFoundException {
+	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName)
+			throws ResourceNotFoundException {
 		Staff staff = staffService.getStaffByUserName(userName);
-		if( staff != null ) {
+		if (staff != null) {
 			return convertToGestionDto(staffService.getStaffByUserName(userName));
 		}
 		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
 	}
 
 	@PostMapping("/check")
-	public boolean checkPasswordToLogout(@Valid @RequestBody CheckPasswordDto checkPasswordDto, BindingResult bindingResult) throws ValidationErrorException {
+	public boolean checkPasswordToLogout(@Valid @RequestBody CheckPasswordDto checkPasswordDto,
+			BindingResult bindingResult) throws ValidationErrorException {
 
-		if(bindingResult.hasErrors()) {
+		if (bindingResult.hasErrors()) {
 			throw new ValidationErrorException("Les champs sont invalides");
 		}
 
