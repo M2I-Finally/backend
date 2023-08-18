@@ -31,11 +31,13 @@ import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.StaffService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Staff", description = "Manage application's staff")
 @RestController
-@RequestMapping("/users")
 @CrossOrigin
+@RequestMapping("/users")
 public class StaffController {
 
 	@Value("${finally.masteraccount}")

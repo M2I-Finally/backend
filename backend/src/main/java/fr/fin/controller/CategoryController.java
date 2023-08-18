@@ -27,8 +27,10 @@ import fr.fin.model.dto.category.CategoryDto;
 import fr.fin.model.dto.category.CreateUpdateCategoryDto;
 import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Categories", description = "Manage categories")
 @CrossOrigin
 @RestController
 @RequestMapping("/categories")

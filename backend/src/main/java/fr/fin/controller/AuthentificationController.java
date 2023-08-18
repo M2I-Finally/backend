@@ -1,22 +1,23 @@
-package fr.fin.auth;
+package fr.fin.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.fin.exceptions.custom.ValidationErrorException;
+import fr.fin.auth.AuthenticationService;
+import fr.fin.auth.JwtLoginRequest;
+import fr.fin.auth.JwtTokenResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
+@Tag(name = "Authentification", description = "Endpoint for authentification")
 @RestController
 @CrossOrigin
 public class AuthentificationController {
@@ -48,19 +49,4 @@ public class AuthentificationController {
 		return ResponseEntity.ok(tokenResponse);
 	}
 
-	/**
-	 * Generate BCrypt password utility route (will be disabled later)
-	 * @param secret	The string to encode using BCrypt
-	 * @return			The encoded string
-	 * @throws ValidationErrorException
-	 */
-	@GetMapping("/bcrypt")
-	public String bcryptPasswordGenerator(@RequestParam(value = "secret", required = true) String secret) throws ValidationErrorException {
-
-		if(secret == null) {
-			throw new ValidationErrorException("Il manque le paramètre 'secret'");
-		}
-
-		return new BCryptPasswordEncoder().encode(secret);
-	}
 }

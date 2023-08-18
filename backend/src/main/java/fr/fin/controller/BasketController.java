@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.fin.exceptions.custom.ResourceNotFoundException;
@@ -27,7 +26,9 @@ import fr.fin.model.entity.Payment;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.BasketPaymentService;
 import fr.fin.service.BasketService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Basket", description = "Manage basket's payment")
 @RestController
 @CrossOrigin
 public class BasketController {
@@ -86,23 +87,23 @@ public class BasketController {
 	 * List<Payment> payments = new ArrayList<>(); List<PaymentDto> paymentDtoList =
 	 * dto.getpaymentDtoList(); List<BasketDetailDto> listBasketDetailDto =
 	 * dto.getBasketDetailDto();
-	 * 
-	 * 
+	 *
+	 *
 	 * for (PaymentDto paymentDto : paymentDtoList) { payments.add(new
 	 * Payment(paymentDto.getAmount(),PaymentType.valueOfPosition(paymentDto.
 	 * getPaymentTypeId()))); }
-	 * 
+	 *
 	 * for (BasketDetailDto basketDetailDto : listBasketDetailDto) { Product product
 	 * = new Product(); product.setProductId(basketDetailDto.getproductId());
 	 * listBasketDetail.add(new
 	 * BasketDetail(basketDetailDto.getQuantity(),basketDetailDto.getDiscount(),
 	 * product) ); }
-	 * 
+	 *
 	 * basket.setDiscount(dto.getDiscount()); basket.setStaff(new
 	 * Staff(dto.getSellerId()));
-	 * 
-	 * 
-	 * 
+	 *
+	 *
+	 *
 	 * return null; }
 	 */
 
@@ -131,10 +132,10 @@ public class BasketController {
 
 	/**
 	 * Make TodaySaleDto for the route GET /today-sale
-	 * 
+	 *
 	 * @param listBaskets found in database
 	 * @return TodaySaleDto PAymentType : cash = 0 , bank_card = 1 , other = 2
-	 * 
+	 *
 	 */
 	private TodaySaleDto makerSaleDto(List<Basket> listBaskets) {
 

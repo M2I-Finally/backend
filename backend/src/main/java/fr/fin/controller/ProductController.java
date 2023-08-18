@@ -32,8 +32,10 @@ import fr.fin.model.entity.Product;
 import fr.fin.service.CategoryService;
 import fr.fin.service.FileService;
 import fr.fin.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Products", description = "Manage products")
 @RequestMapping("/products")
 @CrossOrigin
 @RestController
