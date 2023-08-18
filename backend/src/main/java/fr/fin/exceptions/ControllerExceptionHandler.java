@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import fr.fin.auth.UnauthorizedType;
 import fr.fin.exceptions.custom.ActionForbiddenException;
 import fr.fin.exceptions.custom.ResourceAlreadyExistsException;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
@@ -48,25 +47,25 @@ public class ControllerExceptionHandler {
 	@ExceptionHandler(BadCredentialsException.class)
 	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public ResponseError handleBadCredentialsException(Exception ex, WebRequest request) {
-		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), UnauthorizedType.BAD_CREDENTIALS);
+		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Les identifiants sont incorrects");
 	}
 
 	@ExceptionHandler(LockedException.class)
 	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public ResponseError handleLockedException(Exception ex, WebRequest request) {
-		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), UnauthorizedType.ACCOUNT_LOCKED);
+		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Le compte est verrouillé");
 	}
 
 	@ExceptionHandler(DisabledException.class)
 	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public ResponseError handleDisabledException(Exception ex, WebRequest request) {
-		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), UnauthorizedType.ACCOUNT_DISABLED);
+		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Le compte est désactivé");
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
 	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public ResponseError handleAccessDeniedException(Exception ex, WebRequest request) {
-		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Vous n'avez pas les droits pour accéder à cette page", UnauthorizedType.INSUFFICIENT_RIGHTS);
+		return new ResponseError(HttpStatus.UNAUTHORIZED.value(), "Vous n'avez pas les droits pour accéder à cette page");
 
 	}
 
