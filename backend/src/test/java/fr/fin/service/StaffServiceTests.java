@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import fr.fin.model.entity.Product;
 import fr.fin.model.entity.Staff;
 import fr.fin.repository.StaffRepository;
 
