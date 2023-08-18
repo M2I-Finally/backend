@@ -234,11 +234,11 @@ public class StaffController {
 	 * @throws ResourceNotFoundException
 	 */
 	@GetMapping("/username/{userName}")
-	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) {
+	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) throws ResourceNotFoundException {
 		Staff staff = staffService.getStaffByUserName(userName);
 		if( staff != null ) {
 			return convertToGestionDto(staffService.getStaffByUserName(userName));
 		}
-		return null;
+		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
 	}
 }

@@ -239,28 +239,51 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isBadRequest());
 	}
 	
-//	@Test
-//	@WithMockUser(username = "admin", authorities = "ADMIN")
-//	void givenExistingStaffName_whenCreateStaff_thenReturnBadRequest() throws Exception {
-//
-//		// Arrange
-//		when(staffService.checkIfStaffExistsByName("Jordan")).thenReturn(true);
-//		String json = """
-//				{
-//				"id":4,
-//			    "username":"Jordan",
-//			    "password":"passWord123!",
-//			    "passwordConfirm":"passWord123!",
-//			    "role": "EMPLOYEE"
-//			    }
-//		""";
-//
-//		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/users").content(json).contentType(MediaType.APPLICATION_JSON);
-//
-//		// Execute and Assert
-//		mvc.perform(request).andExpect(status().isBadRequest());
-//	}
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenExistingStaffName_whenCreateStaff_thenReturnBadRequest() throws Exception {
+		
+		// Arrange
+		Staff staff = new Staff(2, "Jordan", "passWord123!", 0, "EMPLOYEE", true, new Date(), new Date());
+		when(staffService.getStaffByUserName("Jordan")).thenReturn(staff);
+		String json = """
+				{
+				"id":4,
+			    "username":"Jordan",
+			    "password":"passWord123!",
+			    "passwordConfirm":"passWord123!",
+			    "role": "EMPLOYEE"
+			    }
+		""";
 
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/users").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenExistingStaffName_whenCreateStaffWithUsernameExistingInLowercase_thenReturnBadRequest() throws Exception {
+		
+		// Arrange
+		Staff staff = new Staff(2, "Jordan", "passWord123!", 0, "EMPLOYEE", true, new Date(), new Date());
+		when(staffService.getStaffByUserName("jordan")).thenReturn(staff);
+		String json = """
+				{
+				"id":4,
+			    "username":"jordan",
+			    "password":"passWord123!",
+			    "passwordConfirm":"passWord123!",
+			    "role": "EMPLOYEE"
+			    }
+		""";
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/users").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
 
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
