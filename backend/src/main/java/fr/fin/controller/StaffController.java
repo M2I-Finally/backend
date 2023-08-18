@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.auth.IsAdmin;
 import fr.fin.exceptions.custom.ActionForbiddenException;
@@ -30,6 +29,7 @@ import fr.fin.model.dto.CheckPasswordDto;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
+import fr.fin.repository.StaffRepository;
 import fr.fin.service.StaffService;
 import jakarta.validation.Valid;
 
@@ -100,10 +100,16 @@ public class StaffController {
 	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto)
 			throws ValidationErrorException, ResourceNotFoundException {
 
-		if (staffDto != null && !staffDto.getUsername().isBlank()) {
+		if (staffDto.getUsername() != null && !staffDto.getUsername().isBlank() && !staffDto.getUsername().isEmpty()) {
 
 			PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
-
+			
+			//username cannot be exist already
+			if (staffService.getStaffByUserName(staffDto.getUsername()) != null) {
+				throw new ValidationErrorException(
+						"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
+			}
+			
 			// password needs to match the pattern
 			if (!passwordValidator.isValid(staffDto.getPassword())) {
 				throw new ValidationErrorException(passwordValidator.getMessage());
@@ -123,11 +129,11 @@ public class StaffController {
 
 			Staff staffToCreate = convertToGestionEntity(staffDto);
 			staffToCreate.setPasswordTrial(0);
-			staffService.createStaff(staffToCreate);
+			staffService.saveStaff(staffToCreate);
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}
 
-		throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+		throw new ValidationErrorException("Veuillez vérifier votre saisi.");
 	}
 
 	/**
@@ -206,13 +212,13 @@ public class StaffController {
 				staffToUpdate.setUpdateAt(new Date());
 
 				// update staff
-				StaffTablePageDto staffUpdated = convertToTableDto(staffService.createStaff(staffToUpdate));
+				StaffTablePageDto staffUpdated = convertToTableDto(staffService.saveStaff(staffToUpdate));
 
 				return staffUpdated;
 			}
-			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+			throw new ResourceNotFoundException("Cet utilisateur n'existe pas.");
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+		throw new ValidationErrorException("Erreur dans la requête.");
 	}
 
 	/**
@@ -232,13 +238,13 @@ public class StaffController {
 			}
 			throw new ActionForbiddenException("Impossible de supprimer le compte");
 		}
-		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé");
+		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
 	}
 
 	/**
 	 * GET the user given its username
 	 * @param userName	The username of the user
-	 * @return		The user
+	 * @return The user
 	 * @throws ResourceNotFoundException
 	 */
 	@GetMapping("/username/{userName}")
@@ -248,7 +254,7 @@ public class StaffController {
 		if( staff != null ) {
 			return convertToGestionDto(staffService.getStaffByUserName(userName));
 		}
-		return null;
+		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
 	}
 
 	@PostMapping("/check")
