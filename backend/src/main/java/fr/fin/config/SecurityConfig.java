@@ -62,6 +62,7 @@ public class SecurityConfig {
 	            .requestMatchers("/login").permitAll()
 	            .requestMatchers("/bcrypt").permitAll()
 	            .requestMatchers("/images/**").permitAll()
+	            .requestMatchers("/v3/**", "/swagger-ui/**").permitAll()
 	            .requestMatchers("/**").authenticated())
 	        .cors(Customizer.withDefaults())
 	        .csrf(csrf -> csrf.disable())
