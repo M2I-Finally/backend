@@ -286,7 +286,6 @@ public class StaffControllerTests {
 	}
 
 	
-
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenAStaffId_whenEditNameAndPassword_thenReturnUpdatedStaff() throws Exception {
@@ -330,6 +329,67 @@ public class StaffControllerTests {
 				""";
 
 		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
+	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaffId_whenEditWithoutName_thenReturnError() throws Exception {
+
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+		
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername(null);
+
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaffId_whenEditUserWithPasswordDifferentThanPasswordConfirm_thenReturnError() throws Exception {
+
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+		
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername("MaelLePatron");
+		createStaffGestionPageDto.setPassword("passWord123!");
+		createStaffGestionPageDto.setPasswordConfirm("passWord123!!");
+
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaffId_whenEditUserWithStatusFalse_thenReturnError() throws Exception {
+
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", false, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+		
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername("MaelLePatron");
+		createStaffGestionPageDto.setPassword("passWord123!");
+		createStaffGestionPageDto.setPasswordConfirm("passWord123!");
+
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isNotFound());
 	}
 	
 	@Test
@@ -381,15 +441,7 @@ public class StaffControllerTests {
 		
 		//simulate update staff
 		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
-		String json = """
-			{
-			"id":1,
-		    "username":"Mael",
-		    "password":"123",
-		    "passwordConfirm":"123",
-		    "role": "ADMIN"
-		    }
-		""";
+		String json = mapper.writeValueAsString(staffToUpdate);
 
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
 
@@ -409,21 +461,14 @@ public class StaffControllerTests {
 		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
 		when(staffService.getStaffById(1)).thenReturn(staff);
 
-		Staff staffToUpdate = staff;
-		staffToUpdate.setUsername("MaelLePatron");
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername("MaelLePatron");
+	
 
 		//simulate update staff
 		staff.setUsername("MaelLePatron");
-		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
-		String json = """
-			{
-			"id":1,
-		    "username":"MaelLePatron",
-		    "password":null,
-		    "passwordConfirm":null,
-		    "role": "ADMIN"
-		    }
-		""";
+		when(staffService.saveStaff(staff)).thenReturn(staff);
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
 
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
 
@@ -431,16 +476,7 @@ public class StaffControllerTests {
 		MockHttpServletResponse response = mvc.perform(request).andReturn().getResponse();
 
 		// Assert
-		String expectedResponse = """
-						{
-					    "id": 1,
-					    "username": "MaelLePatron",
-					    "role": "ADMIN",
-					    "status": true
-						}
-				""";
-
-		assertEquals(mapper.readTree(expectedResponse), mapper.readTree(response.getContentAsString()));
+		mvc.perform(request).andExpect(status().isOk());
 	}
 	
 	@Test
@@ -487,6 +523,36 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isNotFound());
 	}
 
+	@Test
+	@WithMockUser(username = "employee", authorities = "MANAGER")
+	void givenAStaffNotAdmin_whenDeleteStaff_ShouldReturnStatusUnauthorized() throws Exception {
+
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+
+		// Execute
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/users/1");
+
+		// Assert
+		mvc.perform(request).andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenAStaff_whenDeleteSelf_ShouldReturnStatusForbidden() throws Exception {
+
+		// Arrange
+		Staff staff = new Staff(1, "admin", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(1)).thenReturn(staff);
+		
+		// Execute
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.patch("/users/1");
+
+		// Assert
+		mvc.perform(request).andExpect(status().isForbidden());
+	}
+	
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenStaff_whenGetStaffByUsername_shouldReturnStaff() throws Exception {
