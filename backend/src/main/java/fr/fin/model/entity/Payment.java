@@ -2,7 +2,6 @@ package fr.fin.model.entity;
 
 import java.util.Date;
 
-import fr.fin.model.enumeration.PaymentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -107,7 +106,7 @@ public class Payment {
 		return "Payment [id=" + id + ", amount=" + amount + ", type=" + type + ", createdAt=" + createdAt + ", basket="
 				+ basket + "]";
 	}
-	
-	
+
+
 
 }
