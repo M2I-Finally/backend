@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.auth.IsAdmin;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
@@ -92,7 +91,7 @@ public class StaffController {
 	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto)
 			throws ValidationErrorException, ResourceNotFoundException {
 
-		if (staffDto != null && !staffDto.getUsername().isBlank()) {
+		if (staffDto.getUsername() != null && !staffDto.getUsername().isBlank() && !staffDto.getUsername().isEmpty()) {
 
 			PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
 
@@ -119,7 +118,7 @@ public class StaffController {
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}
 
-		throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+		throw new ValidationErrorException("Veuillez vérifier votre saisi.");
 	}
 
 	/**
@@ -129,7 +128,7 @@ public class StaffController {
 	 * @return
 	 * @throws ResourceNotFoundException
 	 */
-	@GetMapping("{id}")
+	@GetMapping("/{id}")
 	public StaffGestionPageDto getStaffById(@PathVariable("id") Integer id) throws ResourceNotFoundException {
 
 		if (staffService.getStaffById(id) != null && staffService.getStaffById(id).isStatus()) {
@@ -152,7 +151,7 @@ public class StaffController {
 	 * @throws ValidationErrorException
 	 * @throws ResourceNotFoundException
 	 */
-	@PutMapping("{id}")
+	@PutMapping("/{id}")
 	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
 			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
 		if (staffDto != null) {
@@ -201,9 +200,9 @@ public class StaffController {
 
 				return staffUpdated;
 			}
-			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+			throw new ResourceNotFoundException("Cet utilisateur n'existe pas.");
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+		throw new ValidationErrorException("Erreur dans la requête.");
 	}
 
 	/**
@@ -218,7 +217,7 @@ public class StaffController {
 		if(staff != null) {
 			return convertToGestionDto(staffService.updateStaffStatus(id));
 		}
-		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé");
+		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
 	}
 
 	/**

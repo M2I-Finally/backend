@@ -204,7 +204,6 @@ public class StaffControllerTests {
 		mvc.perform(request).andExpect(status().isBadRequest());
 	}
 	
-
 	@Test
 	@WithMockUser(username = "admin", authorities = "ADMIN")
 	void givenStaffGesionPageDtoWithValidatedInfo_whenCreateStaff_shouldReturnValidationStatusOk() throws Exception {
@@ -222,6 +221,22 @@ public class StaffControllerTests {
 
 		// Execute and Assert
 		mvc.perform(request).andExpect(status().isCreated());
+	}
+	
+	@Test
+	@WithMockUser(username = "admin", authorities = "ADMIN")
+	void givenStaffGesionPageDtoWithNoUsername_whenCreateStaff_shouldReturnNotFoundMessage() throws Exception {
+
+		// Arrange
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername(null);
+
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/users").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Execute and Assert
+		mvc.perform(request).andExpect(status().isBadRequest());
 	}
 	
 //	@Test
