@@ -29,7 +29,6 @@ import fr.fin.model.dto.CheckPasswordDto;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
-import fr.fin.repository.StaffRepository;
 import fr.fin.service.StaffService;
 import jakarta.validation.Valid;
 
@@ -175,9 +174,17 @@ public class StaffController {
 
 			// staff cannot be 'deleted'
 			if (staffToUpdate.isStatus()) {
-
+				
+				
 				// update username
 				if (staffDto.getUsername() != null) {
+					
+					//username cannot be exist already
+					if (staffService.getStaffByUserName(staffDto.getUsername()) != null) {
+						throw new ValidationErrorException(
+								"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
+					}
+					
 					staffToUpdate.setUsername(staffDto.getUsername());
 				}
 
@@ -249,7 +256,7 @@ public class StaffController {
 	 */
 	@GetMapping("/username/{userName}")
 	@IsAdmin
-	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) {
+	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) throws ResourceNotFoundException {
 		Staff staff = staffService.getStaffByUserName(userName);
 		if( staff != null ) {
 			return convertToGestionDto(staffService.getStaffByUserName(userName));
