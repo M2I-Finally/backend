@@ -33,10 +33,16 @@ public class StaffRepositoryTests {
 	@DisplayName("findByUsername(username), should return staff with given user")
 	@Sql("Staff_findStaffByUserNameDeletedFalse.sql")
 	void findByUsername_ShouldReturn_User() {
-		Staff staff = staffRepository.findByUsername("Mael");
+		Staff staff = staffRepository.findByUsernameIgnoreCase("Mael");
 		assertThat(staff.getUsername()).isEqualTo("Mael");
 	}
 	
-
+	@Test
+	@DisplayName("findByUsername(username), should return staff with given user")
+	@Sql("Staff_findStaffByUserNameDeletedFalse.sql")
+	void findByUsername_ShouldReturn_UserIgnoreCase() {
+		Staff staff = staffRepository.findByUsernameIgnoreCase("MAEL");
+		assertThat(staff.getUsername()).isEqualTo("Mael");
+	}
 
 }

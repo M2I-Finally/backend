@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.listeners.MockCreationListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -107,7 +106,7 @@ public class StaffServiceTests {
 		when(staffRepository.save(staff)).thenReturn(staff);
 
 		// Execute
-		Staff result = staffService.createStaff(staff);
+		Staff result = staffService.saveStaff(staff);
 
 		// Assert
 		assertThat(result.getUsername()).isEqualTo("Mael");
@@ -141,5 +140,72 @@ public class StaffServiceTests {
 
 		// Assert
 		assertThat(result.isStatus()).isFalse();
+	}
+	
+	@Test
+	void givenStatusFalse_WhenPatchStaffStatus_ShouldBeTrue() {
+
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", false, new Date(), new Date());
+		when(staffRepository.findById(1)).thenReturn(Optional.ofNullable(staff));
+		when(staffRepository.save(staff)).thenReturn(staff);
+
+		// Execute
+		Staff result = staffService.updateStaffStatus(1);
+
+		// Assert
+		assertThat(result.isStatus()).isTrue();
+	}
+	
+	@Test
+	void givenStaff_whenGetStaffByUserName_shouldGetUser() {
+		
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, new Date(), new Date());
+		when(staffRepository.findByUsernameIgnoreCase("Mael")).thenReturn(staff);
+		
+		// Execute
+		Staff result = staffService.getStaffByUserName("Mael");
+		
+		// Assert
+		assertThat(result.getUsername()).isEqualTo("Mael");
+	}
+	
+	@Test
+	void givenStaff_whenGetNotExistingStaffByUserName_shouldGetNull() {
+		
+		// Arrange
+		when(staffRepository.findByUsernameIgnoreCase("Mael")).thenReturn(null);
+		
+		// Execute
+		Staff result = staffService.getStaffByUserName("Mael");
+		
+		// Assert
+		assertThat(result).isNull();
+	}
+	
+	@Test
+	void givenStaff_whenGetPasswordById_shouldGetPassword() {
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, new Date(), new Date());
+		when(staffRepository.findById(1)).thenReturn(Optional.of(staff));
+		
+		// Execute
+		String result = staffService.getPasswordById(1);
+		
+		// Assert
+		assertThat(result).isEqualTo("passWord123!");
+	}
+	
+	@Test
+	void givenStaffNotExisted_whenGetPasswordById_shouldReturnNull() {
+		// Arrange
+		when(staffRepository.findById(1)).thenReturn(Optional.ofNullable(null));
+		
+		// Execute
+		String result = staffService.getPasswordById(1);
+		
+		// Assert
+		assertThat(result).isNull();
 	}
 }
