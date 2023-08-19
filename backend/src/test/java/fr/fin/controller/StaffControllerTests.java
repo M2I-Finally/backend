@@ -425,17 +425,14 @@ public class StaffControllerTests {
 		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, new Date(), new Date());
 		when(staffService.getStaffById(1)).thenReturn(staff);
 
-		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
-		createStaffGestionPageDto.setUsername("Mael");
-		createStaffGestionPageDto.setPassword("passWord123!");
-		createStaffGestionPageDto.setPasswordConfirm("passWord123!");
-		createStaffGestionPageDto.setRole("ADMIN");
-		createStaffGestionPageDto.setStatus(true);
-		createStaffGestionPageDto.setCreatedAt(staff.getCreatedAt());
-		createStaffGestionPageDto.setUpdateAt(new Date());
+		Staff staffToUpdate = staff;
+		staffToUpdate.setUsername("Mael");
 
-		String json = mapper.writeValueAsString(createStaffGestionPageDto);
-
+		when(staffService.getStaffByUserName("Mael")).thenReturn(staff);
+		when(staffService.saveStaff(staffToUpdate)).thenReturn(staffToUpdate);
+		
+		String json = mapper.writeValueAsString(staffToUpdate);
+		
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
 
 		// Assert
