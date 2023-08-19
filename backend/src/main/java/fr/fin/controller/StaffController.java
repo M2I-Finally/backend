@@ -180,10 +180,11 @@ public class StaffController {
 				// update username
 				if (staffDto.getUsername() != null) {
 
-					// username cannot be exist already
-					if (staffService.getStaffByUserName(staffDto.getUsername()) != null) {
-						throw new ValidationErrorException(
-								"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
+					// We need to check if the user we are editing has the same username or not, to avoid conflicts
+					if (!staffDto.getUsername().equals(staffToUpdate.getUsername())) {
+						if(staffService.getStaffByUserName(staffDto.getUsername()) != null) {
+							throw new ValidationErrorException("Le nom d'utilisateur existe déjà, veuillez en sélectionner un autre");
+						}
 					}
 
 					staffToUpdate.setUsername(staffDto.getUsername());
@@ -215,7 +216,12 @@ public class StaffController {
 					staffToUpdate.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
 				}
 
-				staffToUpdate.setRole(staffDto.getRole());
+				// Here we don't want our master account to have another role (employee, manager)
+				if(staffToUpdate.getUsername().equals(masterAccountName)) {
+					staffToUpdate.setRole("ADMIN");
+				} else {
+					staffToUpdate.setRole(staffDto.getRole());
+				}
 				staffToUpdate.setUpdateAt(new Date());
 
 				// update staff
@@ -231,7 +237,7 @@ public class StaffController {
 	/**
 	 * UPDATE the status of user, given its id, instead of completely deleting it
 	 * from DB
-	 * 
+	 *
 	 * @param id The id of the user
 	 * @return The user
 	 * @throws ResourceNotFoundException
@@ -253,7 +259,7 @@ public class StaffController {
 
 	/**
 	 * GET the user given its username
-	 * 
+	 *
 	 * @param userName The username of the user
 	 * @return The user
 	 * @throws ResourceNotFoundException
