@@ -3,6 +3,7 @@ package fr.fin.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,11 @@ import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.StaffService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@Tag(name = "Staff", description = "Manage application's staff")
 @RestController
-@CrossOrigin
 @RequestMapping("/users")
+@CrossOrigin
 public class StaffController {
 
 	@Value("${finally.masteraccount}")
@@ -174,21 +173,18 @@ public class StaffController {
 		if (staffDto.getUsername() != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
 
-			// staff cannot be 'deleted'
+			// staff cannot be 'deleted nor the same as current one
 			if (staffToUpdate.isStatus()) {
 
 				// update username
-				if (staffDto.getUsername() != null) {
-
-					// We need to check if the user we are editing has the same username or not, to avoid conflicts
-					if (!staffDto.getUsername().equals(staffToUpdate.getUsername())) {
-						if(staffService.getStaffByUserName(staffDto.getUsername()) != null) {
-							throw new ValidationErrorException("Le nom d'utilisateur existe déjà, veuillez en sélectionner un autre");
-						}
-					}
-
-					staffToUpdate.setUsername(staffDto.getUsername());
+				// username cannot be exist already except than the user self 
+				if (staffService.getStaffByUserName(staffDto.getUsername()) != null && !Objects.equals(staffToUpdate.getId(), staffDto.getId())) {
+					throw new ValidationErrorException(
+							"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
 				}
+
+				staffToUpdate.setUsername(staffDto.getUsername());
+				
 
 				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null)
 						|| (staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank())
@@ -216,12 +212,7 @@ public class StaffController {
 					staffToUpdate.setPassword(bCryptPasswordEncoder.encode(staffDto.getPassword()));
 				}
 
-				// Here we don't want our master account to have another role (employee, manager)
-				if(staffToUpdate.getUsername().equals(masterAccountName)) {
-					staffToUpdate.setRole("ADMIN");
-				} else {
-					staffToUpdate.setRole(staffDto.getRole());
-				}
+				staffToUpdate.setRole(staffDto.getRole());
 				staffToUpdate.setUpdateAt(new Date());
 
 				// update staff
@@ -237,7 +228,7 @@ public class StaffController {
 	/**
 	 * UPDATE the status of user, given its id, instead of completely deleting it
 	 * from DB
-	 *
+	 * 
 	 * @param id The id of the user
 	 * @return The user
 	 * @throws ResourceNotFoundException
@@ -259,7 +250,7 @@ public class StaffController {
 
 	/**
 	 * GET the user given its username
-	 *
+	 * 
 	 * @param userName The username of the user
 	 * @return The user
 	 * @throws ResourceNotFoundException

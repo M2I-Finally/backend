@@ -364,6 +364,8 @@ public class StaffControllerTests {
 
 		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
 		createStaffGestionPageDto.setUsername(null);
+		createStaffGestionPageDto.setPassword("passWord123!");
+		createStaffGestionPageDto.setPasswordConfirm("passWord123!");
 
 		String json = mapper.writeValueAsString(createStaffGestionPageDto);
 
@@ -416,34 +418,52 @@ public class StaffControllerTests {
 	}
 
 	@Test
-	@Disabled
-	@WithMockUser(username = "admin", authorities = "ADMIN")
-	void givenAStaffId_whenEditNameWithExistingUsername_thenReturnError() throws Exception {
+	@WithMockUser(username = "Mael", authorities = "ADMIN")
+	void givenAStaffId_whenEditHisName_thenUpdateWithCurrentName() throws Exception {
+
+		// Arrange
+		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, new Date(), new Date());
+		when(staffService.getStaffById(1)).thenReturn(staff);
+
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername("Mael");
+		createStaffGestionPageDto.setPassword("passWord123!");
+		createStaffGestionPageDto.setPasswordConfirm("passWord123!");
+		createStaffGestionPageDto.setRole("ADMIN");
+		createStaffGestionPageDto.setStatus(true);
+		createStaffGestionPageDto.setCreatedAt(staff.getCreatedAt());
+		createStaffGestionPageDto.setUpdateAt(new Date());
+
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+
+		// Assert
+		mvc.perform(request).andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser(username = "Mael", authorities = "ADMIN")
+	void givenAStaffId_whenEditNameWithExistingUsernameOtherThanUserToUpdate_thenReturnError() throws Exception {
 
 		// Arrange
 
 
 		//Simulate an existing staff
-		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
-		when(staffService.getStaffById(1)).thenReturn(staff);
+		Staff staff1 = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
+		Staff staff2 = new Staff(2, "Jordan", "passWord123!", 0, "ADMIN", true, null, null);
+		when(staffService.getStaffById(2)).thenReturn(staff2);
 
-		Staff staffToUpdate = staff;
+		Staff staffToUpdate = staff2;
 		staffToUpdate.setUsername("Mael");
 
 		//simulate update staff
-		when(staffService.getStaffByUserName("Mael")).thenReturn(staff);
+		when(staffService.getStaffByUserName("Mael")).thenReturn(staff1);
 		when(staffService.saveStaff(staffToUpdate)).thenReturn(staffToUpdate);
-		String json = """
-			{
-			"id":1,
-		    "username":"Mael",
-		    "password":"!passWord123",
-		    "passwordConfirm":"!passWord123",
-		    "role": "ADMIN"
-		    }
-		""";
 
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
+		String json = mapper.writeValueAsString(staffToUpdate);
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/2").content(json).contentType(MediaType.APPLICATION_JSON);
 
 		// Assert
 		mvc.perform(request).andExpect(status().isBadRequest());
