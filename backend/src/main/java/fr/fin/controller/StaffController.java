@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,9 +30,6 @@ import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.StaffService;
-import fr.fin.util.ValidationErrorCheckerUtil;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -179,14 +175,13 @@ public class StaffController {
 			if (staffToUpdate.isStatus()) {
 
 				// update username
-				// username cannot be exist already except than the user self 
-				if (staffService.getStaffByUserName(staffDto.getUsername()) != null && !Objects.equals(staffToUpdate.getId(), staffDto.getId())) {
+				// username cannot be exist already except than the user self
+				if (staffService.getStaffByUserName(staffDto.getUsername()) != null && !Objects.equals(id, staffService.getStaffByUserName(staffDto.getUsername()).getId())) {
 					throw new ValidationErrorException(
 							"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
 				}
 
 				staffToUpdate.setUsername(staffDto.getUsername());
-				
 
 				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null)
 						|| (staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank())
@@ -230,7 +225,7 @@ public class StaffController {
 	/**
 	 * UPDATE the status of user, given its id, instead of completely deleting it
 	 * from DB
-	 * 
+	 *
 	 * @param id The id of the user
 	 * @return The user
 	 * @throws ResourceNotFoundException
@@ -252,7 +247,7 @@ public class StaffController {
 
 	/**
 	 * GET the user given its username
-	 * 
+	 *
 	 * @param userName The username of the user
 	 * @return The user
 	 * @throws ResourceNotFoundException
@@ -269,12 +264,12 @@ public class StaffController {
 	}
 
 	@PostMapping("/check")
-	public boolean checkPasswordToLogout(@Valid @RequestBody CheckPasswordDto checkPasswordDto,
-			BindingResult bindingResult) throws ValidationErrorException {
+	public boolean checkPasswordToLogout(@RequestBody CheckPasswordDto checkPasswordDto) throws ValidationErrorException {
 
-		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
-
-		String hashedPassword = staffService.getPasswordById(checkPasswordDto.getUserId());
-		return bCryptPasswordEncoder.matches(checkPasswordDto.getPassword(), hashedPassword);
+		if(checkPasswordDto.getPassword() != null) {
+			String hashedPassword = staffService.getPasswordById(checkPasswordDto.getUserId());
+			return bCryptPasswordEncoder.matches(checkPasswordDto.getPassword(), hashedPassword);
+		}
+		return false;
 	}
 }
