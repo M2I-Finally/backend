@@ -30,6 +30,7 @@ import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.StaffService;
+import fr.fin.util.ValidationErrorCheckerUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -279,9 +280,7 @@ public class StaffController {
 	public boolean checkPasswordToLogout(@Valid @RequestBody CheckPasswordDto checkPasswordDto,
 			BindingResult bindingResult) throws ValidationErrorException {
 
-		if (bindingResult.hasErrors()) {
-			throw new ValidationErrorException("Les champs sont invalides");
-		}
+		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
 
 		String hashedPassword = staffService.getPasswordById(checkPasswordDto.getUserId());
 		return bCryptPasswordEncoder.matches(checkPasswordDto.getPassword(), hashedPassword);

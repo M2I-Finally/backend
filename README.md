@@ -4,26 +4,34 @@
 
 # Finally - Point de vente
 Finally est une application "terminal de point de vente" (ou caisse enregistreuse), permettant aux petits commerçants de finaliser facilement les transactions commerciales avec leurs clients. <br>
-L'application ne permet que pour l'instant une utilisation simple : gestion des produits, des prix/réductions, ainsi que le paiement. <br>
+L'application ne permet que pour l'instant une utilisation simple : gestion des produits, gestion des utilisateurs, des prix/réductions, ainsi que le paiement. <br>
 L'application utilise une boulangerie comme commerce de démonstration.
 <br>
 
 **Attention : Il ne s'agit pas d'une application à but lucratif, mais d'un projet de fin de formation pour M2i Formation.**
 
-## Installation de l'application avec Docker
+## Installation de l'application et de la base de données avec Docker
 Pour pouvoir lancer l'application, il vous faut Docker (https://www.docker.com) afin d'initialiser la base de données.
 Pour ce faire, rendez-vous dans le dossier `backend` de l'application. Dans votre terminal de commandes tapez `docker compose up -d`. <br>
 
-La base de données s'initialisera. L'interface de gestion est disponible à l'url suivant : `http://localhost:5050`.
+La base de données s'initialisera dans un répertoire nommé `data` et exécutera le script .sql présent dans `initdb`. L'interface de gestion est disponible à l'url suivant : `http://localhost:5050`.
 
-Les identifiants de connexion à pgAdmin sont :
+**Les identifiants de connexion à pgAdmin sont :**
 - Mail : `admin@admin.com`
 - Mot de passe : `root`
+
+**Les identifiants pour accéder à la base de données sans pgAdmin sont :**
+- URL : `http://localhost:5432`
+- Base de données : `finally`
+- Utilisateur : `postgres`
+- Mot de passe : `postgres`
 
 ## Accéder à l'application et documentation de l'API
 Pour lancer l'application, retournez dans le dossier racine et dans votre terminal de commande exécutez la commande : `java -jar backend-0.0.1-SNAPSHOT`.
 
 Si votre base de données est démarrée correctement, alors l'application devrait être accessible à l'url `http:/localhost:8080/documentation.html` où vous trouverez la documentation de l'API.
+
+Vous pouvez également lancer l'application depuis votre IDE avec la commande `spring-boot:run`.
 
 ## Equipe de développement
 - **Huan Xie** (https://github.com/thehuanxie)
