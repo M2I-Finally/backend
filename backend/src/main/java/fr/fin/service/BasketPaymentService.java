@@ -1,16 +1,11 @@
 package fr.fin.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.fin.model.entity.Basket;
-import fr.fin.model.entity.BasketDetail;
-import fr.fin.model.entity.Payment;
-import fr.fin.repository.BasketDetailRepository;
 import fr.fin.repository.BasketRepository;
-import fr.fin.repository.PaymentRepository;
+
 
 @Service
 public class BasketPaymentService {
@@ -26,13 +21,21 @@ public class BasketPaymentService {
 	@Autowired
 	private BasketRepository basketRepository;
 	
+	/**insert a new basket in database 
+	 * when repository give new basketId :
+	 * -> populate the association tables (basketId - productId)
+	 * -> insert new paiement	
+	 * 
+	 * @param basket
+	 * @return Provides the ID of the newly inserted basket in the database.
+	 */
 	public Integer createBasket(Basket basket) {
 		
 		Basket basketToSave = basketRepository.save(basket);
 		basketId = basketToSave.getBasketId();
-		List<BasketDetail> listDetailInsert = basketDetailService.insertBasketDetails(basket.getBasketDetails(), basketId);
-		List<Payment> listPaymentInsert = paymentService.insertPayments(basket, basketId);
-		//System.out.println(basketToSave);
+		basketDetailService.insertBasketDetails(basket.getBasketDetails(), basketId);
+		paymentService.insertPayments(basket, basketId);
+		
 		return basketId;
 	}
 	
