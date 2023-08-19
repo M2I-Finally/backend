@@ -10,7 +10,6 @@ import fr.fin.exceptions.custom.ValidationErrorException;
 
 public class ValidationErrorCheckerUtil {
 
-
 	public static void hasValidationErrors(BindingResult bindingResult) throws ValidationErrorException {
 		if (bindingResult.hasErrors()) {
 			List<String> errorMessages = new ArrayList<>();

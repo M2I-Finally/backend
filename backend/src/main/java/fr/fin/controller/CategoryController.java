@@ -141,9 +141,7 @@ public class CategoryController {
 	public CategoryDto changeCategoryActiveState(@PathVariable("id") Integer categoryId,
 			@Valid @RequestBody CreateUpdateCategoryDto updateCategoryNameDto, BindingResult bindingResult) throws ResourceNotFoundException, ResourceAlreadyExistsException, ValidationErrorException {
 
-		if(bindingResult.hasErrors()) {
-			throw new ValidationErrorException("Erreur de validation");
-		}
+		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
 
 		if (categoryService.getCategoryById(categoryId) != null) {
 			if (!categoryService.checkIfCategoryExistsByName(updateCategoryNameDto.getName())) {

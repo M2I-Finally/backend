@@ -139,9 +139,7 @@ public class ProductController {
 			BindingResult bindingResult,
 			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException, ResourceNotFoundException, ValidationErrorException {
 
-		if(bindingResult.hasErrors()) {
-			throw new ValidationErrorException("Erreur de validation");
-		}
+		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
 
 		if (productService.getProductById(id) != null) {
 
