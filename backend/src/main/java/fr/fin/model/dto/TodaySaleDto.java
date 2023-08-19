@@ -43,12 +43,5 @@ public class TodaySaleDto {
 		this.payments = payments;
 	}
 
-	@Override
-	public String toString() {
-		return "TodaySaleDto [Username=" + seller + ", total=" + total + "]";
-	}
-	
-	
-	
 	
 }

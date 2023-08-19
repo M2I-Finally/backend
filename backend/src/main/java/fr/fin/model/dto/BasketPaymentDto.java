@@ -3,25 +3,28 @@ package fr.fin.model.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BasketPaymentDto {
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
-	/*
-	 * class CartLine { private id: number; private name: string; private price:
-	 * number; private discount: number; private quantity: number;
-	 * 
-	 * 
-	 * class Cart { private cartLines: CartLine[]; private total: number; private
-	 * discount: number;
-	 * 
-	 * class Basket { private cart : Cart; private discount : number; private total
-	 * : number = 0;
-	 * 
-	 * 
-	 */
+public class BasketPaymentDto {
+	
+	@NotNull(message="Il n'y a pas de vendeur pour ce panier")
 	private Integer sellerId;
+	
+	@Positive(message="la reduction ne peut pas etre inférieur à zero")
 	private Float discount;
+	
+	@NotNull(message="le total du panier ne peut étre vide")
+	@Positive(message="le total du panier ne peut pas être négatif")
 	private Float total;
+	
+	@NotNull(message="la liste des articles ne peut être nulle")
+	@Size(min = 1, message = "Il doit y avoir au moins un article dans le panier")
 	private List<BasketDetailDto> basketDetailDtoList = new ArrayList<>();
+	
+	@NotNull(message="la liste des moyens de paiments ne peut pas être nulle")
+	@Size(min = 1, message = "Il doit y avoir au moins un moyen de paiment")
 	private List<PaymentDto> paymentDtoList = new ArrayList<>();
 
 	public BasketPaymentDto() {
@@ -77,13 +80,5 @@ public class BasketPaymentDto {
 	public void setpaymentDtoList(List<PaymentDto> paymentDtoList) {
 		this.paymentDtoList = paymentDtoList;
 	}
-
-	@Override
-	public String toString() {
-		return "BasketPaymentDto [sellerId=" + sellerId + ", discount=" + discount + ", total=" + total
-				+ ", basketDetailDtoList=" + basketDetailDtoList + ", paymentDtoList=" + paymentDtoList + "]";
-	}
-	
-	
 
 }
