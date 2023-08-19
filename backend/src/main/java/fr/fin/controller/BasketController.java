@@ -29,6 +29,7 @@ import fr.fin.model.entity.Payment;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.BasketPaymentService;
 import fr.fin.service.BasketService;
+import fr.fin.util.ValidationErrorCheckerUtil;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -49,16 +50,7 @@ public class BasketController {
 	@PostMapping("/payment")
 	public ResponseEntity<Integer> insertBasket(@Valid @RequestBody BasketPaymentDto basketPaymentDto, BindingResult bindingResult) throws ValidationErrorException {
 		
-		if (bindingResult.hasErrors()) {
-		    List<String> errorMessages = new ArrayList<>();
-		    
-		    for (FieldError error : bindingResult.getFieldErrors()) {
-		        errorMessages.add(error.getDefaultMessage());
-		    }		    
-		    
-		    String errorMessage = String.join(", ", errorMessages);
-		    throw new ValidationErrorException("Erreurs de validation : " + errorMessage);
-		}
+		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
 		
 		Basket basketFromApp = convertToEntities(basketPaymentDto);
 		Integer basketId = basketPaymentService.createBasket(basketFromApp);
