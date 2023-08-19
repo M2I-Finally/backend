@@ -5,6 +5,7 @@ services:
     container_name: db
     image: postgres
     restart: always
+    command: mkdir data
     environment:
       POSTGRES_DB: finally
       POSTGRES_USER: postgres
