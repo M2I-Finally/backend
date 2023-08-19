@@ -30,8 +30,8 @@ public class BasketDetailDto {
 	}
 
 	public void setQuantity(Integer quantity) throws ValidationErrorException {
-        if (quantity == null || quantity < 0) {
-            throw new ValidationErrorException("Erreur de validation : La quantité doit être positive");
+        if (quantity == null || quantity <= 0) {        	
+            throw new ValidationErrorException("Erreur de validation : La quantité doit être positive");            
         }
         this.quantity = quantity;
     }

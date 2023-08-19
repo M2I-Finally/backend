@@ -81,7 +81,7 @@ public class BasketController {
 			}
 		}
 
-		throw new ResourceNotFoundException("il n'y a pas encore eu de vente réalisé pour cette journée");
+		throw new ResourceNotFoundException("il n'y a pas encore eu de vente réalisée pour cette journée");
 	}
 
 	
