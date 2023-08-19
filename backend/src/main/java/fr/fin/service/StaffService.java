@@ -19,17 +19,15 @@ public class StaffService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return staffRepository.findByUsername(username);
+		return staffRepository.findByUsernameIgnoreCase(username);
 	}
 
 	public List<Staff> getAllStaffs() {
-		return staffRepository.findByStatusTrue();
+		return staffRepository.findAllByStatusTrue();
 	}
 
-	public Staff createStaff(Staff staff) {
-
-		Staff newStaff = staffRepository.save(staff);
-		return newStaff;
+	public Staff saveStaff(Staff staff) {
+		return staffRepository.save(staff);
 	}
 
 	public Staff getStaffById(Integer id) {
@@ -39,24 +37,29 @@ public class StaffService implements UserDetailsService {
 		}
 		return null;
 	}
-	
+
 	public Staff getStaffByUserName(String userName) {
-		if ( staffRepository.findByUsername(userName) != null ) {
-			return staffRepository.findByUsername(userName);
+		if ( staffRepository.findByUsernameIgnoreCase(userName) != null ) {
+			return staffRepository.findByUsernameIgnoreCase(userName);
 		}
 		return null;
 	}
 
-	public void saveStaff(Staff staff) {
-		staffRepository.save(staff);
-	}
-	
 	public Staff updateStaffStatus(Integer id) {
 		Staff updatedStaff = this.getStaffById(id);
 		if(updatedStaff != null) {
 			updatedStaff.setStatus(updatedStaff.isStatus() ? false : true);
 			staffRepository.save(updatedStaff);
 			return updatedStaff;
+		}
+		return null;
+	}
+
+
+	public String getPasswordById(Integer id) {
+		Staff staff = this.getStaffById(id);
+		if(staff != null) {
+			return staff.getPassword();
 		}
 		return null;
 	}

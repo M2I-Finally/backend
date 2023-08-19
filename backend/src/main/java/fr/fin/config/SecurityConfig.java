@@ -60,8 +60,8 @@ public class SecurityConfig {
 	    return http
 	        .authorizeHttpRequests(customizer -> customizer
 	            .requestMatchers("/login").permitAll()
-	            .requestMatchers("/bcrypt").permitAll()
 	            .requestMatchers("/images/**").permitAll()
+	            .requestMatchers("/v3/**", "/swagger-ui/**", "/documentation.html").permitAll()
 	            .requestMatchers("/**").authenticated())
 	        .cors(Customizer.withDefaults())
 	        .csrf(csrf -> csrf.disable())

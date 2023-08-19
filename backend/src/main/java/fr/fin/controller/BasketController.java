@@ -3,28 +3,23 @@ package fr.fin.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DirectFieldBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.exceptions.custom.ValidationErrorException;
-import fr.fin.model.dto.BasketDetailDto;
 import fr.fin.model.dto.BasketPaymentDto;
 import fr.fin.model.dto.PaymentDto;
 import fr.fin.model.dto.TodaySaleDto;
@@ -34,17 +29,13 @@ import fr.fin.model.entity.Payment;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.BasketPaymentService;
 import fr.fin.service.BasketService;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import org.springframework.validation.Errors;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+@Tag(name = "Basket", description = "Manage basket's payment")
 @RestController
 @CrossOrigin
 public class BasketController {
-	
-	private final Validator validator = null;
 
 	@Autowired
 	private BasketService basketService;
@@ -92,12 +83,13 @@ public class BasketController {
 
 		throw new ResourceNotFoundException("il n'y a pas encore eu de vente réalisé pour cette journée");
 	}
+
 	
 	/**convert datas received from frontend into a backend-exploitable entity.
 	 * 
 	 * @param BasketPaymentDto
 	 * @return Basket entity
-	 * @throws ValidationErrorException 
+	 * @throws ValidationErrorException 	
 	 */
 	private Basket convertToEntities(BasketPaymentDto dto) throws ValidationErrorException {
 		
@@ -120,11 +112,11 @@ public class BasketController {
 
 	/**
 	 * Make TodaySaleDto for the route GET /today-sale
-	 * 
+	 *
 	 * @param listBaskets found in database
 	 * @return TodaySaleDto PAymentType : cash = 0 , bank_card = 1 , other = 2
-	 * @throws ValidationErrorException 
-	 * 
+	 * @throws ValidationErrorException 	 * 
+	 *
 	 */
 	private TodaySaleDto makerSaleDto(List<Basket> listBaskets) throws ValidationErrorException {
 

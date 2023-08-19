@@ -3,12 +3,15 @@ package fr.fin.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,23 +21,27 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import fr.fin.auth.IsAdmin;
+import fr.fin.exceptions.custom.ActionForbiddenException;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.exceptions.custom.ValidationErrorException;
+import fr.fin.model.dto.CheckPasswordDto;
 import fr.fin.model.dto.StaffGestionPageDto;
 import fr.fin.model.dto.StaffTablePageDto;
 import fr.fin.model.entity.Staff;
 import fr.fin.service.StaffService;
+import fr.fin.util.ValidationErrorCheckerUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
 @CrossOrigin
 public class StaffController {
 
-	// only admin can CRUD users/staffs
-	private final String ROLE_CAN_UPDATE_USER = "ADMIN";
+	@Value("${finally.masteraccount}")
+	private String masterAccountName;
 
 	@Autowired
 	private StaffService staffService;
@@ -95,9 +102,15 @@ public class StaffController {
 	public ResponseEntity<StaffGestionPageDto> addStaff(@RequestBody StaffGestionPageDto staffDto)
 			throws ValidationErrorException, ResourceNotFoundException {
 
-		if (staffDto != null && !staffDto.getUsername().isBlank()) {
+		if (staffDto.getUsername() != null && !staffDto.getUsername().isBlank() && !staffDto.getUsername().isEmpty()) {
 
 			PasswordValidator passwordValidator = new PasswordValidator(staffDto.getPassword());
+
+			// username cannot be exist already
+			if (staffService.getStaffByUserName(staffDto.getUsername()) != null) {
+				throw new ValidationErrorException(
+						"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
+			}
 
 			// password needs to match the pattern
 			if (!passwordValidator.isValid(staffDto.getPassword())) {
@@ -118,11 +131,11 @@ public class StaffController {
 
 			Staff staffToCreate = convertToGestionEntity(staffDto);
 			staffToCreate.setPasswordTrial(0);
-			staffService.createStaff(staffToCreate);
+			staffService.saveStaff(staffToCreate);
 			return new ResponseEntity<StaffGestionPageDto>(staffDto, HttpStatus.CREATED);
 		}
 
-		throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+		throw new ValidationErrorException("Veuillez vérifier votre saisi.");
 	}
 
 	/**
@@ -157,23 +170,27 @@ public class StaffController {
 	 */
 	@PutMapping("/{id}")
 	@IsAdmin
-	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id,
-			@RequestBody StaffGestionPageDto staffDto) throws ValidationErrorException, ResourceNotFoundException {
-		if (staffDto != null) {
+	public StaffTablePageDto updateStaffById(@PathVariable("id") Integer id, @RequestBody StaffGestionPageDto staffDto)
+			throws ValidationErrorException, ResourceNotFoundException {
+		if (staffDto.getUsername() != null) {
 			Staff staffToUpdate = staffService.getStaffById(id);
 
-			// staff cannot be 'deleted'
+			// staff cannot be 'deleted nor the same as current one
 			if (staffToUpdate.isStatus()) {
 
 				// update username
-				if (staffDto.getUsername() != null) {
-					staffToUpdate.setUsername(staffDto.getUsername());
+				// username cannot be exist already except than the user self 
+				if (staffService.getStaffByUserName(staffDto.getUsername()) != null && !Objects.equals(staffToUpdate.getId(), staffDto.getId())) {
+					throw new ValidationErrorException(
+							"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
 				}
 
+				staffToUpdate.setUsername(staffDto.getUsername());
+				
 
-				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null ) ||
-					(staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank()) ||
-					(staffDto.getPassword().isEmpty()&& staffDto.getPasswordConfirm().isEmpty() )) {
+				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null)
+						|| (staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank())
+						|| (staffDto.getPassword().isEmpty() && staffDto.getPasswordConfirm().isEmpty())) {
 
 					// leave password null will keep old password
 					staffToUpdate.setPassword(staffToUpdate.getPassword());
@@ -201,44 +218,63 @@ public class StaffController {
 				staffToUpdate.setUpdateAt(new Date());
 
 				// update staff
-				StaffTablePageDto staffUpdated = convertToTableDto(staffService.createStaff(staffToUpdate));
+				StaffTablePageDto staffUpdated = convertToTableDto(staffService.saveStaff(staffToUpdate));
 
 				return staffUpdated;
 			}
-			throw new ResourceNotFoundException("Cet utilisateur n'existe pas");
+			throw new ResourceNotFoundException("Cet utilisateur n'existe pas.");
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Erreur dans la requête");
+		throw new ValidationErrorException("Erreur dans la requête.");
 	}
 
 	/**
-	 * UPDATE the status of user, given its id, instead of completely deleting it from DB
-	 * @param id	The id of the user
-	 * @return		The user
+	 * UPDATE the status of user, given its id, instead of completely deleting it
+	 * from DB
+	 * 
+	 * @param id The id of the user
+	 * @return The user
 	 * @throws ResourceNotFoundException
+	 * @throws ActionForbiddenException
 	 */
 	@PatchMapping("/{id}")
 	@IsAdmin
-	public StaffGestionPageDto updateUserStatus(@PathVariable("id") Integer id) throws ResourceNotFoundException {
+	public StaffGestionPageDto updateUserStatus(@PathVariable("id") Integer id)
+			throws ResourceNotFoundException, ActionForbiddenException {
 		Staff staff = staffService.getStaffById(id);
-		if(staff != null) {
-			return convertToGestionDto(staffService.updateStaffStatus(id));
+		if (staff != null) {
+			if (!masterAccountName.equals(staff.getUsername())) {
+				return convertToGestionDto(staffService.updateStaffStatus(id));
+			}
+			throw new ActionForbiddenException("Impossible de supprimer le compte");
 		}
-		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé");
+		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
 	}
 
 	/**
 	 * GET the user given its username
-	 * @param userName	The username of the user
-	 * @return		The user
+	 * 
+	 * @param userName The username of the user
+	 * @return The user
 	 * @throws ResourceNotFoundException
 	 */
 	@GetMapping("/username/{userName}")
 	@IsAdmin
-	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName) {
+	public StaffGestionPageDto findUserByUsername(@PathVariable("userName") String userName)
+			throws ResourceNotFoundException {
 		Staff staff = staffService.getStaffByUserName(userName);
-		if( staff != null ) {
+		if (staff != null) {
 			return convertToGestionDto(staffService.getStaffByUserName(userName));
 		}
-		return null;
+		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
+	}
+
+	@PostMapping("/check")
+	public boolean checkPasswordToLogout(@Valid @RequestBody CheckPasswordDto checkPasswordDto,
+			BindingResult bindingResult) throws ValidationErrorException {
+
+		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
+
+		String hashedPassword = staffService.getPasswordById(checkPasswordDto.getUserId());
+		return bCryptPasswordEncoder.matches(checkPasswordDto.getPassword(), hashedPassword);
 	}
 }

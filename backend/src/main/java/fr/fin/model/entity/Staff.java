@@ -18,12 +18,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "staff")
 public class Staff implements UserDetails {
 
 	private static final long serialVersionUID = -4414646490025845750L;
+
+	@Transient
+	private Integer passwordTrialLimit = 50000;
 
 	@Id
 	@Column(name = "staff_id")
@@ -63,7 +67,7 @@ public class Staff implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return ((this.passwordTrial >= 50000) ? false: true);
+		return ((this.passwordTrial >= passwordTrialLimit) ? false: true);
 	}
 
 	@Override
@@ -96,17 +100,15 @@ public class Staff implements UserDetails {
 	// default constructor
 	public Staff() {
 	}
-
-
-
+	
+	public Staff(Integer id) {
+		this.id = id;
+	}
+	
 	public Staff(String username, String password) {
 		super();
 		this.username = username;
 		this.password = password;
-	}
-
-	public Staff(Integer id) {
-		this.id = id;
 	}
 
 	// for Spring Security
