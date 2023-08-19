@@ -27,6 +27,7 @@ import fr.fin.model.dto.category.CategoryDto;
 import fr.fin.model.dto.category.CreateUpdateCategoryDto;
 import fr.fin.model.entity.Category;
 import fr.fin.service.CategoryService;
+import fr.fin.util.ValidationErrorCheckerUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -99,9 +100,7 @@ public class CategoryController {
 	@IsAdminOrIsManager
 	public CategoryDto createCategory(@Valid @RequestBody CreateUpdateCategoryDto createCategoryDto, BindingResult bindingResult) throws ResourceAlreadyExistsException, ValidationErrorException {
 
-		if(bindingResult.hasErrors()) {
-			throw new ValidationErrorException("Erreur de validation");
-		}
+		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
 
 		if (!categoryService.checkIfCategoryExistsByName(createCategoryDto.getName())) {
 			Category categoryFromDto = modelMapper.map(createCategoryDto, Category.class);

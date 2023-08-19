@@ -32,6 +32,7 @@ import fr.fin.model.entity.Product;
 import fr.fin.service.CategoryService;
 import fr.fin.service.FileService;
 import fr.fin.service.ProductService;
+import fr.fin.util.ValidationErrorCheckerUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -105,9 +106,7 @@ public class ProductController {
 			BindingResult bindingResult,
 			@RequestPart(value = "file", required = false) MultipartFile file) throws IOException, ResourceNotFoundException, ValidationErrorException {
 
-		if(bindingResult.hasErrors()) {
-			throw new ValidationErrorException("Erreur de validation");
-		}
+		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
 
 		// If there is a file, we process it and generate a relative URL
   		if (file != null) {
