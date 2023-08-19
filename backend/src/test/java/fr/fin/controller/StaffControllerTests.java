@@ -427,12 +427,14 @@ public class StaffControllerTests {
 
 		Staff staffToUpdate = staff;
 		staffToUpdate.setUsername("Mael");
+		staffToUpdate.setPassword(null);
 
+		//simulate update staff
 		when(staffService.getStaffByUserName("Mael")).thenReturn(staff);
 		when(staffService.saveStaff(staffToUpdate)).thenReturn(staffToUpdate);
-		
+
 		String json = mapper.writeValueAsString(staffToUpdate);
-		
+
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
 
 		// Assert
@@ -453,7 +455,7 @@ public class StaffControllerTests {
 
 		Staff staffToUpdate = staff2;
 		staffToUpdate.setUsername("Mael");
-
+		
 		//simulate update staff
 		when(staffService.getStaffByUserName("Mael")).thenReturn(staff1);
 		when(staffService.saveStaff(staffToUpdate)).thenReturn(staffToUpdate);
@@ -471,19 +473,15 @@ public class StaffControllerTests {
 	void givenAStaffId_whenEditNameWithNotValidatedPassword_thenReturnError() throws Exception {
 
 		// Arrange
-
-
-		//Simulate an existing staff
 		Staff staff = new Staff(1, "Mael", "passWord123!", 0, "ADMIN", true, null, null);
 		when(staffService.getStaffById(1)).thenReturn(staff);
 
-		Staff staffToUpdate = staff;
-		staffToUpdate.setUsername("MaelLePatron");
-		staffToUpdate.setPassword("123");
+		StaffGestionPageDto createStaffGestionPageDto = new StaffGestionPageDto();
+		createStaffGestionPageDto.setUsername("MaelLePatron");
+		createStaffGestionPageDto.setPassword("password123!");
+		createStaffGestionPageDto.setPasswordConfirm("password123!");
 
-		//simulate update staff
-		when(staffService.saveStaff(staffToUpdate)).thenReturn(staff);
-		String json = mapper.writeValueAsString(staffToUpdate);
+		String json = mapper.writeValueAsString(createStaffGestionPageDto);
 
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put("/users/1").content(json).contentType(MediaType.APPLICATION_JSON);
 

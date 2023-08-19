@@ -180,13 +180,12 @@ public class StaffController {
 
 				// update username
 				// username cannot be exist already except than the user self 
-				if (staffService.getStaffByUserName(staffDto.getUsername()) != null && !Objects.equals(staffToUpdate.getId(), staffDto.getId())) {
+				if (staffService.getStaffByUserName(staffDto.getUsername()) != null && !Objects.equals(id, staffDto.getId())) {
 					throw new ValidationErrorException(
 							"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
 				}
 
 				staffToUpdate.setUsername(staffDto.getUsername());
-				
 
 				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null)
 						|| (staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank())
