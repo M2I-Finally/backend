@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="600" height="200" src="./docs/finally-logo.png">
+  <img src="./docs/finally-logo.png">
 </p>
 
 # Finally - Point de vente
