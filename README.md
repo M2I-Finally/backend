@@ -1,8 +1,6 @@
-<center> 
-
-![Logo Finally](./docs/finally-logo.png)
-
-</center>
+<p align="center">
+  <img width="600" height="200" src="./docs/finally-logo.png">
+</p>
 
 # Finally - Point de vente
 Finally est une application "terminal de point de vente" (ou caisse enregistreuse), permettant aux petits commerçants de finaliser facilement les transactions commerciales avec leurs clients. <br>
