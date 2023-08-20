@@ -11,7 +11,8 @@ import fr.fin.repository.BasketDetailRepository;
 public class BasketDetailService {
 	
 	@Autowired
-	private BasketDetailRepository basketDetailRepository;
+	private BasketDetailRepository basketDetailRepository;	
+	
 	
 	public List<BasketDetail> insertBasketDetails(List<BasketDetail> listBasketDetail, Integer basketId){
 		
