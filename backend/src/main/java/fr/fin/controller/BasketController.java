@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.fin.exceptions.custom.ActionForbiddenException;
 import fr.fin.exceptions.custom.ResourceNotFoundException;
 import fr.fin.exceptions.custom.ValidationErrorException;
+import fr.fin.model.dto.BasketDetailDto;
 import fr.fin.model.dto.BasketPaymentDto;
 import fr.fin.model.dto.PaymentDto;
 import fr.fin.model.dto.TodaySaleDto;
@@ -47,17 +49,38 @@ public class BasketController {
 	@Autowired
 	private BasketPaymentService basketPaymentService;
 
+	
+	/**to save basket and payment in db
+	 * 
+	 * @param basketPaymentDto
+	 * @param bindingResult
+	 * @return basketId generated
+	 * @throws ValidationErrorException
+	 * @throws ActionForbiddenException 
+	 */
+	
 	@PostMapping("/payment")
-	public ResponseEntity<Integer> insertBasket(@Valid @RequestBody BasketPaymentDto basketPaymentDto, BindingResult bindingResult) throws ValidationErrorException {
-		
+	public ResponseEntity<Integer> insertBasket(@Valid @RequestBody BasketPaymentDto basketPaymentDto,
+			BindingResult bindingResult) throws ValidationErrorException, ActionForbiddenException {
+
 		ValidationErrorCheckerUtil.hasValidationErrors(bindingResult);
-		
+
 		Basket basketFromApp = convertToEntities(basketPaymentDto);
 		Integer basketId = basketPaymentService.createBasket(basketFromApp);
-		return new ResponseEntity<Integer>(basketId, HttpStatus.CREATED);
+		if (basketId >=0 && basketId != null) {
+			return new ResponseEntity<Integer>(basketId, HttpStatus.CREATED);
+		}
+		
+			throw new ActionForbiddenException("Creation du panier impossible");
 	}
 	
-
+	
+	/**get the day's sales based on the seller's id
+	 * 
+	 * @param sellerId
+	 * @return 
+	 * @throws ResourceNotFoundException
+	 */
 	@GetMapping("/today-sale/{id}")
 	public TodaySaleDto getTodaySale(@PathVariable("id") Integer sellerId) throws ResourceNotFoundException {
 
@@ -68,25 +91,37 @@ public class BasketController {
 			try {
 				return makerSaleDto(listBaskets);
 			} catch (ValidationErrorException e) {
-				
-				throw new ResourceNotFoundException("Erreur lors de la récupération des données");
+
+				throw new ResourceNotFoundException("Erreur lors de la récupération des données :" + e.getMessage());
 			}
 		}
 
 		throw new ResourceNotFoundException("il n'y a pas encore eu de vente réalisée pour cette journée");
 	}
 
-	
-	/**convert datas received from frontend into a backend-exploitable entity.
+	/**
+	 * convert datas received from frontend into a backend-exploitable entity.
 	 * 
 	 * @param BasketPaymentDto
 	 * @return Basket entity
-	 * @throws ValidationErrorException 	
+	 * @throws ValidationErrorException
 	 */
 	private Basket convertToEntities(BasketPaymentDto dto) throws ValidationErrorException {
-		
+
+		for (BasketDetailDto basketDetailDto : dto.getBasketDetailDto()) {
+			if (basketDetailDto.getQuantity() == null || basketDetailDto.getQuantity() == null
+					|| basketDetailDto.getproductId() == null) {
+				throw new ValidationErrorException("Erreur de validation : impossible d'inserer un champ null");
+			}
+		}
+
+		for (PaymentDto paymentDto : dto.getpaymentDtoList()) {
+			if (paymentDto.getAmount() == null) {
+				throw new ValidationErrorException("Erreur de validation : impossible d'inserer un champ null");
+			}
+		}
 		List<BasketDetail> listBasketDetail = mapList(dto.getBasketDetailDto(), BasketDetail.class);
-		List<Payment> payments = mapList(dto.getpaymentDtoList(), Payment.class);		
+		List<Payment> payments = mapList(dto.getpaymentDtoList(), Payment.class);
 		Staff staff = new Staff();
 		staff.setId(dto.getSellerId());
 
@@ -107,7 +142,7 @@ public class BasketController {
 	 *
 	 * @param listBaskets found in database
 	 * @return TodaySaleDto PAymentType : cash = 0 , bank_card = 1 , other = 2
-	 * @throws ValidationErrorException 	 * 
+	 * @throws ValidationErrorException
 	 *
 	 */
 	private TodaySaleDto makerSaleDto(List<Basket> listBaskets) throws ValidationErrorException {
@@ -145,6 +180,6 @@ public class BasketController {
 		todaySales.setPayments(paymentsDto);
 
 		return todaySales;
-	}	
+	}
 
 }
