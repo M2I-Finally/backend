@@ -36,12 +36,12 @@ public class BasketPaymentService {
 		if (basketId > 0 ) {
 			basketDetailService.insertBasketDetails(basket.getBasketDetails(), basketId);
 			paymentService.insertPayments(basket, basketId);
+			return basketId;
 		}else {
 			return null;
 		}
 		
 		
-		return basketId;
 	}
 	
 	

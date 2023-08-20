@@ -67,7 +67,7 @@ public class BasketController {
 
 		Basket basketFromApp = convertToEntities(basketPaymentDto);
 		Integer basketId = basketPaymentService.createBasket(basketFromApp);
-		if (basketId <=0 && basketId != null) {
+		if (basketId >=0 && basketId != null) {
 			return new ResponseEntity<Integer>(basketId, HttpStatus.CREATED);
 		}
 		
