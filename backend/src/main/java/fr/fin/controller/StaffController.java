@@ -189,13 +189,13 @@ public class StaffController {
 
 				staffToUpdate.setUsername(staffDto.getUsername());
 
+				// leave password null will keep old password
 				if ((staffDto.getPassword() == null && staffDto.getPasswordConfirm() == null)
 						|| (staffDto.getPassword().isBlank() && staffDto.getPasswordConfirm().isBlank())
 						|| (staffDto.getPassword().isEmpty() && staffDto.getPasswordConfirm().isEmpty())) {
 
-					// leave password null will keep old password
 					staffToUpdate.setPassword(staffToUpdate.getPassword());
-
+					
 				} else {
 					// update password & passwordConfirm
 					// objectify a password validator
@@ -219,9 +219,7 @@ public class StaffController {
 				staffToUpdate.setUpdateAt(new Date());
 
 				// update staff
-				StaffTablePageDto staffUpdated = convertToTableDto(staffService.saveStaff(staffToUpdate));
-
-				return staffUpdated;
+				return convertToTableDto(staffService.saveStaff(staffToUpdate));
 			}
 			throw new ResourceNotFoundException("Cet utilisateur n'existe pas.");
 		}
