@@ -1,8 +1,13 @@
 package fr.fin.model.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,15 +18,21 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "staff")
-public class Staff {
+public class Staff implements UserDetails {
+
+	private static final long serialVersionUID = -4414646490025845750L;
+
+	@Transient
+	private Integer passwordTrialLimit = 50000;
 
 	@Id
 	@Column(name = "staff_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer staffId;
+	private Integer id;
 
 	@Column(name = "username", length = 50)
 	private String username;
@@ -48,14 +59,68 @@ public class Staff {
 
 	@OneToMany(targetEntity = Basket.class, mappedBy = "staff")
 	private List<Basket> baskets = new ArrayList<>();
-	
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority(role));
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return ((this.passwordTrial >= passwordTrialLimit) ? false: true);
+	}
+
+	@Override
+	// Overriden getter for Spring Security from UserDetails implementation
+	public String getUsername() {
+		return username;
+	}
+
+	@Override
+	// Overriden getter for Spring Security from UserDetails implementation
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return this.status;
+	}
+
 	// default constructor
 	public Staff() {
-	};
+	}
+	
+	public Staff(Integer id) {
+		this.id = id;
+	}
+	
+	public Staff(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+	}
+
+	// for Spring Security
+	public Staff(Integer id, String username, String role) {
+		this.id = id;
+		this.username = username;
+		this.role = role;
+	}
 
 	// constructor w/o id
-	public Staff(String username, String password, Integer passwordTrial, String role, boolean status,
-			Date createdAt, Date updateAt) {
+	public Staff(String username, String password, Integer passwordTrial, String role, boolean status, Date createdAt,
+			Date updateAt) {
 		this.username = username;
 		this.password = password;
 		this.passwordTrial = passwordTrial;
@@ -68,7 +133,7 @@ public class Staff {
 	// constructor w/ id
 	public Staff(Integer id, String userName, String password, Integer passwordTrial, String role, boolean status,
 			Date createdAt, Date updateAt) {
-		this.staffId = id;
+		this.id = id;
 		this.username = userName;
 		this.password = password;
 		this.passwordTrial = passwordTrial;
@@ -81,20 +146,9 @@ public class Staff {
 	/*
 	 * getters & setters (no id setter)
 	 */
-	public int getId() {
-		return staffId;
-	}
-
-	public String getUsername() {
-		return username;
-	}
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
 	}
 
 	public void setPassword(String password) {
@@ -141,12 +195,12 @@ public class Staff {
 		this.updateAt = updateAt;
 	}
 
-	public Integer getStaffId() {
-		return staffId;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setStaffId(Integer staffId) {
-		this.staffId = staffId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public List<Basket> getBaskets() {
@@ -155,7 +209,15 @@ public class Staff {
 
 	public void setBaskets(List<Basket> baskets) {
 		this.baskets = baskets;
-	};
+	}
 
-	
+	@Override
+	public String toString() {
+		return "Staff [id=" + id + ", username=" + username + ", password=" + password + ", passwordTrial="
+				+ passwordTrial + ", role=" + role + ", status=" + status + ", createdAt=" + createdAt + ", updateAt="
+				+ updateAt + ", baskets=" + baskets + "]";
+	}
+
+
+
 }
