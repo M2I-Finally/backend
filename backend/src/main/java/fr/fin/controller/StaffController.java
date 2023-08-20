@@ -86,10 +86,15 @@ public class StaffController {
 
 	/**
 	 * Create a new staff, only manager can create a new staff, and control the
-	 * validity of every input
+	 * validity of every input:
+	 * Username cannot be null nor blank
+	 * Password should be valid
+	 * PasswordConfirm should be identical than Password
+	 * isStatus by default
+	 * CreatedBy and UpdateAt now by default
 	 *
 	 * @param staffDto
-	 * @return
+	 * @return ResponseEntity<StaffGestionPageDto>
 	 * @throws ValidationErrorException
 	 * @throws ResourceNotFoundException
 	 */
@@ -176,7 +181,8 @@ public class StaffController {
 
 				// update username
 				// username cannot be exist already except than the user self
-				if (staffService.getStaffByUserName(staffDto.getUsername()) != null && !Objects.equals(id, staffService.getStaffByUserName(staffDto.getUsername()).getId())) {
+				if (staffService.getStaffByUserName(staffDto.getUsername()) != null
+						&& !Objects.equals(id, staffService.getStaffByUserName(staffDto.getUsername()).getId())) {
 					throw new ValidationErrorException(
 							"Le nom d'utilisateur existe déjà, veuillez renommer l'utilisateur.");
 				}
@@ -263,10 +269,19 @@ public class StaffController {
 		throw new ResourceNotFoundException("L'utilisateur n'a pas été trouvé.");
 	}
 
+	/**
+	 * Logout directely if logout w/o password or the wrong password, only correct
+	 * password get sell recap.
+	 * 
+	 * @param checkPasswordDto
+	 * @return boolean isPasswordMatchesHashedPasswordInDB
+	 * @throws ValidationErrorException
+	 */
 	@PostMapping("/check")
-	public boolean checkPasswordToLogout(@RequestBody CheckPasswordDto checkPasswordDto) throws ValidationErrorException {
+	public boolean checkPasswordToLogout(@RequestBody CheckPasswordDto checkPasswordDto)
+			throws ValidationErrorException {
 
-		if(checkPasswordDto.getPassword() != null) {
+		if (checkPasswordDto.getPassword() != null) {
 			String hashedPassword = staffService.getPasswordById(checkPasswordDto.getUserId());
 			return bCryptPasswordEncoder.matches(checkPasswordDto.getPassword(), hashedPassword);
 		}
