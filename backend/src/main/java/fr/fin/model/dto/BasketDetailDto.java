@@ -1,10 +1,7 @@
 package fr.fin.model.dto;
 
 import fr.fin.exceptions.custom.ValidationErrorException;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+
 
 public class BasketDetailDto {
 
@@ -51,7 +48,10 @@ public class BasketDetailDto {
 		return productId;
 	}
 
-	public void setproductId(Integer productId) {
+	public void setproductId(Integer productId) throws ValidationErrorException {		
+		if (productId == null || productId <=0) {			
+			throw new ValidationErrorException("Erreur de validation : il faut au moins un produit dans le panier");
+		}
 		this.productId = productId;
 	}
 

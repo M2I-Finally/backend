@@ -33,8 +33,13 @@ public class BasketPaymentService {
 		
 		Basket basketToSave = basketRepository.save(basket);
 		basketId = basketToSave.getBasketId();
-		basketDetailService.insertBasketDetails(basket.getBasketDetails(), basketId);
-		paymentService.insertPayments(basket, basketId);
+		if (basketId > 0 ) {
+			basketDetailService.insertBasketDetails(basket.getBasketDetails(), basketId);
+			paymentService.insertPayments(basket, basketId);
+		}else {
+			return null;
+		}
+		
 		
 		return basketId;
 	}
