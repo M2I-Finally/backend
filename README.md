@@ -34,7 +34,7 @@ Si votre base de données est démarrée correctement, alors l'application devra
 Vous pouvez également lancer l'application depuis votre IDE avec la commande `mvn spring-boot:run`.
 
 ## Installation du projet front
-Le projet front se trouve à l'url suivante : https://github.com/M2I-Finally/frontend
+Le projet front se trouve à l'url suivante : https://github.com/M2I-Finally/frontend <br>
 Vous trouverez toute la documentation pour démarrer le projet, ainsi que les identifiants permettant d'accéder à l'application.
 
 ## Equipe de développement
