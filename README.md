@@ -31,7 +31,7 @@ Pour lancer l'application, retournez dans le dossier racine et dans votre termin
 
 Si votre base de données est démarrée correctement, alors l'application devrait être accessible à l'url `http:/localhost:8080/documentation.html` où vous trouverez la documentation de l'API.
 
-Vous pouvez également lancer l'application depuis votre IDE avec la commande `spring-boot:run`.
+Vous pouvez également lancer l'application depuis votre IDE avec la commande `mvn spring-boot:run`.
 
 ## Equipe de développement
 - **Huan Xie** (https://github.com/thehuanxie)
