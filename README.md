@@ -27,11 +27,8 @@ La base de données s'initialisera dans un répertoire nommé `data` et exécute
 - Mot de passe : `postgres`
 
 ## Accéder à l'application et documentation de l'API
-Pour lancer l'application, retournez dans le dossier racine et dans votre terminal de commande exécutez la commande : `java -jar backend-0.0.1-SNAPSHOT`.
-
+Vous pouvez lancer l'application en exécutant le fichier `BackendApplication.java` présent dans `src/main/java` dans votre IDE ou avec la commande `mvn spring-boot:run`.
 Si votre base de données est démarrée correctement, alors l'application devrait être accessible à l'url `http:/localhost:8080/documentation.html` où vous trouverez la documentation de l'API.
-
-Vous pouvez également lancer l'application depuis votre IDE avec la commande `mvn spring-boot:run`.
 
 ## Installation du projet front
 Le projet front se trouve à l'url suivante : https://github.com/M2I-Finally/frontend <br>
